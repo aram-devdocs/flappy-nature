@@ -1,7 +1,8 @@
 import type { BestScores, DifficultyKey, GameColors, GameState } from './game';
+import type { LeaderboardProps } from './leaderboard';
 
 /** Props for the top-level FlappyNatureGame React component. */
-export interface FlappyNatureGameProps {
+export interface FlappyNatureGameProps extends LeaderboardProps {
   /** Custom color theme overrides. */
   colors?: Partial<GameColors>;
   /** Custom banner texts displayed on flying planes. */

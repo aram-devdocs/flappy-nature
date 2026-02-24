@@ -1,6 +1,7 @@
 /** Z-index levels. */
 export const Z_INDEX = {
   overlay: 2,
+  tab: 3,
   modal: 5,
   picker: 10,
 } as const;
