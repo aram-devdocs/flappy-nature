@@ -1,6 +1,6 @@
 import type { GameColors, Pipe } from '@repo/types';
 import type { CachedFonts } from './cache.js';
-import { TAU } from './math.js';
+import { DEG_TO_RAD, TAU } from './math.js';
 import type { PipeLipCache } from './renderer-prerender.js';
 
 export function drawBird(
@@ -9,13 +9,14 @@ export function drawBird(
   rot: number,
   birdX: number,
   birdSize: number,
-  dpr: number,
+  _dpr: number,
   heartImg: HTMLImageElement | null,
   colors: GameColors,
 ): void {
   const cx = birdX + birdSize / 2;
   const cy = y + birdSize / 2;
-  const rad = rot * (Math.PI / 180);
+  const rad = rot * DEG_TO_RAD;
+  ctx.save();
   ctx.translate(cx, cy);
   ctx.rotate(rad);
 
@@ -27,7 +28,7 @@ export function drawBird(
     ctx.arc(0, 0, birdSize / 2, 0, TAU);
     ctx.fill();
   }
-  ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  ctx.restore();
 }
 
 export function drawPipes(
@@ -44,6 +45,7 @@ export function drawPipes(
     const p = pipes[i] as Pipe;
     const gapBottom = p.topH + pipeGap;
 
+    ctx.save();
     ctx.translate(p.x, 0);
 
     if (pipeGrad) {
@@ -62,7 +64,7 @@ export function drawPipes(
       ctx.drawImage(pipeLip.canvas, -4, gapBottom, pipeLip.logW, pipeLip.logH);
     }
 
-    ctx.translate(-p.x, 0);
+    ctx.restore();
   }
 }
 
