@@ -1,3 +1,4 @@
+import { COLOR_TOKENS } from '@repo/types';
 import type { Preview } from '@storybook/react';
 
 const preview: Preview = {
@@ -6,13 +7,13 @@ const preview: Preview = {
       <div
         style={
           {
-            '--fn-navy': '#090949',
-            '--fn-violet': '#6500D9',
-            '--fn-cyan': '#00D9FF',
-            '--fn-magenta': '#D76EFF',
-            '--fn-light': '#FBF6F6',
-            '--fn-white': '#FFFFFF',
-            '--fn-midviolet': '#4B00A0',
+            '--fn-navy': COLOR_TOKENS.navy,
+            '--fn-violet': COLOR_TOKENS.violet,
+            '--fn-cyan': COLOR_TOKENS.cyan,
+            '--fn-magenta': COLOR_TOKENS.magenta,
+            '--fn-light': COLOR_TOKENS.light,
+            '--fn-white': COLOR_TOKENS.white,
+            '--fn-midviolet': COLOR_TOKENS.midviolet,
           } as React.CSSProperties
         }
       >

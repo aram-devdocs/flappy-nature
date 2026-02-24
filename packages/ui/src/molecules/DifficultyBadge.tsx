@@ -1,5 +1,15 @@
 import type { DifficultyKey } from '@repo/types';
-import { DIFF_LABELS } from '@repo/types';
+import {
+  BORDER_WIDTH,
+  DIFF_LABELS,
+  FONT_SIZE,
+  FONT_WEIGHT,
+  LINE_HEIGHT,
+  RADIUS,
+  RGBA_TOKENS,
+  SPACING,
+  cssVar,
+} from '@repo/types';
 
 /** Props for {@link DifficultyBadge}. */
 interface DifficultyBadgeProps {
@@ -21,15 +31,15 @@ export function DifficultyBadge({ difficulty, visible, onClick }: DifficultyBadg
       aria-label={`Difficulty: ${DIFF_LABELS[difficulty]}`}
       onClick={onClick}
       style={{
-        padding: '2px 10px',
-        fontSize: '11px',
-        fontWeight: 700,
-        color: 'var(--fn-violet, #6500D9)',
-        background: 'rgba(101, 0, 217, 0.08)',
-        border: '1px solid rgba(101, 0, 217, 0.15)',
-        borderRadius: '12px',
+        padding: `${SPACING[0.5]} ${SPACING[2.5]}`,
+        fontSize: FONT_SIZE.sm,
+        fontWeight: FONT_WEIGHT.bold,
+        color: cssVar('violet'),
+        background: RGBA_TOKENS.violetBgSubtle,
+        border: `${BORDER_WIDTH.thin} solid ${RGBA_TOKENS.violetBorderSubtle}`,
+        borderRadius: RADIUS.xl,
         cursor: 'pointer',
-        lineHeight: '18px',
+        lineHeight: LINE_HEIGHT.tight,
       }}
     >
       {DIFF_LABELS[difficulty]}

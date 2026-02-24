@@ -1,4 +1,4 @@
-import { DESIGN_TOKENS } from '@repo/types';
+import { COLOR_TOKENS, FONT_FAMILY, FONT_SIZE, FONT_WEIGHT, SPACING } from '@repo/types';
 import type { ReactNode } from 'react';
 
 /** Props for {@link GamePage}. */
@@ -19,16 +19,16 @@ export function GamePage({ title, children }: GamePageProps) {
         alignItems: 'center',
         justifyContent: 'center',
         minHeight: '100vh',
-        padding: '24px',
-        fontFamily: '"Poppins", "Inter", system-ui, sans-serif',
+        padding: SPACING[6],
+        fontFamily: FONT_FAMILY.body,
       }}
     >
       <h1
         style={{
-          fontSize: '24px',
-          fontWeight: 800,
-          color: DESIGN_TOKENS.colors.navy,
-          marginBottom: '16px',
+          fontSize: FONT_SIZE['4xl'],
+          fontWeight: FONT_WEIGHT.extrabold,
+          color: COLOR_TOKENS.navy,
+          marginBottom: SPACING[4],
         }}
       >
         {title}

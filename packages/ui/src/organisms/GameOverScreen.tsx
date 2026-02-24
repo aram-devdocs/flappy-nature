@@ -1,3 +1,15 @@
+import {
+  FONT_SIZE,
+  FONT_WEIGHT,
+  OPACITY,
+  RADIUS,
+  RGBA_TOKENS,
+  SHADOW,
+  SPACING,
+  Z_INDEX,
+  cssVar,
+} from '@repo/types';
+
 /** Props for {@link GameOverScreen}. */
 interface GameOverScreenProps {
   /** Whether the game-over overlay is shown. */
@@ -22,8 +34,8 @@ export function GameOverScreen({ visible, score, bestScore }: GameOverScreenProp
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
-        background: 'rgba(9, 9, 73, 0.45)',
-        zIndex: 5,
+        background: RGBA_TOKENS.scrimHeavy,
+        zIndex: Z_INDEX.modal,
         pointerEvents: 'none',
         border: 'none',
         padding: 0,
@@ -36,49 +48,49 @@ export function GameOverScreen({ visible, score, bestScore }: GameOverScreenProp
     >
       <div
         style={{
-          background: 'var(--fn-white, #FFFFFF)',
-          borderRadius: '16px',
-          padding: '24px 32px',
+          background: cssVar('white'),
+          borderRadius: RADIUS['2xl'],
+          padding: `${SPACING[6]} ${SPACING[8]}`,
           textAlign: 'center',
-          boxShadow: '0 4px 20px rgba(0,0,0,0.1)',
+          boxShadow: SHADOW.card,
         }}
       >
         <h2
           style={{
-            fontSize: '20px',
-            fontWeight: 800,
-            color: 'var(--fn-navy, #090949)',
-            margin: '0 0 8px',
+            fontSize: FONT_SIZE['3xl'],
+            fontWeight: FONT_WEIGHT.extrabold,
+            color: cssVar('navy'),
+            margin: `0 0 ${SPACING[2]}`,
           }}
         >
           Game Over
         </h2>
         <p
           style={{
-            fontSize: '14px',
-            fontWeight: 700,
-            color: 'var(--fn-violet, #6500D9)',
-            margin: '0 0 4px',
+            fontSize: FONT_SIZE.xl,
+            fontWeight: FONT_WEIGHT.bold,
+            color: cssVar('violet'),
+            margin: `0 0 ${SPACING[1]}`,
           }}
         >
           Score: {score}
         </p>
         <p
           style={{
-            fontSize: '14px',
-            fontWeight: 700,
-            color: 'var(--fn-magenta, #D76EFF)',
-            margin: '0 0 16px',
+            fontSize: FONT_SIZE.xl,
+            fontWeight: FONT_WEIGHT.bold,
+            color: cssVar('magenta'),
+            margin: `0 0 ${SPACING[4]}`,
           }}
         >
           Best: {bestScore}
         </p>
         <p
           style={{
-            fontSize: '12px',
-            fontWeight: 600,
-            color: 'var(--fn-navy, #090949)',
-            opacity: 0.5,
+            fontSize: FONT_SIZE.md,
+            fontWeight: FONT_WEIGHT.semibold,
+            color: cssVar('navy'),
+            opacity: OPACITY.soft,
             margin: 0,
           }}
         >

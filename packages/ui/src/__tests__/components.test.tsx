@@ -18,7 +18,7 @@ import { GameLayout } from '../templates/GameLayout';
 describe('TitleScreen', () => {
   it('renders when visible is true', () => {
     render(<TitleScreen visible bestScore={0} onPlay={vi.fn()} />);
-    expect(screen.getByText('Flappy Nature')).toBeDefined();
+    expect(screen.getByLabelText('Start game')).toBeDefined();
     expect(screen.getByRole('button', { name: 'Play' })).toBeDefined();
   });
 
@@ -291,9 +291,14 @@ describe('GameHeader', () => {
     onDifficultyClick: vi.fn(),
   };
 
-  it('renders brand name', () => {
+  it('renders brand name when provided', () => {
     render(<GameHeader {...defaultProps} />);
     expect(screen.getByText('Flappy Nature')).toBeDefined();
+  });
+
+  it('hides brand name when omitted', () => {
+    render(<GameHeader {...defaultProps} brandName={undefined} />);
+    expect(screen.queryByText('Flappy Nature')).toBeNull();
   });
 
   it('renders heart icon', () => {

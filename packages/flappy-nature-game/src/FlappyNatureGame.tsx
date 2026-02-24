@@ -4,7 +4,6 @@ import {
   DifficultyPicker,
   FpsCounter,
   GameCanvas,
-  GameFooter,
   GameHeader,
   GameLayout,
   GameOverScreen,
@@ -128,6 +127,7 @@ export function FlappyNatureGame({
   }, [flap]);
 
   const currentBest = bestScores[difficulty] ?? 0;
+  const isOverlayVisible = state !== 'play' || pickerOpen || migration.showModal;
 
   return (
     <GameErrorBoundary>
@@ -136,16 +136,15 @@ export function FlappyNatureGame({
         className={className}
         header={
           <GameHeader
-            brandName="Flappy Nature"
             difficulty={difficulty}
             bestScore={currentBest}
             difficultyVisible={state !== 'idle'}
             onDifficultyClick={togglePicker}
           />
         }
-        footer={<GameFooter text="Made with ♥ by the Finance Team" />}
+        footer={null}
       >
-        <GameCanvas ref={canvasRef} />
+        <GameCanvas ref={canvasRef} blurred={isOverlayVisible} />
         <FpsCounter fps={fps} visible={showFps} />
         <TitleScreen visible={state === 'idle'} bestScore={currentBest} onPlay={handlePlay} />
         <GameOverScreen visible={state === 'dead'} score={score} bestScore={currentBest} />

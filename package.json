@@ -17,12 +17,13 @@
     "validate:file-sizes": "npx tsx scripts/validate-file-sizes.ts",
     "validate:ui-stateless": "npx tsx scripts/validate-ui-stateless.ts",
     "validate:storybook": "npx tsx scripts/validate-storybook-coverage.ts",
-    "validate:theme": "npx tsx scripts/validate-theme.ts",
+    "validate:theme": "npx tsx scripts/validate-tokens.ts",
+    "validate:tokens": "npx tsx scripts/validate-tokens.ts",
     "validate:error-boundaries": "npx tsx scripts/validate-error-boundaries.ts",
     "validate:a11y": "npx tsx scripts/validate-accessibility.ts",
     "validate:claude-md": "npx tsx scripts/validate-claude-md.ts",
     "validate:dead-code": "npx tsx scripts/validate-dead-code.ts",
-    "validate:all": "npx tsx scripts/validate-architecture.ts && npx tsx scripts/validate-file-sizes.ts && npx tsx scripts/validate-ui-stateless.ts && npx tsx scripts/validate-storybook-coverage.ts && npx tsx scripts/validate-theme.ts && npx tsx scripts/validate-error-boundaries.ts && npx tsx scripts/validate-accessibility.ts && npx tsx scripts/validate-claude-md.ts",
+    "validate:all": "npx tsx scripts/validate-architecture.ts && npx tsx scripts/validate-file-sizes.ts && npx tsx scripts/validate-ui-stateless.ts && npx tsx scripts/validate-storybook-coverage.ts && npx tsx scripts/validate-tokens.ts && npx tsx scripts/validate-error-boundaries.ts && npx tsx scripts/validate-accessibility.ts && npx tsx scripts/validate-claude-md.ts",
     "prepare": "husky"
   },
   "devDependencies": {

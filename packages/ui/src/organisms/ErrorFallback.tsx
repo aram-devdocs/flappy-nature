@@ -1,3 +1,5 @@
+import { FONT_SIZE, FONT_WEIGHT, OPACITY, RADIUS, SPACING, cssVar } from '@repo/types';
+
 /** Props for {@link ErrorFallback}. */
 interface ErrorFallbackProps {
   /** Human-readable error message to display. */
@@ -16,27 +18,27 @@ export function ErrorFallback({ message, onReset }: ErrorFallbackProps) {
         flexDirection: 'column',
         alignItems: 'center',
         justifyContent: 'center',
-        padding: '32px',
+        padding: SPACING[8],
         textAlign: 'center',
         minHeight: '200px',
       }}
     >
       <h2
         style={{
-          fontSize: '18px',
-          fontWeight: 700,
-          color: 'var(--fn-navy, #090949)',
-          margin: '0 0 8px',
+          fontSize: FONT_SIZE['2xl'],
+          fontWeight: FONT_WEIGHT.bold,
+          color: cssVar('navy'),
+          margin: `0 0 ${SPACING[2]}`,
         }}
       >
         Something went wrong
       </h2>
       <p
         style={{
-          fontSize: '12px',
-          color: 'var(--fn-navy, #090949)',
-          opacity: 0.6,
-          margin: '0 0 16px',
+          fontSize: FONT_SIZE.md,
+          color: cssVar('navy'),
+          opacity: OPACITY.visible,
+          margin: `0 0 ${SPACING[4]}`,
         }}
       >
         {message}
@@ -45,13 +47,13 @@ export function ErrorFallback({ message, onReset }: ErrorFallbackProps) {
         type="button"
         onClick={onReset}
         style={{
-          padding: '8px 24px',
-          fontSize: '13px',
-          fontWeight: 700,
-          color: 'var(--fn-white, #FFFFFF)',
-          background: 'var(--fn-violet, #6500D9)',
+          padding: `${SPACING[2]} ${SPACING[6]}`,
+          fontSize: FONT_SIZE.lg,
+          fontWeight: FONT_WEIGHT.bold,
+          color: cssVar('white'),
+          background: cssVar('violet'),
           border: 'none',
-          borderRadius: '8px',
+          borderRadius: RADIUS.lg,
           cursor: 'pointer',
         }}
       >

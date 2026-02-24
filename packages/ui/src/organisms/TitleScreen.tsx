@@ -1,3 +1,14 @@
+import {
+  FONT_SIZE,
+  FONT_WEIGHT,
+  OPACITY,
+  RADIUS,
+  RGBA_TOKENS,
+  SHADOW,
+  SPACING,
+  Z_INDEX,
+  cssVar,
+} from '@repo/types';
 import { HeartIcon } from '../atoms/HeartIcon.js';
 
 /** Props for {@link TitleScreen}. */
@@ -25,8 +36,8 @@ export function TitleScreen({ visible, bestScore, onPlay }: TitleScreenProps) {
         flexDirection: 'column',
         alignItems: 'center',
         justifyContent: 'center',
-        background: 'rgba(9, 9, 73, 0.35)',
-        zIndex: 5,
+        background: RGBA_TOKENS.scrimMedium,
+        zIndex: Z_INDEX.modal,
         border: 'none',
         padding: 0,
         margin: 0,
@@ -38,54 +49,44 @@ export function TitleScreen({ visible, bestScore, onPlay }: TitleScreenProps) {
     >
       <div
         style={{
-          background: 'var(--fn-white, #FFFFFF)',
-          borderRadius: '16px',
-          padding: '24px 32px',
+          background: cssVar('white'),
+          borderRadius: RADIUS['2xl'],
+          padding: `${SPACING[6]} ${SPACING[8]}`,
           textAlign: 'center',
-          boxShadow: '0 4px 20px rgba(0,0,0,0.1)',
+          boxShadow: SHADOW.card,
         }}
       >
-        <div style={{ fontSize: '48px', marginBottom: '8px' }}>
+        <div style={{ fontSize: FONT_SIZE['6xl'], marginBottom: SPACING[3] }}>
           <HeartIcon />
         </div>
-        <h2
-          style={{
-            fontSize: '20px',
-            fontWeight: 800,
-            color: 'var(--fn-navy, #090949)',
-            margin: '0 0 12px',
-          }}
-        >
-          Flappy Nature
-        </h2>
         <p
           style={{
-            fontSize: '11px',
-            color: 'var(--fn-navy, #090949)',
-            opacity: 0.55,
-            margin: '0 0 8px',
+            fontSize: FONT_SIZE.sm,
+            color: cssVar('navy'),
+            opacity: OPACITY.medium,
+            margin: `0 0 ${SPACING[2]}`,
           }}
         >
           <kbd
             style={{
-              padding: '2px 6px',
-              background: 'var(--fn-light, #FBF6F6)',
-              borderRadius: '4px',
-              fontSize: '10px',
-              fontWeight: 600,
-              border: '1px solid rgba(0,0,0,0.08)',
+              padding: `${SPACING[0.5]} ${SPACING[1.5]}`,
+              background: cssVar('light'),
+              borderRadius: RADIUS.sm,
+              fontSize: FONT_SIZE.xs,
+              fontWeight: FONT_WEIGHT.semibold,
+              border: `1px solid ${RGBA_TOKENS.shadowSm}`,
             }}
           >
             Space
           </kbd>{' '}
           <kbd
             style={{
-              padding: '2px 6px',
-              background: 'var(--fn-light, #FBF6F6)',
-              borderRadius: '4px',
-              fontSize: '10px',
-              fontWeight: 600,
-              border: '1px solid rgba(0,0,0,0.08)',
+              padding: `${SPACING[0.5]} ${SPACING[1.5]}`,
+              background: cssVar('light'),
+              borderRadius: RADIUS.sm,
+              fontSize: FONT_SIZE.xs,
+              fontWeight: FONT_WEIGHT.semibold,
+              border: `1px solid ${RGBA_TOKENS.shadowSm}`,
             }}
           >
             Click
@@ -95,10 +96,10 @@ export function TitleScreen({ visible, bestScore, onPlay }: TitleScreenProps) {
         {bestScore > 0 && (
           <p
             style={{
-              fontSize: '12px',
-              fontWeight: 600,
-              color: 'var(--fn-magenta, #D76EFF)',
-              margin: '0 0 12px',
+              fontSize: FONT_SIZE.md,
+              fontWeight: FONT_WEIGHT.semibold,
+              color: cssVar('magenta'),
+              margin: `0 0 ${SPACING[3]}`,
             }}
           >
             Best: {bestScore}
@@ -108,13 +109,13 @@ export function TitleScreen({ visible, bestScore, onPlay }: TitleScreenProps) {
           type="button"
           onClick={onPlay}
           style={{
-            padding: '8px 24px',
-            fontSize: '13px',
-            fontWeight: 700,
-            color: 'var(--fn-white, #FFFFFF)',
-            background: 'var(--fn-violet, #6500D9)',
+            padding: `${SPACING[2]} ${SPACING[6]}`,
+            fontSize: FONT_SIZE.lg,
+            fontWeight: FONT_WEIGHT.bold,
+            color: cssVar('white'),
+            background: cssVar('violet'),
             border: 'none',
-            borderRadius: '8px',
+            borderRadius: RADIUS.lg,
             cursor: 'pointer',
           }}
         >
