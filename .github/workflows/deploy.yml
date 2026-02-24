@@ -39,6 +39,8 @@ jobs:
 
       - name: Build Storybook
         run: pnpm --filter=@repo/ui build-storybook
+        env:
+          STORYBOOK_BASE_PATH: /storybook/
 
       - name: Assemble site
         run: |
