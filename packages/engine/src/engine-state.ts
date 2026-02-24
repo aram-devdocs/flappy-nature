@@ -39,16 +39,25 @@ export class EngineState {
     this.setState('idle');
     this.lastPipeTime = 0;
     this.deadTime = 0;
+    this.prevStateBeforePause = null;
+    this.pausedTime = 0;
   }
 
-  /** Transition to the dead state, persisting a new best score if achieved. */
+  /** Begin the death fall animation. Persists a new best score if achieved. */
   die(): void {
-    this.setState('dead');
+    this.setState('dying');
     this.deadTime = performance.now();
     if (this.score > this.bestScores[this.difficulty]) {
       this.bestScores[this.difficulty] = this.score;
       saveBestScores(this.bestScores);
       this.events.emit('bestScoreChange', { ...this.bestScores });
+    }
+  }
+
+  /** Finish the death fall, transitioning from dying to dead. */
+  finishDeath(): void {
+    if (this.state === 'dying') {
+      this.setState('dead');
     }
   }
 
@@ -63,6 +72,7 @@ export class EngineState {
 
   /** Pause the game if currently playing, recording the pause timestamp. */
   pause(): void {
+    if (this.state === 'dying') return;
     if (this.state === 'play') {
       this.prevStateBeforePause = 'play';
       this.pausedTime = performance.now();
