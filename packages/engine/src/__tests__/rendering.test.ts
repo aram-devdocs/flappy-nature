@@ -916,9 +916,10 @@ describe('Renderer', () => {
       expect(ctx.drawImage).toHaveBeenCalled();
     });
 
-    it('restores the transform via setTransform', () => {
+    it('restores the transform via save/restore', () => {
       renderer.drawBird(250, 30);
-      expect(ctx.setTransform).toHaveBeenCalledWith(DPR, 0, 0, DPR, 0, 0);
+      expect(ctx.save).toHaveBeenCalled();
+      expect(ctx.restore).toHaveBeenCalled();
     });
   });
 

@@ -230,6 +230,18 @@ describe('EngineState', () => {
       expect(state.deadTime).toBe(0);
     });
 
+    it('clears prevStateBeforePause and pausedTime', () => {
+      const cfg = makeConfig();
+      const bird = makeBird();
+      state.prevStateBeforePause = 'play';
+      state.pausedTime = 5000;
+
+      state.resetGameState(bird, cfg);
+
+      expect(state.prevStateBeforePause).toBeNull();
+      expect(state.pausedTime).toBe(0);
+    });
+
     it('emits scoreChange and stateChange events during reset', () => {
       const scoreCb = vi.fn();
       const stateCb = vi.fn();
@@ -249,12 +261,12 @@ describe('EngineState', () => {
   });
 
   describe('die', () => {
-    it('sets state to dead and records deadTime', () => {
+    it('sets state to dying and records deadTime', () => {
       vi.spyOn(performance, 'now').mockReturnValue(12345);
       state.state = 'play';
       state.score = 0;
       state.die();
-      expect(state.state).toBe('dead');
+      expect(state.state).toBe('dying');
       expect(state.deadTime).toBe(12345);
     });
 
@@ -290,6 +302,20 @@ describe('EngineState', () => {
 
       expect(state.bestScores.normal).toBe(10);
       expect(bestCb).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('finishDeath', () => {
+    it('transitions dying to dead', () => {
+      state.state = 'dying';
+      state.finishDeath();
+      expect(state.state).toBe('dead');
+    });
+
+    it('does nothing when not in dying state', () => {
+      state.state = 'play';
+      state.finishDeath();
+      expect(state.state).toBe('play');
     });
   });
 
@@ -348,6 +374,12 @@ describe('EngineState', () => {
       state.state = 'dead';
       state.pause();
       expect(state.state).toBe('dead');
+    });
+
+    it('does nothing when state is dying', () => {
+      state.state = 'dying';
+      state.pause();
+      expect(state.state).toBe('dying');
     });
   });
 
@@ -570,6 +602,95 @@ describe('EngineLoop', () => {
 
       expect(loop.frameTime).toBe(9000);
       expect(loop.accumulator).toBe(0);
+    });
+  });
+
+  describe('alpha', () => {
+    it('computes alpha as accumulator fraction after tick', () => {
+      const updateFn = vi.fn();
+      const drawFn = vi.fn();
+      const TICK_MS = 1000 / 60;
+
+      // Set up: 1.5 ticks worth of delta
+      loop.frameTime = 1000;
+      loop.tick(1000 + TICK_MS * 1.5, updateFn, drawFn);
+
+      // 1 full tick consumed, 0.5 tick remaining
+      expect(updateFn).toHaveBeenCalledTimes(1);
+      expect(loop.alpha).toBeCloseTo(0.5, 1);
+    });
+
+    it('alpha is near 0 when delta is exactly one tick from zero base', () => {
+      const updateFn = vi.fn();
+      const drawFn = vi.fn();
+      const TICK_MS = 1000 / 60;
+
+      // Use 0 as base to avoid floating point precision loss
+      loop.frameTime = 0;
+      loop.tick(TICK_MS, updateFn, drawFn);
+
+      expect(updateFn).toHaveBeenCalledTimes(1);
+      expect(loop.alpha).toBeLessThan(0.01);
+    });
+  });
+
+  describe('visibility change', () => {
+    let addEventSpy: ReturnType<typeof vi.fn>;
+    let removeEventSpy: ReturnType<typeof vi.fn>;
+
+    beforeEach(() => {
+      addEventSpy = vi.fn();
+      removeEventSpy = vi.fn();
+      vi.stubGlobal('document', {
+        hidden: false,
+        addEventListener: addEventSpy,
+        removeEventListener: removeEventSpy,
+      });
+    });
+
+    it('attaches visibilitychange listener on begin', () => {
+      loop.begin();
+      expect(addEventSpy).toHaveBeenCalledWith('visibilitychange', expect.any(Function));
+    });
+
+    it('cancels RAF when document becomes hidden', () => {
+      loop.begin();
+      const handler = addEventSpy.mock.calls[0]?.[1] as () => void;
+
+      loop.rafId = 99;
+      (document as unknown as { hidden: boolean }).hidden = true;
+      handler();
+
+      expect(cancelAnimationFrame).toHaveBeenCalledWith(99);
+      expect(loop.rafId).toBeNull();
+    });
+
+    it('resets accumulator and re-schedules when document becomes visible', () => {
+      vi.spyOn(performance, 'now').mockReturnValue(5000);
+      loop.begin();
+      const handler = addEventSpy.mock.calls[0]?.[1] as () => void;
+
+      // Simulate a tick to store updateFn/drawFn
+      const updateFn = vi.fn();
+      const drawFn = vi.fn();
+      loop.frameTime = 5000;
+      loop.tick(5000, updateFn, drawFn);
+
+      // Now simulate hidden → visible
+      (document as unknown as { hidden: boolean }).hidden = false;
+      vi.spyOn(performance, 'now').mockReturnValue(8000);
+      handler();
+
+      expect(loop.accumulator).toBe(0);
+      expect(loop.frameTime).toBe(8000);
+      // RAF was called once by tick + once by visibility handler
+      expect(requestAnimationFrame).toHaveBeenCalledTimes(2);
+    });
+
+    it('detaches visibilitychange listener on stop', () => {
+      loop.begin();
+      loop.stop();
+      expect(removeEventSpy).toHaveBeenCalledWith('visibilitychange', expect.any(Function));
     });
   });
 });

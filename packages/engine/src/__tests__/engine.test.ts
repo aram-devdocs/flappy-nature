@@ -13,6 +13,7 @@ import {
   checkPipeScore,
   spawnPipe,
   updateBird,
+  updateDyingBird,
   updatePipes,
 } from '../physics.js';
 import { drawBird, drawPipes, drawScore } from '../renderer-entities.js';
@@ -61,6 +62,54 @@ describe('updateBird', () => {
     const bird = makeBird({ vy: 5 });
     updateBird(bird, makeConfig(), 1);
     expect(bird.rot).not.toBe(0);
+  });
+
+  it('rotation converges >80% of target within 10 ticks', () => {
+    const bird = makeBird({ vy: 10 });
+    const cfg = makeConfig();
+    for (let i = 0; i < 10; i++) {
+      updateBird(bird, cfg, 1);
+    }
+    const target = Math.max(-20, Math.min(55, bird.vy * 3.2));
+    expect(Math.abs(bird.rot - target) / Math.abs(target)).toBeLessThan(0.2);
+  });
+});
+
+describe('updateDyingBird', () => {
+  it('applies gravity and moves bird down', () => {
+    const bird = makeBird({ y: 100, vy: 0 });
+    const cfg = makeConfig();
+    updateDyingBird(bird, cfg, 1);
+    expect(bird.vy).toBeCloseTo(cfg.gravity);
+    expect(bird.y).toBeGreaterThan(100);
+  });
+
+  it('rotates toward 90 degrees nose-dive', () => {
+    const bird = makeBird({ rot: 0 });
+    updateDyingBird(bird, makeConfig(), 1);
+    expect(bird.rot).toBeGreaterThan(0);
+    expect(bird.rot).toBeLessThanOrEqual(90);
+  });
+
+  it('returns true when bird hits ground', () => {
+    const cfg = makeConfig();
+    const groundY = cfg.height - cfg.groundH - cfg.birdSize + 1;
+    const bird = makeBird({ y: groundY, vy: 5 });
+    const hit = updateDyingBird(bird, cfg, 1);
+    expect(hit).toBe(true);
+  });
+
+  it('returns false when bird is still above ground', () => {
+    const bird = makeBird({ y: 100, vy: 0 });
+    const hit = updateDyingBird(bird, makeConfig(), 1);
+    expect(hit).toBe(false);
+  });
+
+  it('clamps vy to terminalVel', () => {
+    const bird = makeBird({ vy: 100 });
+    const cfg = makeConfig();
+    updateDyingBird(bird, cfg, 1);
+    expect(bird.vy).toBe(cfg.terminalVel);
   });
 });
 
@@ -413,12 +462,13 @@ describe('DEFAULT_COLORS', () => {
 // --- renderer-entities.ts (mock canvas context) ---
 
 describe('drawBird', () => {
-  it('calls canvas translate, rotate, and setTransform', () => {
+  it('calls canvas save, translate, rotate, and restore', () => {
     const ctx = makeCanvasContext();
     drawBird(ctx, 100, 15, 70, 28, 1, null, DEFAULT_COLORS);
+    expect(ctx.save).toHaveBeenCalled();
     expect(ctx.translate).toHaveBeenCalled();
     expect(ctx.rotate).toHaveBeenCalled();
-    expect(ctx.setTransform).toHaveBeenCalled();
+    expect(ctx.restore).toHaveBeenCalled();
   });
 
   it('draws fallback circle when heartImg is null', () => {
@@ -431,11 +481,13 @@ describe('drawBird', () => {
 });
 
 describe('drawPipes', () => {
-  it('renders pipe columns for active pipes', () => {
+  it('renders pipe columns for active pipes using save/restore', () => {
     const ctx = makeCanvasContext();
     const pipes: Pipe[] = [makePipe({ x: 100, topH: 80, scored: false })];
     drawPipes(ctx, pipes, 1, 52, 162, 520, null, { canvas: null, logW: 60, logH: 20 });
+    expect(ctx.save).toHaveBeenCalled();
     expect(ctx.translate).toHaveBeenCalledWith(100, 0);
+    expect(ctx.restore).toHaveBeenCalled();
   });
 
   it('does nothing when activeCount is 0', () => {
