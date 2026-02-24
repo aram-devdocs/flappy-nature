@@ -1,7 +1,16 @@
 import type { GameColors, Pipe } from '@repo/types';
+import { atIndex } from './assert.js';
 import type { CachedFonts } from './cache.js';
-import { TAU } from './math.js';
+import { PIPE_LIP } from './config.js';
+import { DEG_TO_RAD, TAU } from './math.js';
 import type { PipeLipCache } from './renderer-prerender.js';
+
+export interface IconBounds {
+  x: number;
+  y: number;
+  w: number;
+  h: number;
+}
 
 export function drawBird(
   ctx: CanvasRenderingContext2D,
@@ -9,13 +18,13 @@ export function drawBird(
   rot: number,
   birdX: number,
   birdSize: number,
-  dpr: number,
   heartImg: HTMLImageElement | null,
   colors: GameColors,
 ): void {
   const cx = birdX + birdSize / 2;
   const cy = y + birdSize / 2;
-  const rad = rot * (Math.PI / 180);
+  const rad = rot * DEG_TO_RAD;
+  ctx.save();
   ctx.translate(cx, cy);
   ctx.rotate(rad);
 
@@ -27,7 +36,7 @@ export function drawBird(
     ctx.arc(0, 0, birdSize / 2, 0, TAU);
     ctx.fill();
   }
-  ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  ctx.restore();
 }
 
 export function drawPipes(
@@ -41,9 +50,10 @@ export function drawPipes(
   pipeLip: PipeLipCache,
 ): void {
   for (let i = 0; i < activeCount; i++) {
-    const p = pipes[i] as Pipe;
+    const p = atIndex(pipes, i);
     const gapBottom = p.topH + pipeGap;
 
+    ctx.save();
     ctx.translate(p.x, 0);
 
     if (pipeGrad) {
@@ -51,7 +61,13 @@ export function drawPipes(
       ctx.fillRect(0, -4, pipeWidth, p.topH + 4);
     }
     if (pipeLip.canvas) {
-      ctx.drawImage(pipeLip.canvas, -4, p.topH - 20, pipeLip.logW, pipeLip.logH);
+      ctx.drawImage(
+        pipeLip.canvas,
+        -PIPE_LIP.extraW / 2,
+        p.topH - PIPE_LIP.height,
+        pipeLip.logW,
+        pipeLip.logH,
+      );
     }
 
     if (pipeGrad) {
@@ -59,10 +75,10 @@ export function drawPipes(
       ctx.fillRect(0, gapBottom, pipeWidth, height - gapBottom);
     }
     if (pipeLip.canvas) {
-      ctx.drawImage(pipeLip.canvas, -4, gapBottom, pipeLip.logW, pipeLip.logH);
+      ctx.drawImage(pipeLip.canvas, -PIPE_LIP.extraW / 2, gapBottom, pipeLip.logW, pipeLip.logH);
     }
 
-    ctx.translate(-p.x, 0);
+    ctx.restore();
   }
 }
 
@@ -81,4 +97,50 @@ export function drawScore(
   ctx.globalAlpha = 1;
   ctx.fillStyle = colors.magenta;
   ctx.fillText(String(score), width / 2, 50);
+}
+
+const ICON_SIZE = 22;
+const ICON_PAD = 10;
+
+export function getSettingsIconBounds(width: number): IconBounds {
+  return { x: width - ICON_SIZE - ICON_PAD, y: ICON_PAD, w: ICON_SIZE, h: ICON_SIZE };
+}
+
+export function drawSettingsIcon(
+  ctx: CanvasRenderingContext2D,
+  width: number,
+  colors: GameColors,
+  hovered = false,
+): void {
+  const b = getSettingsIconBounds(width);
+  const cx = b.x + b.w / 2;
+  const cy = b.y + b.h / 2;
+  const outer = b.w / 2;
+  const inner = outer * 0.62;
+  const hole = outer * 0.3;
+  const teeth = 8;
+
+  ctx.save();
+  ctx.globalAlpha = hovered ? 0.7 : 0.35;
+  ctx.fillStyle = colors.navy;
+  ctx.beginPath();
+  for (let i = 0; i < teeth; i++) {
+    const a0 = (TAU / teeth) * i - TAU / (teeth * 4);
+    const a1 = a0 + TAU / (teeth * 4);
+    const a2 = a1 + TAU / (teeth * 4);
+    ctx.lineTo(cx + Math.cos(a0) * outer, cy + Math.sin(a0) * outer);
+    ctx.lineTo(cx + Math.cos(a1) * outer, cy + Math.sin(a1) * outer);
+    ctx.lineTo(cx + Math.cos(a1) * inner, cy + Math.sin(a1) * inner);
+    ctx.lineTo(cx + Math.cos(a2) * inner, cy + Math.sin(a2) * inner);
+  }
+  ctx.closePath();
+  ctx.moveTo(cx + hole, cy);
+  ctx.arc(cx, cy, hole, 0, TAU, true);
+  ctx.fill('evenodd');
+  ctx.restore();
+}
+
+export function hitTestSettingsIcon(logicalX: number, logicalY: number, width: number): boolean {
+  const b = getSettingsIconBounds(width);
+  return logicalX >= b.x && logicalX <= b.x + b.w && logicalY >= b.y && logicalY <= b.y + b.h;
 }

@@ -39,9 +39,11 @@ export class EngineState {
     this.setState('idle');
     this.lastPipeTime = 0;
     this.deadTime = 0;
+    this.prevStateBeforePause = null;
+    this.pausedTime = 0;
   }
 
-  /** Transition to the dead state, persisting a new best score if achieved. */
+  /** End the current run. Persists a new best score if achieved. */
   die(): void {
     this.setState('dead');
     this.deadTime = performance.now();

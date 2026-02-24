@@ -5,9 +5,28 @@ import { useGameEngine } from '../useGameEngine';
 import { useGameInput } from '../useGameInput';
 import { useLocalStorage } from '../useLocalStorage';
 
-// Mock @repo/engine so useGameEngine can be tested without a real canvas
+// Typed mock for @repo/engine so we can access __mockEngine without `as any`
+interface MockEngine {
+  on: ReturnType<typeof vi.fn>;
+  start: ReturnType<typeof vi.fn>;
+  destroy: ReturnType<typeof vi.fn>;
+  flap: ReturnType<typeof vi.fn>;
+  setDifficulty: ReturnType<typeof vi.fn>;
+  reset: ReturnType<typeof vi.fn>;
+  pause: ReturnType<typeof vi.fn>;
+  resume: ReturnType<typeof vi.fn>;
+  handleClick: ReturnType<typeof vi.fn>;
+  getDifficulty: ReturnType<typeof vi.fn>;
+  getBestScores: ReturnType<typeof vi.fn>;
+}
+
+interface MockedEngineModule {
+  FlappyEngine: ReturnType<typeof vi.fn>;
+  __mockEngine: MockEngine;
+}
+
 vi.mock('@repo/engine', () => {
-  const mockEngine = {
+  const mockEngine: MockEngine = {
     on: vi.fn(),
     start: vi.fn(),
     destroy: vi.fn(),
@@ -16,6 +35,9 @@ vi.mock('@repo/engine', () => {
     reset: vi.fn(),
     pause: vi.fn(),
     resume: vi.fn(),
+    handleClick: vi.fn(() => false),
+    getDifficulty: vi.fn(() => 'normal'),
+    getBestScores: vi.fn(() => ({ easy: 0, normal: 0, hard: 0 })),
   };
   return {
     FlappyEngine: vi.fn(() => mockEngine),
@@ -291,6 +313,8 @@ describe('useGameEngine', () => {
     expect(result.current).toHaveProperty('reset');
     expect(result.current).toHaveProperty('pause');
     expect(result.current).toHaveProperty('resume');
+    expect(result.current).toHaveProperty('handleCanvasClick');
+    expect(result.current).toHaveProperty('handleCanvasHover');
   });
 
   it('returns initial state values', () => {
@@ -314,7 +338,7 @@ describe('useGameEngine', () => {
   });
 
   it('creates engine when canvasRef has an element', async () => {
-    const engineMod = (await import('@repo/engine')) as any;
+    const engineMod = (await import('@repo/engine')) as unknown as MockedEngineModule;
     const mockEngine = engineMod.__mockEngine;
     vi.clearAllMocks();
 
@@ -337,7 +361,7 @@ describe('useGameEngine', () => {
   });
 
   it('calls engine methods through returned callbacks', async () => {
-    const engineMod = (await import('@repo/engine')) as any;
+    const engineMod = (await import('@repo/engine')) as unknown as MockedEngineModule;
     const mockEngine = engineMod.__mockEngine;
     vi.clearAllMocks();
 
@@ -367,7 +391,7 @@ describe('useGameEngine', () => {
   });
 
   it('destroys engine on unmount', async () => {
-    const engineMod = (await import('@repo/engine')) as any;
+    const engineMod = (await import('@repo/engine')) as unknown as MockedEngineModule;
     const mockEngine = engineMod.__mockEngine;
     vi.clearAllMocks();
 

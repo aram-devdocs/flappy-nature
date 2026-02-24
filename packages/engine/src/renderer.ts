@@ -1,4 +1,5 @@
-import type { Cloud, GameColors, Pipe, Plane } from '@repo/types';
+import type { Cloud, GameColors, Pipe } from '@repo/types';
+import { atIndex } from './assert.js';
 import type { BackgroundSystem } from './background.js';
 import type { CachedFonts } from './cache.js';
 import { BG } from './config.js';
@@ -10,7 +11,7 @@ import {
   drawSkylineSegment,
   drawTree,
 } from './renderer-background.js';
-import { drawBird, drawPipes, drawScore } from './renderer-entities.js';
+import { drawBird, drawPipes, drawScore, drawSettingsIcon } from './renderer-entities.js';
 import {
   buildGradients,
   buildPipeLipCache,
@@ -54,6 +55,13 @@ export class Renderer {
     this.dpr = dpr;
   }
 
+  /** Release cached offscreen canvases and gradient references. */
+  dispose(): void {
+    this.grads = { skyGrad: null, accentGrad: null, pipeGrad: null };
+    this.pipeLip = { canvas: null, logW: 0, logH: 0 };
+    this.heartImg = null;
+  }
+
   /** Create and cache all canvas gradients and the pipe lip sprite. */
   buildGradients(): void {
     this.grads = buildGradients(
@@ -67,12 +75,10 @@ export class Renderer {
     this.pipeLip = buildPipeLipCache(this.deps.pipeWidth, this.dpr, this.colors);
   }
 
-  /** Pre-render a single cloud to an offscreen canvas for fast blitting. */
   prerenderCloud(c: Cloud): void {
     prerenderCloud(c, this.dpr, this.colors);
   }
 
-  /** Pre-render all near clouds and background-layer clouds. */
   prerenderAllClouds(nearClouds: Cloud[], bg: BackgroundSystem): void {
     prerenderAllClouds(nearClouds, bg, this.dpr, this.colors);
   }
@@ -104,7 +110,7 @@ export class Renderer {
     drawCloudsPrerendered(ctx, bg.layers.midClouds);
 
     for (let i = 0; i < bg.planeActiveCount; i++) {
-      drawPlane(ctx, bg.planePool[i] as Plane, globalTime, this.colors, this.fonts);
+      drawPlane(ctx, atIndex(bg.planePool, i), globalTime, this.colors, this.fonts);
     }
 
     ctx.globalAlpha = BG.buildingAlpha;
@@ -123,7 +129,6 @@ export class Renderer {
     ctx.globalAlpha = 1;
   }
 
-  /** Draw the near-layer ambient clouds with transparency. */
   drawNearClouds(clouds: Cloud[]): void {
     this.ctx.globalAlpha = 0.12;
     drawCloudsPrerendered(this.ctx, clouds);
@@ -181,19 +186,14 @@ export class Renderer {
   }
 
   drawBird(y: number, rot: number): void {
-    drawBird(
-      this.ctx,
-      y,
-      rot,
-      this.deps.birdX,
-      this.deps.birdSize,
-      this.dpr,
-      this.heartImg,
-      this.colors,
-    );
+    drawBird(this.ctx, y, rot, this.deps.birdX, this.deps.birdSize, this.heartImg, this.colors);
   }
 
   drawScore(score: number): void {
     drawScore(this.ctx, score, this.deps.width, this.fonts, this.colors);
+  }
+
+  drawSettingsIcon(hovered: boolean): void {
+    drawSettingsIcon(this.ctx, this.deps.width, this.colors, hovered);
   }
 }

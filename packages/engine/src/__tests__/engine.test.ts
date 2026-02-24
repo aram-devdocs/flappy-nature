@@ -62,6 +62,16 @@ describe('updateBird', () => {
     updateBird(bird, makeConfig(), 1);
     expect(bird.rot).not.toBe(0);
   });
+
+  it('rotation converges >80% of target within 10 ticks', () => {
+    const bird = makeBird({ vy: 10 });
+    const cfg = makeConfig();
+    for (let i = 0; i < 10; i++) {
+      updateBird(bird, cfg, 1);
+    }
+    const target = Math.max(-20, Math.min(55, bird.vy * 3.2));
+    expect(Math.abs(bird.rot - target) / Math.abs(target)).toBeLessThan(0.2);
+  });
 });
 
 describe('checkGroundCollision', () => {
@@ -413,17 +423,18 @@ describe('DEFAULT_COLORS', () => {
 // --- renderer-entities.ts (mock canvas context) ---
 
 describe('drawBird', () => {
-  it('calls canvas translate, rotate, and setTransform', () => {
+  it('calls canvas save, translate, rotate, and restore', () => {
     const ctx = makeCanvasContext();
-    drawBird(ctx, 100, 15, 70, 28, 1, null, DEFAULT_COLORS);
+    drawBird(ctx, 100, 15, 70, 28, null, DEFAULT_COLORS);
+    expect(ctx.save).toHaveBeenCalled();
     expect(ctx.translate).toHaveBeenCalled();
     expect(ctx.rotate).toHaveBeenCalled();
-    expect(ctx.setTransform).toHaveBeenCalled();
+    expect(ctx.restore).toHaveBeenCalled();
   });
 
   it('draws fallback circle when heartImg is null', () => {
     const ctx = makeCanvasContext();
-    drawBird(ctx, 100, 0, 70, 28, 1, null, DEFAULT_COLORS);
+    drawBird(ctx, 100, 0, 70, 28, null, DEFAULT_COLORS);
     expect(ctx.beginPath).toHaveBeenCalled();
     expect(ctx.arc).toHaveBeenCalled();
     expect(ctx.fill).toHaveBeenCalled();
@@ -431,11 +442,13 @@ describe('drawBird', () => {
 });
 
 describe('drawPipes', () => {
-  it('renders pipe columns for active pipes', () => {
+  it('renders pipe columns for active pipes using save/restore', () => {
     const ctx = makeCanvasContext();
     const pipes: Pipe[] = [makePipe({ x: 100, topH: 80, scored: false })];
     drawPipes(ctx, pipes, 1, 52, 162, 520, null, { canvas: null, logW: 60, logH: 20 });
+    expect(ctx.save).toHaveBeenCalled();
     expect(ctx.translate).toHaveBeenCalledWith(100, 0);
+    expect(ctx.restore).toHaveBeenCalled();
   });
 
   it('does nothing when activeCount is 0', () => {
