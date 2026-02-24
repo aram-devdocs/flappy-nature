@@ -1,3 +1,5 @@
+import { FONT_SIZE, FONT_WEIGHT, SPACING, TEXT_SHADOW, Z_INDEX, cssVar } from '@repo/types';
+
 /** Props for {@link ScoreDisplay}. */
 interface ScoreDisplayProps {
   /** Current numeric score to display. */
@@ -16,15 +18,15 @@ export function ScoreDisplay({ score, visible }: ScoreDisplayProps) {
       aria-label={`Score: ${score}`}
       style={{
         position: 'absolute',
-        top: '12px',
+        top: SPACING[3],
         left: '50%',
         transform: 'translateX(-50%)',
-        fontSize: '32px',
-        fontWeight: 800,
-        color: 'var(--fn-magenta, #D76EFF)',
-        textShadow: '2px 2px 0 rgba(9, 9, 73, 0.12)',
+        fontSize: FONT_SIZE['5xl'],
+        fontWeight: FONT_WEIGHT.extrabold,
+        color: cssVar('magenta'),
+        textShadow: TEXT_SHADOW.score,
         pointerEvents: 'none',
-        zIndex: 2,
+        zIndex: Z_INDEX.overlay,
         display: 'block',
       }}
     >

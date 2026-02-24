@@ -1,5 +1,17 @@
 import type { BestScores, DifficultyKey } from '@repo/types';
-import { DIFF_KEYS, DIFF_LABELS } from '@repo/types';
+import {
+  DIFF_KEYS,
+  DIFF_LABELS,
+  FONT_SIZE,
+  FONT_WEIGHT,
+  OPACITY,
+  RADIUS,
+  RGBA_TOKENS,
+  SHADOW,
+  SPACING,
+  Z_INDEX,
+  cssVar,
+} from '@repo/types';
 
 /** Props for {@link DifficultyPicker}. */
 interface DifficultyPickerProps {
@@ -35,8 +47,8 @@ export function DifficultyPicker({
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
-        background: 'rgba(9, 9, 73, 0.3)',
-        zIndex: 10,
+        background: RGBA_TOKENS.scrimLight,
+        zIndex: Z_INDEX.picker,
         border: 'none',
         padding: 0,
         margin: 0,
@@ -52,22 +64,22 @@ export function DifficultyPicker({
         role="radiogroup"
         aria-label="Difficulty options"
         style={{
-          background: 'var(--fn-white, #FFFFFF)',
-          borderRadius: '12px',
-          padding: '16px',
+          background: cssVar('white'),
+          borderRadius: RADIUS.xl,
+          padding: SPACING[4],
           minWidth: '150px',
-          boxShadow: '0 4px 16px rgba(0,0,0,0.12)',
+          boxShadow: SHADOW.dropdown,
         }}
         onClick={(e) => e.stopPropagation()}
         onKeyDown={(e) => e.stopPropagation()}
       >
         <div
           style={{
-            fontSize: '12px',
-            fontWeight: 800,
+            fontSize: FONT_SIZE.md,
+            fontWeight: FONT_WEIGHT.extrabold,
             textAlign: 'center',
-            marginBottom: '12px',
-            color: 'var(--fn-navy, #090949)',
+            marginBottom: SPACING[3],
+            color: cssVar('navy'),
           }}
         >
           Difficulty
@@ -86,20 +98,26 @@ export function DifficultyPicker({
                 alignItems: 'center',
                 justifyContent: 'space-between',
                 width: '100%',
-                padding: '6px 10px',
-                marginBottom: '6px',
-                fontSize: '11px',
-                fontWeight: 700,
-                color: isActive ? 'var(--fn-white, #FFFFFF)' : 'var(--fn-navy, #090949)',
-                background: isActive ? 'var(--fn-violet, #6500D9)' : 'var(--fn-light, #FBF6F6)',
+                padding: `${SPACING[1.5]} ${SPACING[2.5]}`,
+                marginBottom: SPACING[1.5],
+                fontSize: FONT_SIZE.sm,
+                fontWeight: FONT_WEIGHT.bold,
+                color: isActive ? cssVar('white') : cssVar('navy'),
+                background: isActive ? cssVar('violet') : cssVar('light'),
                 border: 'none',
-                borderRadius: '6px',
+                borderRadius: RADIUS.md,
                 cursor: 'pointer',
               }}
             >
               <span>{DIFF_LABELS[key]}</span>
               {best > 0 && (
-                <span style={{ fontSize: '9px', fontWeight: 600, opacity: isActive ? 0.75 : 0.45 }}>
+                <span
+                  style={{
+                    fontSize: FONT_SIZE['2xs'],
+                    fontWeight: FONT_WEIGHT.semibold,
+                    opacity: isActive ? OPACITY.strong : OPACITY.dimmed,
+                  }}
+                >
                   Best: {best}
                 </span>
               )}

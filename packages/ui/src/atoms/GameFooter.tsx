@@ -1,3 +1,5 @@
+import { FONT_SIZE, OPACITY, SPACING, cssVar } from '@repo/types';
+
 /** Props for {@link GameFooter}. */
 export interface GameFooterProps {
   /** Text content for the footer. */
@@ -9,11 +11,11 @@ export function GameFooter({ text }: GameFooterProps) {
   return (
     <div
       style={{
-        padding: '6px 12px',
-        fontSize: '10px',
+        padding: `${SPACING[1.5]} ${SPACING[3]}`,
+        fontSize: FONT_SIZE.xs,
         textAlign: 'center',
-        color: 'var(--fn-navy, #090949)',
-        opacity: 0.4,
+        color: cssVar('navy'),
+        opacity: OPACITY.subtle,
       }}
     >
       {text}

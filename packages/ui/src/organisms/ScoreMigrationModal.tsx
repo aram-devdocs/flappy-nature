@@ -1,4 +1,15 @@
 import type { ScoreComparison } from '@repo/types';
+import {
+  FONT_SIZE,
+  FONT_WEIGHT,
+  OPACITY,
+  RADIUS,
+  RGBA_TOKENS,
+  SHADOW,
+  SPACING,
+  Z_INDEX,
+  cssVar,
+} from '@repo/types';
 
 /** Props for {@link ScoreMigrationModal}. */
 export interface ScoreMigrationModalProps {
@@ -31,8 +42,8 @@ export function ScoreMigrationModal({
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
-        background: 'rgba(9, 9, 73, 0.55)',
-        zIndex: 10,
+        background: RGBA_TOKENS.scrimDense,
+        zIndex: Z_INDEX.picker,
         border: 'none',
         padding: 0,
         margin: 0,
@@ -44,36 +55,36 @@ export function ScoreMigrationModal({
     >
       <div
         style={{
-          background: 'var(--fn-white, #FFFFFF)',
-          borderRadius: '16px',
-          padding: '24px 28px',
+          background: cssVar('white'),
+          borderRadius: RADIUS['2xl'],
+          padding: `${SPACING[6]} ${SPACING[7]}`,
           textAlign: 'center',
-          boxShadow: '0 4px 20px rgba(0,0,0,0.15)',
+          boxShadow: SHADOW.cardHeavy,
           maxWidth: '320px',
           width: '100%',
         }}
       >
         <h2
           style={{
-            fontSize: '18px',
-            fontWeight: 800,
-            color: 'var(--fn-navy, #090949)',
-            margin: '0 0 4px',
+            fontSize: FONT_SIZE['2xl'],
+            fontWeight: FONT_WEIGHT.extrabold,
+            color: cssVar('navy'),
+            margin: `0 0 ${SPACING[1]}`,
           }}
         >
           Scores Found
         </h2>
         <p
           style={{
-            fontSize: '12px',
-            color: 'var(--fn-navy, #090949)',
-            opacity: 0.6,
-            margin: '0 0 16px',
+            fontSize: FONT_SIZE.md,
+            color: cssVar('navy'),
+            opacity: OPACITY.visible,
+            margin: `0 0 ${SPACING[4]}`,
           }}
         >
           Import your best scores from the old site?
         </p>
-        <table style={{ width: '100%', borderCollapse: 'collapse', marginBottom: '16px' }}>
+        <table style={{ width: '100%', borderCollapse: 'collapse', marginBottom: SPACING[4] }}>
           <thead>
             <tr>
               <th style={thStyle}>Difficulty</th>
@@ -88,10 +99,8 @@ export function ScoreMigrationModal({
                 <td
                   style={{
                     ...tdStyle,
-                    fontWeight: c.isImprovement ? 700 : 400,
-                    color: c.isImprovement
-                      ? 'var(--fn-violet, #6500D9)'
-                      : 'var(--fn-navy, #090949)',
+                    fontWeight: c.isImprovement ? FONT_WEIGHT.bold : FONT_WEIGHT.normal,
+                    color: c.isImprovement ? cssVar('violet') : cssVar('navy'),
                   }}
                 >
                   {c.oldScore}
@@ -101,7 +110,7 @@ export function ScoreMigrationModal({
             ))}
           </tbody>
         </table>
-        <div style={{ display: 'flex', gap: '8px', justifyContent: 'center' }}>
+        <div style={{ display: 'flex', gap: SPACING[2], justifyContent: 'center' }}>
           <button type="button" onClick={onDecline} style={declineBtnStyle}>
             No Thanks
           </button>
@@ -115,40 +124,40 @@ export function ScoreMigrationModal({
 }
 
 const thStyle: React.CSSProperties = {
-  fontSize: '11px',
-  fontWeight: 600,
-  color: 'var(--fn-navy, #090949)',
-  opacity: 0.5,
-  padding: '4px 8px',
+  fontSize: FONT_SIZE.sm,
+  fontWeight: FONT_WEIGHT.semibold,
+  color: cssVar('navy'),
+  opacity: OPACITY.soft,
+  padding: `${SPACING[1]} ${SPACING[2]}`,
   textAlign: 'center',
 };
 
 const tdStyle: React.CSSProperties = {
-  fontSize: '14px',
-  padding: '4px 8px',
+  fontSize: FONT_SIZE.xl,
+  padding: `${SPACING[1]} ${SPACING[2]}`,
   textAlign: 'center',
-  color: 'var(--fn-navy, #090949)',
+  color: cssVar('navy'),
 };
 
 const acceptBtnStyle: React.CSSProperties = {
-  padding: '8px 20px',
-  borderRadius: '8px',
+  padding: `${SPACING[2]} ${SPACING[5]}`,
+  borderRadius: RADIUS.lg,
   border: 'none',
-  background: 'var(--fn-violet, #6500D9)',
-  color: 'var(--fn-white, #FFFFFF)',
-  fontWeight: 700,
-  fontSize: '14px',
+  background: cssVar('violet'),
+  color: cssVar('white'),
+  fontWeight: FONT_WEIGHT.bold,
+  fontSize: FONT_SIZE.xl,
   cursor: 'pointer',
 };
 
 const declineBtnStyle: React.CSSProperties = {
-  padding: '8px 20px',
-  borderRadius: '8px',
-  border: '1px solid var(--fn-navy, #090949)',
+  padding: `${SPACING[2]} ${SPACING[5]}`,
+  borderRadius: RADIUS.lg,
+  border: `1px solid ${cssVar('navy')}`,
   background: 'transparent',
-  color: 'var(--fn-navy, #090949)',
-  fontWeight: 600,
-  fontSize: '14px',
+  color: cssVar('navy'),
+  fontWeight: FONT_WEIGHT.semibold,
+  fontSize: FONT_SIZE.xl,
   cursor: 'pointer',
-  opacity: 0.7,
+  opacity: OPACITY.prominent,
 };

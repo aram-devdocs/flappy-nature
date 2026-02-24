@@ -1,4 +1,4 @@
-import { DEFAULT_GAME_COLORS } from '@repo/types';
+import { DEFAULT_GAME_COLORS, RADIUS } from '@repo/types';
 import type { GameColors } from '@repo/types';
 import type { ReactNode } from 'react';
 
@@ -22,7 +22,7 @@ export function GameContainer({ colors, className, children }: GameContainerProp
       style={{
         position: 'relative',
         display: 'inline-block',
-        borderRadius: '12px',
+        borderRadius: RADIUS.xl,
         overflow: 'hidden',
         // CSS custom properties for sub-components
         ['--fn-navy' as string]: merged.navy,

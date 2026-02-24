@@ -1,9 +1,10 @@
-import { FlappyNatureGame, GamePage } from '@repo/flappy-nature-game';
+import { FlappyNatureGame } from '@repo/flappy-nature-game';
+import { DemoPage } from './components/DemoPage.js';
 
 export function App() {
   return (
-    <GamePage title="Flappy Nature">
+    <DemoPage>
       <FlappyNatureGame showFps />
-    </GamePage>
+    </DemoPage>
   );
 }

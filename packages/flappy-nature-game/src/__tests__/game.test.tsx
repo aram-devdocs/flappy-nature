@@ -42,12 +42,9 @@ describe('FlappyNatureGame', () => {
     expect(container.firstChild).not.toBeNull();
   });
 
-  it('displays the title "Flappy Nature"', () => {
+  it('renders the heart icon in the header', () => {
     render(<FlappyNatureGame />);
-    // The title text appears in a <span>; use getAllByText to handle any
-    // duplicate matches (e.g. the SVG aria-label) and assert at least one hit.
-    const matches = screen.getAllByText('Flappy Nature');
-    expect(matches.length).toBeGreaterThan(0);
+    expect(screen.getByRole('img', { name: 'Heart icon' })).toBeDefined();
   });
 
   it('renders the canvas element', () => {
@@ -61,9 +58,9 @@ describe('FlappyNatureGame', () => {
     expect(screen.getByRole('main')).toBeDefined();
   });
 
-  it('renders footer text', () => {
+  it('renders without a footer', () => {
     render(<FlappyNatureGame />);
-    expect(screen.getByText(/Made with/)).toBeDefined();
+    expect(screen.queryByText(/Made with/)).toBeNull();
   });
 
   it('shows best score when > 0', () => {

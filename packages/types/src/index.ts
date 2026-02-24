@@ -8,6 +8,7 @@ export type {
   BackgroundConfig,
   BestScores,
 } from './game';
+
 export { DIFF_KEYS, DIFF_LABELS } from './game';
 
 export type {
@@ -32,4 +33,23 @@ export type { FlappyNatureGameProps } from './props';
 
 export type { ScoreComparison } from './migration';
 
-export { DESIGN_TOKENS, DEFAULT_GAME_COLORS } from './tokens';
+export {
+  DESIGN_TOKENS,
+  DEFAULT_GAME_COLORS,
+  COLOR_TOKENS,
+  COLOR_RGB,
+  CSS_VAR_PREFIX,
+  RGBA_TOKENS,
+  FONT_FAMILY,
+  FONT_SIZE,
+  FONT_WEIGHT,
+  LINE_HEIGHT,
+  SPACING,
+  RADIUS,
+  BORDER_WIDTH,
+  SHADOW,
+  TEXT_SHADOW,
+  Z_INDEX,
+  OPACITY,
+  cssVar,
+} from './tokens';

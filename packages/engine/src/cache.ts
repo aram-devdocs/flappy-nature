@@ -1,14 +1,14 @@
-import { DEFAULT_GAME_COLORS } from '@repo/types';
+import { DEFAULT_GAME_COLORS, FONT_FAMILY, FONT_SIZE, FONT_WEIGHT, RGBA_TOKENS } from '@repo/types';
 import type { GameColors } from '@repo/types';
 
 /** Pre-cached RGBA strings to avoid string allocation per frame. */
 export const RGBA = {
-  scrim30: 'rgba(9, 9, 73, 0.3)',
-  scrim35: 'rgba(9, 9, 73, 0.35)',
-  scrim45: 'rgba(9, 9, 73, 0.45)',
-  shadow09: 'rgba(0,0,0,0.09)',
-  shadow08: 'rgba(0,0,0,0.08)',
-  shadow05: 'rgba(0,0,0,0.05)',
+  scrim30: RGBA_TOKENS.scrimLight,
+  scrim35: RGBA_TOKENS.scrimMedium,
+  scrim45: RGBA_TOKENS.scrimHeavy,
+  shadow09: RGBA_TOKENS.shadowBase,
+  shadow08: RGBA_TOKENS.shadowSm,
+  shadow05: RGBA_TOKENS.shadowXs,
 };
 
 /** Pre-computed CSS font strings to avoid template literal allocation per frame. */
@@ -32,16 +32,16 @@ export interface CachedFonts {
  */
 export function buildFontCache(fontFamily: string): CachedFonts {
   return {
-    banner: `800 9px ${fontFamily}`,
-    score: `800 32px ${fontFamily}`,
-    hint: `600 11px ${fontFamily}`,
-    diffTitle: `800 12px ${fontFamily}`,
-    diffBtn: `700 11px ${fontFamily}`,
-    diffBest: `600 9px ${fontFamily}`,
-    fps: `600 10px ${fontFamily}`,
-    deadTitle: `800 20px ${fontFamily}`,
-    deadScore: `700 14px ${fontFamily}`,
-    deadRetry: `600 12px ${fontFamily}`,
+    banner: `${FONT_WEIGHT.extrabold} ${FONT_SIZE['2xs']} ${fontFamily}`,
+    score: `${FONT_WEIGHT.extrabold} ${FONT_SIZE['5xl']} ${fontFamily}`,
+    hint: `${FONT_WEIGHT.semibold} ${FONT_SIZE.sm} ${fontFamily}`,
+    diffTitle: `${FONT_WEIGHT.extrabold} ${FONT_SIZE.md} ${fontFamily}`,
+    diffBtn: `${FONT_WEIGHT.bold} ${FONT_SIZE.sm} ${fontFamily}`,
+    diffBest: `${FONT_WEIGHT.semibold} ${FONT_SIZE['2xs']} ${fontFamily}`,
+    fps: `${FONT_WEIGHT.semibold} ${FONT_SIZE.xs} ${fontFamily}`,
+    deadTitle: `${FONT_WEIGHT.extrabold} ${FONT_SIZE['3xl']} ${fontFamily}`,
+    deadScore: `${FONT_WEIGHT.bold} ${FONT_SIZE.xl} ${fontFamily}`,
+    deadRetry: `${FONT_WEIGHT.semibold} ${FONT_SIZE.md} ${fontFamily}`,
   };
 }
 
@@ -49,4 +49,4 @@ export function buildFontCache(fontFamily: string): CachedFonts {
 export const DEFAULT_COLORS: GameColors = DEFAULT_GAME_COLORS;
 
 /** Default font family used when none is provided via EngineConfig. */
-export const DEFAULT_FONT = '"Poppins", sans-serif';
+export const DEFAULT_FONT = FONT_FAMILY.heading;
