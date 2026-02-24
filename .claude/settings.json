@@ -5,12 +5,20 @@
       "Bash(pnpm build)",
       "Bash(pnpm test*)",
       "Bash(pnpm lint*)",
+      "Bash(pnpm format*)",
       "Bash(pnpm typecheck)",
-      "Bash(pnpm validate-architecture)",
+      "Bash(pnpm validate*)",
+      "Bash(pnpm storybook)",
       "Bash(git status)",
       "Bash(git diff*)",
-      "Bash(git log*)"
+      "Bash(git log*)",
+      "Bash(git branch*)",
+      "Bash(git checkout*)",
+      "Bash(git add*)",
+      "Bash(git commit*)",
+      "Bash(wc -l*)",
+      "Bash(npx tsx scripts/*)"
     ],
-    "deny": ["Bash(rm -rf *)", "Bash(git push --force*)"]
+    "deny": ["Bash(rm -rf *)", "Bash(git push --force*)", "Bash(git push -f*)"]
   }
 }

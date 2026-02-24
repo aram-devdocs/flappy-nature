@@ -143,12 +143,10 @@ All feature work SHOULD follow this pipeline:
 RED --> GREEN --> REFACTOR --> VERIFY
 ```
 
-1. **RED:** `test-first-implementer` writes a failing test that describes the desired behavior. The test MUST fail. No implementation code is written.
-
-2. **GREEN:** `implementer` writes the minimum code to make the failing test pass. No additional features, no premature optimization.
-
-3. **REFACTOR:** `implementer` cleans up the passing code -- extract helpers, rename variables, reduce duplication -- without changing behavior. Tests MUST still pass.
-
-4. **VERIFY:** `tdd-verifier` checks that all tests pass, no `any` types leaked in, file sizes are within limits, and dependency rules hold. Outputs APPROVED or REJECTED.
+1. **RED:** `test-first-implementer` writes failing tests
+2. **GREEN:** `implementer` writes minimum passing code
+3. **REFACTOR:** `implementer` cleans up
+4. **VERIFY:** `tdd-verifier` + `code-quality-reviewer` checks compliance
+5. **VALIDATE:** Architecture validator runs all scripts (`pnpm validate:all`)
 
 If REJECTED, the cycle restarts from the appropriate phase.
