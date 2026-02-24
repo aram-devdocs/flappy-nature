@@ -13,13 +13,22 @@ export function updateBird(bird: Bird, config: GameConfig, dt: number): void {
   bird.y += bird.vy * dt;
 
   const targetRot = Math.max(-20, Math.min(55, bird.vy * 3.2));
-  bird.rot += (targetRot - bird.rot) * 0.12;
+  bird.rot += (targetRot - bird.rot) * 0.22;
 
   // Ceiling clamp
   if (bird.y < 0) {
     bird.y = 0;
     bird.vy = 0;
   }
+}
+
+/** Apply gravity during death fall, rotate toward nose-dive. Returns true when bird hits ground. */
+export function updateDyingBird(bird: Bird, config: GameConfig, dt: number): boolean {
+  bird.vy += config.gravity * dt;
+  if (bird.vy > config.terminalVel) bird.vy = config.terminalVel;
+  bird.y += bird.vy * dt;
+  bird.rot += (90 - bird.rot) * 0.25;
+  return bird.y + config.birdSize > config.height - config.groundH;
 }
 
 /** Returns true if the bird has hit the ground plane. */
