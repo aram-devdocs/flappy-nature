@@ -1,27 +1,25 @@
+import { DESIGN_TOKENS } from '@repo/types';
 import type { GameColors } from '@repo/types';
 import type { ReactNode } from 'react';
 
+/** Props for {@link GameContainer}. */
 interface GameContainerProps {
+  /** Optional theme color overrides. */
   colors?: Partial<GameColors>;
+  /** Additional CSS class name for the outer wrapper. */
   className?: string;
+  /** Content rendered inside the container. */
   children: ReactNode;
 }
 
-const DEFAULT_COLORS: GameColors = {
-  navy: '#090949',
-  violet: '#6500D9',
-  cyan: '#00D9FF',
-  magenta: '#D76EFF',
-  light: '#FBF6F6',
-  white: '#FFFFFF',
-  midviolet: '#4B00A0',
-};
+const DEFAULT_COLORS: GameColors = { ...DESIGN_TOKENS.colors };
 
+/** Outer wrapper that sets CSS custom properties for the game's color theme. */
 export function GameContainer({ colors, className, children }: GameContainerProps) {
   const merged = { ...DEFAULT_COLORS, ...colors };
 
   return (
-    <div
+    <main
       className={className}
       style={{
         position: 'relative',
@@ -39,6 +37,6 @@ export function GameContainer({ colors, className, children }: GameContainerProp
       }}
     >
       {children}
-    </div>
+    </main>
   );
 }

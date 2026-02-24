@@ -12,3 +12,4 @@ export { DifficultyPicker } from './molecules/DifficultyPicker.js';
 export { TitleScreen } from './organisms/TitleScreen.js';
 export { GameOverScreen } from './organisms/GameOverScreen.js';
 export { GameContainer } from './organisms/GameContainer.js';
+export { ErrorFallback } from './organisms/ErrorFallback.js';

@@ -2,7 +2,12 @@ import { fireEvent, render, screen } from '@testing-library/react';
 import { describe, expect, it, vi } from 'vitest';
 
 import { FpsCounter } from '../atoms/FpsCounter';
+import { GameCanvas } from '../atoms/GameCanvas';
+import { ScoreDisplay } from '../atoms/ScoreDisplay';
 import { DifficultyBadge } from '../molecules/DifficultyBadge';
+import { DifficultyPicker } from '../molecules/DifficultyPicker';
+import { ErrorFallback } from '../organisms/ErrorFallback';
+import { GameContainer } from '../organisms/GameContainer';
 import { GameOverScreen } from '../organisms/GameOverScreen';
 import { TitleScreen } from '../organisms/TitleScreen';
 
@@ -59,17 +64,17 @@ describe('GameOverScreen', () => {
 describe('DifficultyBadge', () => {
   it('renders "Easy" for easy difficulty', () => {
     render(<DifficultyBadge difficulty="easy" visible onClick={vi.fn()} />);
-    expect(screen.getByRole('button', { name: 'Easy' })).toBeDefined();
+    expect(screen.getByRole('button', { name: 'Difficulty: Easy' })).toBeDefined();
   });
 
   it('renders "Normal" for normal difficulty', () => {
     render(<DifficultyBadge difficulty="normal" visible onClick={vi.fn()} />);
-    expect(screen.getByRole('button', { name: 'Normal' })).toBeDefined();
+    expect(screen.getByRole('button', { name: 'Difficulty: Normal' })).toBeDefined();
   });
 
   it('renders "Hard" for hard difficulty', () => {
     render(<DifficultyBadge difficulty="hard" visible onClick={vi.fn()} />);
-    expect(screen.getByRole('button', { name: 'Hard' })).toBeDefined();
+    expect(screen.getByRole('button', { name: 'Difficulty: Hard' })).toBeDefined();
   });
 
   it('returns null when visible is false', () => {
@@ -82,7 +87,7 @@ describe('DifficultyBadge', () => {
   it('calls onClick when the badge is clicked', () => {
     const onClick = vi.fn();
     render(<DifficultyBadge difficulty="easy" visible onClick={onClick} />);
-    fireEvent.click(screen.getByRole('button', { name: 'Easy' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Difficulty: Easy' }));
     expect(onClick).toHaveBeenCalledOnce();
   });
 });
@@ -106,5 +111,157 @@ describe('FpsCounter', () => {
   it('renders correct fps value', () => {
     render(<FpsCounter fps={144} visible />);
     expect(screen.getByText('144 FPS')).toBeDefined();
+  });
+});
+
+describe('ScoreDisplay', () => {
+  it('renders score value when visible', () => {
+    render(<ScoreDisplay score={5} visible />);
+    expect(screen.getByText('5')).toBeDefined();
+  });
+
+  it('returns null when visible is false', () => {
+    const { container } = render(<ScoreDisplay score={5} visible={false} />);
+    expect(container.firstChild).toBeNull();
+  });
+
+  it('has aria-live="polite" attribute', () => {
+    render(<ScoreDisplay score={5} visible />);
+    const output = screen.getByText('5');
+    expect(output.getAttribute('aria-live')).toBe('polite');
+  });
+
+  it('has aria-label with score value', () => {
+    render(<ScoreDisplay score={12} visible />);
+    const output = screen.getByText('12');
+    expect(output.getAttribute('aria-label')).toBe('Score: 12');
+  });
+});
+
+describe('GameCanvas', () => {
+  it('renders canvas element', () => {
+    const { container } = render(<GameCanvas />);
+    const canvas = container.querySelector('canvas');
+    expect(canvas).not.toBeNull();
+  });
+
+  it('has aria-label="Flappy Nature game"', () => {
+    render(<GameCanvas />);
+    expect(screen.getByLabelText('Flappy Nature game')).toBeDefined();
+  });
+
+  it('has role="img"', () => {
+    render(<GameCanvas />);
+    expect(screen.getByRole('img', { name: 'Flappy Nature game' })).toBeDefined();
+  });
+});
+
+describe('DifficultyPicker', () => {
+  const defaultProps = {
+    currentDifficulty: 'normal' as const,
+    bestScores: { easy: 0, normal: 0, hard: 0 },
+    onSelect: vi.fn(),
+    onClose: vi.fn(),
+  };
+
+  it('renders all 3 difficulty options when visible', () => {
+    render(<DifficultyPicker {...defaultProps} visible />);
+    expect(screen.getByText('Easy')).toBeDefined();
+    expect(screen.getByText('Normal')).toBeDefined();
+    expect(screen.getByText('Hard')).toBeDefined();
+  });
+
+  it('returns null when visible is false', () => {
+    const { container } = render(<DifficultyPicker {...defaultProps} visible={false} />);
+    expect(container.firstChild).toBeNull();
+  });
+
+  it('calls onSelect with correct key when option clicked', () => {
+    const onSelect = vi.fn();
+    render(<DifficultyPicker {...defaultProps} onSelect={onSelect} visible />);
+    fireEvent.click(screen.getByText('Easy'));
+    expect(onSelect).toHaveBeenCalledWith('easy');
+  });
+
+  it('calls onClose when backdrop clicked', () => {
+    const onClose = vi.fn();
+    render(<DifficultyPicker {...defaultProps} onClose={onClose} visible />);
+    fireEvent.click(screen.getByLabelText('Select difficulty'));
+    expect(onClose).toHaveBeenCalledOnce();
+  });
+
+  it('shows best scores when greater than 0', () => {
+    render(
+      <DifficultyPicker {...defaultProps} bestScores={{ easy: 5, normal: 12, hard: 0 }} visible />,
+    );
+    expect(screen.getByText('Best: 5')).toBeDefined();
+    expect(screen.getByText('Best: 12')).toBeDefined();
+    expect(screen.queryByText('Best: 0')).toBeNull();
+  });
+
+  it('calls onClose on Escape key in backdrop', () => {
+    const onClose = vi.fn();
+    render(<DifficultyPicker {...defaultProps} onClose={onClose} visible />);
+    fireEvent.keyDown(screen.getByLabelText('Select difficulty'), { key: 'Escape' });
+    expect(onClose).toHaveBeenCalledOnce();
+  });
+
+  it('does not close on non-Escape key', () => {
+    const onClose = vi.fn();
+    render(<DifficultyPicker {...defaultProps} onClose={onClose} visible />);
+    fireEvent.keyDown(screen.getByLabelText('Select difficulty'), { key: 'Enter' });
+    expect(onClose).not.toHaveBeenCalled();
+  });
+
+  it('stops propagation of keyDown in inner panel', () => {
+    const onClose = vi.fn();
+    render(<DifficultyPicker {...defaultProps} onClose={onClose} visible />);
+    const panel = screen.getByRole('radiogroup');
+    fireEvent.keyDown(panel, { key: 'Escape' });
+    expect(onClose).not.toHaveBeenCalled();
+  });
+});
+
+describe('GameContainer', () => {
+  it('renders children', () => {
+    render(
+      <GameContainer>
+        <span>child content</span>
+      </GameContainer>,
+    );
+    expect(screen.getByText('child content')).toBeDefined();
+  });
+
+  it('uses main element (semantic)', () => {
+    render(
+      <GameContainer>
+        <span>test</span>
+      </GameContainer>,
+    );
+    expect(screen.getByRole('main')).toBeDefined();
+  });
+});
+
+describe('ErrorFallback', () => {
+  it('renders error message', () => {
+    render(<ErrorFallback message="Oops something broke" onReset={vi.fn()} />);
+    expect(screen.getByText('Oops something broke')).toBeDefined();
+  });
+
+  it('renders "Try Again" button', () => {
+    render(<ErrorFallback message="error" onReset={vi.fn()} />);
+    expect(screen.getByRole('button', { name: 'Try Again' })).toBeDefined();
+  });
+
+  it('has role="alert"', () => {
+    render(<ErrorFallback message="error" onReset={vi.fn()} />);
+    expect(screen.getByRole('alert')).toBeDefined();
+  });
+
+  it('calls onReset when button clicked', () => {
+    const onReset = vi.fn();
+    render(<ErrorFallback message="error" onReset={onReset} />);
+    fireEvent.click(screen.getByRole('button', { name: 'Try Again' }));
+    expect(onReset).toHaveBeenCalledOnce();
   });
 });
