@@ -2,20 +2,37 @@ import { FlappyEngine } from '@repo/engine';
 import type { BestScores, DifficultyKey, EngineConfig, GameState } from '@repo/types';
 import { useCallback, useEffect, useRef, useState } from 'react';
 
+/** Shape returned by {@link useGameEngine}. */
 export interface UseGameEngineReturn {
+  /** Ref to attach to the game canvas element. */
   canvasRef: React.RefObject<HTMLCanvasElement | null>;
+  /** Current game lifecycle state. */
   state: GameState;
+  /** Current score for the active run. */
   score: number;
+  /** Per-difficulty best scores. */
   bestScores: BestScores;
+  /** Currently active difficulty key. */
   difficulty: DifficultyKey;
+  /** Smoothed frames-per-second value. */
   fps: number;
+  /** Trigger a flap impulse on the bird. */
   flap: () => void;
+  /** Switch to a new difficulty level. */
   setDifficulty: (key: DifficultyKey) => void;
+  /** Reset the game to idle state. */
   reset: () => void;
+  /** Pause gameplay. */
   pause: () => void;
+  /** Resume gameplay after a pause. */
   resume: () => void;
 }
 
+/**
+ * Create and manage a FlappyEngine instance, surfacing its state as React state.
+ * @param config Optional engine configuration overrides.
+ * @returns Reactive game state, a canvas ref, and stable action callbacks.
+ */
 export function useGameEngine(config?: EngineConfig): UseGameEngineReturn {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const engineRef = useRef<FlappyEngine | null>(null);

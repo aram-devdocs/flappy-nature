@@ -1,5 +1,6 @@
 import { useCallback, useState } from 'react';
 
+/** Persist and hydrate a value in localStorage, returning a stateful getter and setter. */
 export function useLocalStorage<T>(key: string, initialValue: T): [T, (value: T) => void] {
   const [storedValue, setStoredValue] = useState<T>(() => {
     try {
