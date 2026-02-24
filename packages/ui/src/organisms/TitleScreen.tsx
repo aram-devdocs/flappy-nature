@@ -1,14 +1,21 @@
+/** Props for {@link TitleScreen}. */
 interface TitleScreenProps {
+  /** Whether the title overlay is shown. */
   visible: boolean;
+  /** Player's best score for the current difficulty (0 hides the label). */
   bestScore: number;
+  /** Called when the Play button is clicked. */
   onPlay: () => void;
 }
 
+/** Full-screen overlay shown in idle state with branding, controls hint, and Play button. */
 export function TitleScreen({ visible, bestScore, onPlay }: TitleScreenProps) {
   if (!visible) return null;
 
   return (
-    <div
+    <dialog
+      open
+      aria-label="Start game"
       style={{
         position: 'absolute',
         inset: 0,
@@ -18,11 +25,18 @@ export function TitleScreen({ visible, bestScore, onPlay }: TitleScreenProps) {
         justifyContent: 'center',
         background: 'rgba(9, 9, 73, 0.35)',
         zIndex: 5,
+        border: 'none',
+        padding: 0,
+        margin: 0,
+        maxWidth: 'none',
+        maxHeight: 'none',
+        width: '100%',
+        height: '100%',
       }}
     >
       <div
         style={{
-          background: '#fff',
+          background: 'var(--fn-white, #FFFFFF)',
           borderRadius: '16px',
           padding: '24px 32px',
           textAlign: 'center',
@@ -100,7 +114,7 @@ export function TitleScreen({ visible, bestScore, onPlay }: TitleScreenProps) {
             padding: '8px 24px',
             fontSize: '13px',
             fontWeight: 700,
-            color: '#fff',
+            color: 'var(--fn-white, #FFFFFF)',
             background: 'var(--fn-violet, #6500D9)',
             border: 'none',
             borderRadius: '8px',
@@ -110,6 +124,6 @@ export function TitleScreen({ visible, bestScore, onPlay }: TitleScreenProps) {
           Play
         </button>
       </div>
-    </div>
+    </dialog>
   );
 }

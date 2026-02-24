@@ -1,5 +1,6 @@
 import { useCallback, useEffect } from 'react';
 
+/** Options for {@link useGameInput}. */
 interface UseGameInputOptions {
   onFlap: () => void;
   onEscape?: () => void;
@@ -7,6 +8,10 @@ interface UseGameInputOptions {
   enabled?: boolean;
 }
 
+/**
+ * Bind keyboard, click, and touch input to game actions.
+ * Listens for Space/Enter/click/touch to flap and Escape to dismiss.
+ */
 export function useGameInput({
   onFlap,
   onEscape,

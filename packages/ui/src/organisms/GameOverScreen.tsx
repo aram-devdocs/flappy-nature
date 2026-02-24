@@ -1,14 +1,21 @@
+/** Props for {@link GameOverScreen}. */
 interface GameOverScreenProps {
+  /** Whether the game-over overlay is shown. */
   visible: boolean;
+  /** Final score from the run that just ended. */
   score: number;
+  /** Player's best score for the current difficulty. */
   bestScore: number;
 }
 
+/** Full-screen overlay shown after death displaying score, best score, and retry hint. */
 export function GameOverScreen({ visible, score, bestScore }: GameOverScreenProps) {
   if (!visible) return null;
 
   return (
-    <div
+    <dialog
+      open
+      aria-label="Game over"
       style={{
         position: 'absolute',
         inset: 0,
@@ -18,11 +25,18 @@ export function GameOverScreen({ visible, score, bestScore }: GameOverScreenProp
         background: 'rgba(9, 9, 73, 0.45)',
         zIndex: 5,
         pointerEvents: 'none',
+        border: 'none',
+        padding: 0,
+        margin: 0,
+        maxWidth: 'none',
+        maxHeight: 'none',
+        width: '100%',
+        height: '100%',
       }}
     >
       <div
         style={{
-          background: '#fff',
+          background: 'var(--fn-white, #FFFFFF)',
           borderRadius: '16px',
           padding: '24px 32px',
           textAlign: 'center',
@@ -71,6 +85,6 @@ export function GameOverScreen({ visible, score, bestScore }: GameOverScreenProp
           Space / Click to retry
         </p>
       </div>
-    </div>
+    </dialog>
   );
 }

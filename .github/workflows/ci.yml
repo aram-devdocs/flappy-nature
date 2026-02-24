@@ -11,93 +11,134 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  lint:
-    name: Lint
+  setup:
+    name: Setup
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-
       - uses: pnpm/action-setup@v4
-
       - uses: actions/setup-node@v4
         with:
           node-version-file: .nvmrc
           cache: pnpm
-
       - run: pnpm install --frozen-lockfile
+      - run: pnpm build
+      - uses: actions/cache/save@v4
+        with:
+          path: |
+            node_modules
+            packages/*/node_modules
+            packages/*/dist
+            apps/*/node_modules
+          key: ${{ runner.os }}-build-${{ github.sha }}
 
+  lint:
+    name: Lint
+    needs: setup
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: pnpm
+      - uses: actions/cache/restore@v4
+        with:
+          path: |
+            node_modules
+            packages/*/node_modules
+            packages/*/dist
+            apps/*/node_modules
+          key: ${{ runner.os }}-build-${{ github.sha }}
       - run: pnpm lint
 
   typecheck:
     name: Typecheck
+    needs: setup
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-
       - uses: pnpm/action-setup@v4
-
       - uses: actions/setup-node@v4
         with:
           node-version-file: .nvmrc
           cache: pnpm
-
-      - run: pnpm install --frozen-lockfile
-
-      - run: pnpm build
-
+      - uses: actions/cache/restore@v4
+        with:
+          path: |
+            node_modules
+            packages/*/node_modules
+            packages/*/dist
+            apps/*/node_modules
+          key: ${{ runner.os }}-build-${{ github.sha }}
       - run: pnpm typecheck
-
-  architecture:
-    name: Architecture Validation
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-
-      - uses: pnpm/action-setup@v4
-
-      - uses: actions/setup-node@v4
-        with:
-          node-version-file: .nvmrc
-          cache: pnpm
-
-      - run: pnpm install --frozen-lockfile
-
-      - run: pnpm validate-architecture
 
   test:
     name: Test
+    needs: setup
     runs-on: ubuntu-latest
-    needs: [lint, typecheck, architecture]
     steps:
       - uses: actions/checkout@v4
-
       - uses: pnpm/action-setup@v4
-
       - uses: actions/setup-node@v4
         with:
           node-version-file: .nvmrc
           cache: pnpm
-
-      - run: pnpm install --frozen-lockfile
-
-      - run: pnpm build
-
+      - uses: actions/cache/restore@v4
+        with:
+          path: |
+            node_modules
+            packages/*/node_modules
+            packages/*/dist
+            apps/*/node_modules
+          key: ${{ runner.os }}-build-${{ github.sha }}
       - run: pnpm test
+      - name: Job Summary
+        if: always()
+        run: echo "## Test Results" >> $GITHUB_STEP_SUMMARY
+
+  architecture:
+    name: Architecture Validation
+    needs: setup
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: pnpm
+      - uses: actions/cache/restore@v4
+        with:
+          path: |
+            node_modules
+            packages/*/node_modules
+            packages/*/dist
+            apps/*/node_modules
+          key: ${{ runner.os }}-build-${{ github.sha }}
+      - run: pnpm validate:all
+      - name: Job Summary
+        if: always()
+        run: echo "## Architecture Validation" >> $GITHUB_STEP_SUMMARY
 
   build:
     name: Build
+    needs: [lint, typecheck, test, architecture]
     runs-on: ubuntu-latest
-    needs: [lint, typecheck, architecture]
     steps:
       - uses: actions/checkout@v4
-
       - uses: pnpm/action-setup@v4
-
       - uses: actions/setup-node@v4
         with:
           node-version-file: .nvmrc
           cache: pnpm
-
-      - run: pnpm install --frozen-lockfile
-
+      - uses: actions/cache/restore@v4
+        with:
+          path: |
+            node_modules
+            packages/*/node_modules
+            packages/*/dist
+            apps/*/node_modules
+          key: ${{ runner.os }}-build-${{ github.sha }}
       - run: pnpm build

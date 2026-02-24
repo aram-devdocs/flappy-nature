@@ -1,14 +1,21 @@
 import type { BestScores, DifficultyKey } from '@repo/types';
 import { DIFF_KEYS, DIFF_LABELS } from '@repo/types';
 
+/** Props for {@link DifficultyPicker}. */
 interface DifficultyPickerProps {
+  /** The currently selected difficulty level. */
   currentDifficulty: DifficultyKey;
+  /** Per-difficulty best scores shown alongside each option. */
   bestScores: BestScores;
+  /** Whether the picker dialog is shown. */
   visible: boolean;
+  /** Called when the player selects a difficulty option. */
   onSelect: (key: DifficultyKey) => void;
+  /** Called when the picker is dismissed (backdrop click or Escape). */
   onClose: () => void;
 }
 
+/** Modal dialog listing all difficulty levels with best-score annotations. */
 export function DifficultyPicker({
   currentDifficulty,
   bestScores,
@@ -19,7 +26,9 @@ export function DifficultyPicker({
   if (!visible) return null;
 
   return (
-    <div
+    <dialog
+      open
+      aria-label="Select difficulty"
       style={{
         position: 'absolute',
         inset: 0,
@@ -28,13 +37,22 @@ export function DifficultyPicker({
         justifyContent: 'center',
         background: 'rgba(9, 9, 73, 0.3)',
         zIndex: 10,
+        border: 'none',
+        padding: 0,
+        margin: 0,
+        maxWidth: 'none',
+        maxHeight: 'none',
+        width: '100%',
+        height: '100%',
       }}
       onClick={onClose}
       onKeyDown={(e) => e.key === 'Escape' && onClose()}
     >
       <div
+        role="radiogroup"
+        aria-label="Difficulty options"
         style={{
-          background: '#fff',
+          background: 'var(--fn-white, #FFFFFF)',
           borderRadius: '12px',
           padding: '16px',
           minWidth: '150px',
@@ -61,6 +79,7 @@ export function DifficultyPicker({
             <button
               key={key}
               type="button"
+              aria-pressed={isActive}
               onClick={() => onSelect(key)}
               style={{
                 display: 'flex',
@@ -71,7 +90,7 @@ export function DifficultyPicker({
                 marginBottom: '6px',
                 fontSize: '11px',
                 fontWeight: 700,
-                color: isActive ? '#fff' : 'var(--fn-navy, #090949)',
+                color: isActive ? 'var(--fn-white, #FFFFFF)' : 'var(--fn-navy, #090949)',
                 background: isActive ? 'var(--fn-violet, #6500D9)' : 'var(--fn-light, #FBF6F6)',
                 border: 'none',
                 borderRadius: '6px',
@@ -88,6 +107,6 @@ export function DifficultyPicker({
           );
         })}
       </div>
-    </div>
+    </dialog>
   );
 }
