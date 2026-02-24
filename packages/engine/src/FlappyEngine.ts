@@ -12,7 +12,7 @@ import type {
 import type { BackgroundSystem } from './background.js';
 import { DEFAULT_BANNERS } from './banners.js';
 import { type CachedFonts, DEFAULT_COLORS, DEFAULT_FONT, buildFontCache } from './cache.js';
-import { DEFAULT_CONFIG } from './config.js';
+import { DEFAULT_CONFIG, applyDifficulty } from './config.js';
 import { EngineEventEmitter } from './engine-events.js';
 import { resetEngine, syncPrevBird } from './engine-lifecycle.js';
 import { EngineLoop } from './engine-loop.js';
@@ -25,7 +25,6 @@ import {
   spawnPipe,
   updateBird,
   updateClouds,
-  updateDyingBird,
   updatePipes,
 } from './physics.js';
 import type { Renderer } from './renderer.js';
@@ -60,6 +59,7 @@ export class FlappyEngine {
     this.config = { ...DEFAULT_CONFIG };
     this.state.bestScores = loadBestScores();
     this.state.difficulty = engineConfig?.difficulty ?? loadDifficulty();
+    applyDifficulty(this.state.difficulty, this.config);
     this.bg = createBgSystem(this.config, this.bannerTexts);
     this.renderer = createRenderer(this.ctx, this.config, this.colors, this.fonts, this.dpr);
   }
@@ -113,6 +113,8 @@ export class FlappyEngine {
 
   setDifficulty(key: DifficultyKey): void {
     this.state.setDifficulty(key, this.config);
+    this.renderer = createRenderer(this.ctx, this.config, this.colors, this.fonts, this.dpr);
+    this.renderer.buildGradients();
     this.bg = createBgSystem(this.config, this.bannerTexts);
     this.bg.init();
     this.renderer.prerenderAllClouds(this.clouds, this.bg);
@@ -157,13 +159,6 @@ export class FlappyEngine {
     this.loop.globalTime = now;
     updateClouds(this.clouds, this.config, dt);
     this.bg.update(dt, now, this.state.state === 'play');
-    if (this.state.state === 'dying') {
-      syncPrevBird(this.prevBird, this.bird);
-      if (updateDyingBird(this.bird, this.config, dt)) {
-        this.state.finishDeath();
-      }
-      return;
-    }
     if (this.state.state !== 'play') return;
     syncPrevBird(this.prevBird, this.bird);
     updateBird(this.bird, this.config, dt);

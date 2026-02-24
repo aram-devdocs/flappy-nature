@@ -261,12 +261,12 @@ describe('EngineState', () => {
   });
 
   describe('die', () => {
-    it('sets state to dying and records deadTime', () => {
+    it('sets state to dead and records deadTime', () => {
       vi.spyOn(performance, 'now').mockReturnValue(12345);
       state.state = 'play';
       state.score = 0;
       state.die();
-      expect(state.state).toBe('dying');
+      expect(state.state).toBe('dead');
       expect(state.deadTime).toBe(12345);
     });
 
@@ -302,20 +302,6 @@ describe('EngineState', () => {
 
       expect(state.bestScores.normal).toBe(10);
       expect(bestCb).not.toHaveBeenCalled();
-    });
-  });
-
-  describe('finishDeath', () => {
-    it('transitions dying to dead', () => {
-      state.state = 'dying';
-      state.finishDeath();
-      expect(state.state).toBe('dead');
-    });
-
-    it('does nothing when not in dying state', () => {
-      state.state = 'play';
-      state.finishDeath();
-      expect(state.state).toBe('play');
     });
   });
 
@@ -374,12 +360,6 @@ describe('EngineState', () => {
       state.state = 'dead';
       state.pause();
       expect(state.state).toBe('dead');
-    });
-
-    it('does nothing when state is dying', () => {
-      state.state = 'dying';
-      state.pause();
-      expect(state.state).toBe('dying');
     });
   });
 

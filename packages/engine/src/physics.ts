@@ -22,15 +22,6 @@ export function updateBird(bird: Bird, config: GameConfig, dt: number): void {
   }
 }
 
-/** Apply gravity during death fall, rotate toward nose-dive. Returns true when bird hits ground. */
-export function updateDyingBird(bird: Bird, config: GameConfig, dt: number): boolean {
-  bird.vy += config.gravity * dt;
-  if (bird.vy > config.terminalVel) bird.vy = config.terminalVel;
-  bird.y += bird.vy * dt;
-  bird.rot += (90 - bird.rot) * 0.25;
-  return bird.y + config.birdSize > config.height - config.groundH;
-}
-
 /** Returns true if the bird has hit the ground plane. */
 export function checkGroundCollision(bird: Bird, config: GameConfig): boolean {
   return bird.y + config.birdSize > config.height - config.groundH;

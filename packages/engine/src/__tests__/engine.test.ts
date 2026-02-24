@@ -13,7 +13,6 @@ import {
   checkPipeScore,
   spawnPipe,
   updateBird,
-  updateDyingBird,
   updatePipes,
 } from '../physics.js';
 import { drawBird, drawPipes, drawScore } from '../renderer-entities.js';
@@ -72,44 +71,6 @@ describe('updateBird', () => {
     }
     const target = Math.max(-20, Math.min(55, bird.vy * 3.2));
     expect(Math.abs(bird.rot - target) / Math.abs(target)).toBeLessThan(0.2);
-  });
-});
-
-describe('updateDyingBird', () => {
-  it('applies gravity and moves bird down', () => {
-    const bird = makeBird({ y: 100, vy: 0 });
-    const cfg = makeConfig();
-    updateDyingBird(bird, cfg, 1);
-    expect(bird.vy).toBeCloseTo(cfg.gravity);
-    expect(bird.y).toBeGreaterThan(100);
-  });
-
-  it('rotates toward 90 degrees nose-dive', () => {
-    const bird = makeBird({ rot: 0 });
-    updateDyingBird(bird, makeConfig(), 1);
-    expect(bird.rot).toBeGreaterThan(0);
-    expect(bird.rot).toBeLessThanOrEqual(90);
-  });
-
-  it('returns true when bird hits ground', () => {
-    const cfg = makeConfig();
-    const groundY = cfg.height - cfg.groundH - cfg.birdSize + 1;
-    const bird = makeBird({ y: groundY, vy: 5 });
-    const hit = updateDyingBird(bird, cfg, 1);
-    expect(hit).toBe(true);
-  });
-
-  it('returns false when bird is still above ground', () => {
-    const bird = makeBird({ y: 100, vy: 0 });
-    const hit = updateDyingBird(bird, makeConfig(), 1);
-    expect(hit).toBe(false);
-  });
-
-  it('clamps vy to terminalVel', () => {
-    const bird = makeBird({ vy: 100 });
-    const cfg = makeConfig();
-    updateDyingBird(bird, cfg, 1);
-    expect(bird.vy).toBe(cfg.terminalVel);
   });
 });
 

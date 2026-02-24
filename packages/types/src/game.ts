@@ -1,5 +1,5 @@
 /** Current state of the game lifecycle. */
-export type GameState = 'idle' | 'play' | 'dying' | 'dead' | 'paused';
+export type GameState = 'idle' | 'play' | 'dead' | 'paused';
 
 /** Identifier for a difficulty level. */
 export type DifficultyKey = 'easy' | 'normal' | 'hard';
