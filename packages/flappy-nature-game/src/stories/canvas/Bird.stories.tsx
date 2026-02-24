@@ -21,7 +21,7 @@ function HeartBirdPreview({ rotation }: { rotation: number }) {
   const [heartImg, setHeartImg] = useState<HTMLImageElement | null>(null);
 
   useEffect(() => {
-    loadHeartImage(DEFAULT_COLORS.magenta).then(setHeartImg);
+    loadHeartImage(DEFAULT_COLORS.magenta).then(setHeartImg).catch(console.error);
   }, []);
 
   const draw = useCallback(
