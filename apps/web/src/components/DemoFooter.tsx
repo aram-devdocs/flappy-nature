@@ -34,8 +34,8 @@ export function DemoFooter() {
       >
         <div
           style={{
-            height: '40px',
-            width: '120px',
+            height: '28px',
+            width: '80px',
             overflow: 'hidden',
             display: 'flex',
             alignItems: 'center',
@@ -46,7 +46,7 @@ export function DemoFooter() {
             src="/assets/logos/vegan-gouda-leaf.png"
             alt="Vegan Gouda Development"
             style={{
-              height: '180px',
+              height: '130px',
               filter: 'brightness(0) invert(1)',
             }}
           />

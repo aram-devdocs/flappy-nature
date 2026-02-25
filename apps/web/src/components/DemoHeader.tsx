@@ -24,7 +24,7 @@ export function DemoHeader() {
     >
       <div
         style={{
-          height: '64px',
+          height: '80px',
           width: '200px',
           overflow: 'hidden',
           display: 'flex',
@@ -38,6 +38,7 @@ export function DemoHeader() {
           style={{
             height: '280px',
             filter: 'brightness(0) invert(1)',
+            marginTop: '24px',
           }}
         />
       </div>
