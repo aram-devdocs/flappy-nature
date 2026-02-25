@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.4.0](https://github.com/aram-devdocs/flappy-gouda/compare/flappy-gouda-game-v0.3.1...flappy-gouda-game-v0.4.0) (2026-02-25)
+
+
+### Features
+
+* **game:** add settings menu with nickname management ([#19](https://github.com/aram-devdocs/flappy-gouda/issues/19)) ([cabd8f4](https://github.com/aram-devdocs/flappy-gouda/commit/cabd8f4c53a3ebe1334947bde76b84f0ca60ada4))
+
 ## [0.3.1](https://github.com/aram-devdocs/flappy-gouda/compare/flappy-gouda-game-v0.3.0...flappy-gouda-game-v0.3.1) (2026-02-25)
 
 
