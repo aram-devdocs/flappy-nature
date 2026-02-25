@@ -15,14 +15,24 @@ export function DemoBadges() {
         flexWrap: 'wrap',
       }}
     >
-      <a href={GITHUB_URL} target="_blank" rel="noopener noreferrer">
+      <a
+        href={GITHUB_URL}
+        target="_blank"
+        rel="noopener noreferrer"
+        aria-label="View Flappy Gouda on GitHub"
+      >
         <img
           src="https://img.shields.io/badge/GitHub-flappy--gouda-181717?logo=github&style=flat-square"
           alt="GitHub"
           height={20}
         />
       </a>
-      <a href={STORYBOOK_URL} target="_blank" rel="noopener noreferrer">
+      <a
+        href={STORYBOOK_URL}
+        target="_blank"
+        rel="noopener noreferrer"
+        aria-label="View Flappy Gouda Storybook"
+      >
         <img
           src="https://img.shields.io/badge/Storybook-live-FF4785?logo=storybook&style=flat-square"
           alt="Storybook"

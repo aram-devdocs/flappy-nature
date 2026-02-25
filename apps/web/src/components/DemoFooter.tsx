@@ -14,6 +14,7 @@ export function DemoFooter() {
       }}
     >
       <div
+        aria-hidden="true"
         style={{
           height: '1px',
           width: '64px',
@@ -34,9 +35,9 @@ export function DemoFooter() {
         <img
           src="/assets/logos/vegan-gouda-leaf.png"
           alt="Vegan Gouda Development"
-          width={28}
-          height={28}
-          style={{ opacity: OPACITY.strong }}
+          width={36}
+          height={36}
+          style={{ mixBlendMode: 'multiply' }}
         />
         <span
           style={{
@@ -64,6 +65,7 @@ export function DemoFooter() {
           href="https://github.com/aram-devdocs"
           target="_blank"
           rel="noopener noreferrer"
+          aria-label="aramhammoudeh on GitHub (opens in new tab)"
           style={{
             color: COLOR_TOKENS.cyan,
             textDecoration: 'underline',
