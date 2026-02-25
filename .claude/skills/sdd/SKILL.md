@@ -20,7 +20,7 @@ Coordinates the four agents (`test-first-implementer`, `implementer`, `code-qual
    - New type definitions -> `@repo/types`
    - New UI elements -> `@repo/ui`
    - New state bridges -> `@repo/hooks`
-   - Composition changes -> `@repo/flappy-nature-game`
+   - Composition changes -> `@repo/flappy-gouda-game`
 3. Determine the order of implementation (types first, then engine, then hooks, then ui, then game).
 4. Present the plan to the user for approval before proceeding.
 

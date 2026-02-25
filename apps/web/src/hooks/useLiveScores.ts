@@ -1,4 +1,4 @@
-import type { DifficultyKey } from '@repo/flappy-nature-game';
+import type { DifficultyKey } from '@repo/flappy-gouda-game';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useLeaderboardService } from '../components/LeaderboardProvider';
 import type { LiveScoreBroadcast } from '../lib/leaderboard/service';

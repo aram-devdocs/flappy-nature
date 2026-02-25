@@ -1,23 +1,23 @@
-/** CSS variable prefix for all Flappy Nature design tokens. */
-export const CSS_VAR_PREFIX = '--fn' as const;
+/** CSS variable prefix for all Flappy Gouda design tokens. */
+export const CSS_VAR_PREFIX = '--fg' as const;
 
 /** Core color palette hex values. */
 export const COLOR_TOKENS = {
-  navy: '#090949',
-  violet: '#6500D9',
-  cyan: '#00D9FF',
-  magenta: '#D76EFF',
-  light: '#FBF6F6',
+  navy: '#0A3D5C',
+  violet: '#5AAFA5',
+  cyan: '#8ED5C5',
+  magenta: '#6BC8AD',
+  light: '#F5FAF8',
   white: '#FFFFFF',
-  midviolet: '#4B00A0',
-  skyBottom: '#F5F0F8',
-  lavender: '#D8DAF5',
+  midviolet: '#1A6B7A',
+  skyBottom: '#E8F5F0',
+  lavender: '#C5E8DC',
 } as const;
 
 /** RGB channel strings for composing rgba() values. */
 export const COLOR_RGB = {
-  navy: '9, 9, 73',
-  violet: '101, 0, 217',
+  navy: '10, 61, 92',
+  violet: '90, 175, 165',
   black: '0, 0, 0',
 } as const;
 

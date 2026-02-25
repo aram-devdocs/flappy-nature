@@ -24,8 +24,6 @@ export type EngineEventName = keyof EngineEvents;
 export interface EngineConfig {
   /** Custom color theme overrides. */
   colors?: Partial<GameColors>;
-  /** Custom banner texts for flying planes. */
-  bannerTexts?: string[];
   /** Custom heading font family. */
   fontFamily?: string;
   /** Initial difficulty level. */

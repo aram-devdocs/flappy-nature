@@ -1,4 +1,4 @@
-import type { BgLayers, BuildingType, Plane } from '@repo/types';
+import type { BgLayers, BuildingType } from '@repo/types';
 import { atIndex } from './assert';
 import { BG, CLOUD_PARAMS, SKYLINE_CITIES } from './config';
 import { maxOf } from './math';
@@ -23,14 +23,6 @@ export function createEmptyLayers(): BgLayers {
     maxRightTrees: 0,
     maxRightGroundDeco: 0,
   };
-}
-
-export function createPlanePool(): Plane[] {
-  const pool: Plane[] = [];
-  for (let i = 0; i < 3; i++) {
-    pool[i] = { x: 0, y: 0, dir: 1, bannerText: '', bannerW: 0, wobble: 0, speed: 0 };
-  }
-  return pool;
 }
 
 export function populateFarClouds(layers: BgLayers, width: number): void {

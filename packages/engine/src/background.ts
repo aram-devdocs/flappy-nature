@@ -1,9 +1,8 @@
-import type { BgLayers, Plane } from '@repo/types';
+import type { BgLayers } from '@repo/types';
 import { atIndex } from './assert';
 import {
   computeMaxRight,
   createEmptyLayers,
-  createPlanePool,
   populateBuildings,
   populateFarClouds,
   populateGroundDeco,
@@ -12,86 +11,43 @@ import {
   populateTrees,
   randomBuildingType,
 } from './background-init';
-import { BG, PLANE_PARAMS, SKYLINE_CITIES } from './config';
-import { poolRemove } from './pool';
+import { BG, SKYLINE_CITIES } from './config';
 
 interface BackgroundDeps {
   width: number;
   height: number;
   groundH: number;
   pipeSpeed: number;
-  bannerTexts: string[];
 }
 
-/** Manages parallax background layers: clouds, skyline, buildings, trees, and planes. */
+/** Manages parallax background layers: clouds, skyline, buildings, and trees. */
 export class BackgroundSystem {
   layers: BgLayers | null = null;
-  planePool: Plane[] = [];
-  planeActiveCount = 0;
-  private nextPlaneTime = 0;
   private deps: BackgroundDeps;
   constructor(deps: BackgroundDeps) {
     this.deps = deps;
   }
 
-  /** Populate all background layers and spawn the first plane. */
+  /** Populate all background layers. */
   init(): void {
     const { width, height, groundH } = this.deps;
     const groundY = height - groundH;
     this.layers = createEmptyLayers();
-    this.planePool = createPlanePool();
-    this.planeActiveCount = 0;
     populateFarClouds(this.layers, width);
     populateSkyline(this.layers, width, groundY);
     populateMidClouds(this.layers, width);
     populateBuildings(this.layers, width, groundY);
     populateTrees(this.layers, width, groundY);
     populateGroundDeco(this.layers, width);
-    this.spawnPlane(performance.now());
     computeMaxRight(this.layers);
   }
 
-  /** Spawn a new banner plane from a random edge at a non-conflicting altitude. */
-  spawnPlane(now: number): void {
-    if (this.planeActiveCount >= this.planePool.length) return;
-    const bannerText =
-      this.deps.bannerTexts[Math.floor(Math.random() * this.deps.bannerTexts.length)] ??
-      'Second Nature';
-    let y: number;
-    let attempts = 0;
-    do {
-      y = PLANE_PARAMS.altMin + Math.random() * (PLANE_PARAMS.altMax - PLANE_PARAMS.altMin);
-      attempts++;
-    } while (attempts < 20 && this.planeAltConflict(y));
-    const goingRight = Math.random() < 0.5;
-    const p = atIndex(this.planePool, this.planeActiveCount++);
-    p.x = goingRight ? -180 : this.deps.width + 180;
-    p.y = y;
-    p.dir = goingRight ? 1 : -1;
-    p.bannerText = bannerText;
-    p.bannerW = bannerText.length * 6.5 + 24;
-    p.wobble = Math.random() * 1000;
-    p.speed = BG.planeSpeed;
-    this.nextPlaneTime =
-      now + PLANE_PARAMS.spawnDelayMin + Math.random() * PLANE_PARAMS.spawnDelayRange;
-  }
-
-  private planeAltConflict(y: number): boolean {
-    for (let i = 0; i < this.planeActiveCount; i++) {
-      if (Math.abs(atIndex(this.planePool, i).y - y) < PLANE_PARAMS.altSep) return true;
-    }
-    return false;
-  }
-
   /** Advance all background layers by one tick. */
-  update(dt: number, now: number, isPlaying: boolean, reducedMotion = false): void {
+  update(dt: number, _now: number, isPlaying: boolean, reducedMotion = false): void {
     if (!this.layers) return;
     const W = this.deps.width;
     const ambientMul = isPlaying ? 1 : reducedMotion ? 0 : 0.35;
     this.updateClouds(ambientMul, dt, W);
-    if (!reducedMotion) {
-      this.updatePlanes(ambientMul, dt, W, now);
-    }
     if (!isPlaying) return;
     this.updateScrollingLayers(dt);
   }
@@ -111,19 +67,6 @@ export class BackgroundSystem {
         c.x = W + 20 + Math.random() * 40;
         c.y = 60 + Math.random() * 100;
       }
-    }
-  }
-
-  private updatePlanes(ambientMul: number, dt: number, W: number, now: number): void {
-    for (let i = this.planeActiveCount - 1; i >= 0; i--) {
-      const p = atIndex(this.planePool, i);
-      p.x += p.dir * p.speed * this.deps.pipeSpeed * dt * ambientMul;
-      if ((p.dir > 0 && p.x > W + 250 + p.bannerW) || (p.dir < 0 && p.x < -250 - p.bannerW)) {
-        this.planeActiveCount = poolRemove(this.planePool, i, this.planeActiveCount);
-      }
-    }
-    if (now > this.nextPlaneTime && this.planeActiveCount < 2) {
-      this.spawnPlane(now);
     }
   }
 

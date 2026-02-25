@@ -264,7 +264,7 @@ describe('persistence', () => {
   });
 
   it('loadDifficulty returns normal for unknown value', () => {
-    localStorage.setItem('sn-flappy-diff', 'invalid');
+    localStorage.setItem('fg-flappy-diff', 'invalid');
     expect(loadDifficulty()).toBe('normal');
   });
 
@@ -356,7 +356,6 @@ describe('BackgroundSystem', () => {
       height: 520,
       groundH: 50,
       pipeSpeed: 2.2,
-      bannerTexts: ['Test'],
     });
     expect(bg).toBeInstanceOf(BackgroundSystem);
     expect(bg.layers).toBeNull();
@@ -368,7 +367,6 @@ describe('BackgroundSystem', () => {
       height: 520,
       groundH: 50,
       pipeSpeed: 2.2,
-      bannerTexts: ['Test'],
     });
     bg.init();
     expect(bg.layers).not.toBeNull();
@@ -384,7 +382,6 @@ describe('BackgroundSystem', () => {
       height: 520,
       groundH: 50,
       pipeSpeed: 2.2,
-      bannerTexts: ['Test'],
     });
     bg.init();
     const skyXBefore = bg.layers?.skyline[0]?.x ?? 0;
@@ -432,7 +429,7 @@ describe('drawBird', () => {
     expect(ctx.restore).toHaveBeenCalled();
   });
 
-  it('draws fallback circle when heartImg is null', () => {
+  it('draws fallback circle when spriteImg is null', () => {
     const ctx = makeCanvasContext();
     drawBird(ctx, 100, 0, 70, 28, null, DEFAULT_COLORS);
     expect(ctx.beginPath).toHaveBeenCalled();

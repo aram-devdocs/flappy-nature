@@ -1,5 +1,5 @@
-import { useGameEngine, useGameInput, useScoreMigration } from '@repo/hooks';
-import type { FlappyNatureGameProps } from '@repo/types';
+import { useGameEngine, useGameInput } from '@repo/hooks';
+import type { FlappyGoudaGameProps } from '@repo/types';
 import {
   DifficultyPicker,
   FpsCounter,
@@ -8,7 +8,6 @@ import {
   GameLayout,
   GameOverScreen,
   NicknameModal,
-  ScoreMigrationModal,
   TitleScreen,
 } from '@repo/ui';
 import { useEffect, useState } from 'react';
@@ -18,9 +17,8 @@ import { useDebugBridge } from './useDebugBridge';
 import { useGameCallbacks } from './useGameCallbacks';
 import { useLeaderboardState } from './useLeaderboardState';
 
-export function FlappyNatureGame({
+export function FlappyGoudaGame({
   colors,
-  bannerTexts,
   fontFamily,
   difficulty: initialDifficulty,
   onStateChange,
@@ -36,7 +34,7 @@ export function FlappyNatureGame({
   leaderboardCallbacks,
   leaderboardExpanded = false,
   nickname,
-}: FlappyNatureGameProps) {
+}: FlappyGoudaGameProps) {
   const {
     canvasRef,
     engineRef,
@@ -54,14 +52,12 @@ export function FlappyNatureGame({
     handleCanvasHover,
   } = useGameEngine({
     colors,
-    bannerTexts,
     fontFamily,
     difficulty: initialDifficulty,
     enableDebug: showDebug,
   });
 
   useDebugBridge(engineRef, engineReady, showDebug, onDebugMetrics, debugControlsRef);
-  const migration = useScoreMigration(bestScores);
   const [pickerOpen, setPickerOpen] = useState(false);
   const lb = useLeaderboardState(state, score, difficulty, nickname, leaderboardCallbacks);
 
@@ -109,7 +105,7 @@ export function FlappyNatureGame({
   });
 
   const currentBest = bestScores[difficulty] ?? 0;
-  const isOverlayVisible = state !== 'play' || pickerOpen || migration.showModal;
+  const isOverlayVisible = state !== 'play' || pickerOpen;
   const hasLeaderboard = !!leaderboard;
   const hasCallbacks = !!leaderboardCallbacks;
 
@@ -132,12 +128,6 @@ export function FlappyNatureGame({
         <FpsCounter fps={fps} visible={showFps} />
         <TitleScreen visible={state === 'idle'} bestScore={currentBest} onPlay={handlePlay} />
         <GameOverScreen visible={state === 'dead'} score={score} bestScore={currentBest} />
-        <ScoreMigrationModal
-          visible={migration.showModal}
-          comparisons={migration.comparisons}
-          onAccept={migration.accept}
-          onDecline={migration.decline}
-        />
         <DifficultyPicker
           currentDifficulty={difficulty}
           bestScores={bestScores}

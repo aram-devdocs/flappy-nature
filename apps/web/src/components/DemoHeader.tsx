@@ -6,7 +6,7 @@ import {
   OPACITY,
   SHADOW,
   SPACING,
-} from '@repo/flappy-nature-game';
+} from '@repo/flappy-gouda-game';
 
 export function DemoHeader() {
   return (
@@ -22,7 +22,7 @@ export function DemoHeader() {
         boxShadow: SHADOW.dropdown,
       }}
     >
-      <img src="/assets/logos/second-nature-white.svg" alt="Second Nature" height={32} />
+      <img src="/assets/logos/vegan-gouda-white.svg" alt="Vegan Gouda" height={32} />
       <div
         style={{
           height: '1px',
@@ -42,7 +42,7 @@ export function DemoHeader() {
           letterSpacing: '0.25em',
         }}
       >
-        Flappy Nature
+        Flappy Gouda
       </span>
     </header>
   );

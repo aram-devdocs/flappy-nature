@@ -52,7 +52,7 @@ jobs:
           mkdir -p _site/storybook
           cp -r apps/web/dist/* _site/
           cp -r packages/ui/storybook-static/* _site/storybook/
-          echo "flappy-nature.aramhammoudeh.com" > _site/CNAME
+          echo "flappy-gouda.aramhammoudeh.com" > _site/CNAME
 
       - uses: actions/configure-pages@v5
 

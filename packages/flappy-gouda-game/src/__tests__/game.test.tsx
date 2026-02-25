@@ -1,6 +1,6 @@
 import { fireEvent, render, screen } from '@testing-library/react';
 import { beforeAll, beforeEach, describe, expect, it, vi } from 'vitest';
-import { FlappyNatureGame } from '../FlappyNatureGame';
+import { FlappyGoudaGame } from '../FlappyGoudaGame';
 import { GameErrorBoundary } from '../GameErrorBoundary';
 
 const mockFlap = vi.fn();
@@ -24,59 +24,53 @@ vi.mock('@repo/hooks', () => ({
     resume: mockResume,
   })),
   useGameInput: vi.fn(),
-  useScoreMigration: vi.fn(() => ({
-    showModal: false,
-    comparisons: [],
-    accept: vi.fn(),
-    decline: vi.fn(),
-  })),
 }));
 
 beforeEach(() => {
   vi.clearAllMocks();
 });
 
-describe('FlappyNatureGame', () => {
+describe('FlappyGoudaGame', () => {
   it('renders without crashing', () => {
-    const { container } = render(<FlappyNatureGame />);
+    const { container } = render(<FlappyGoudaGame />);
     expect(container.firstChild).not.toBeNull();
   });
 
-  it('renders the heart icon in the header', () => {
-    render(<FlappyNatureGame />);
-    expect(screen.getByRole('img', { name: 'Heart icon' })).toBeDefined();
+  it('renders the cheese icon in the header', () => {
+    render(<FlappyGoudaGame />);
+    expect(screen.getByRole('img', { name: 'Cheese icon' })).toBeDefined();
   });
 
   it('renders the canvas element', () => {
-    const { container } = render(<FlappyNatureGame />);
+    const { container } = render(<FlappyGoudaGame />);
     const canvas = container.querySelector('canvas');
     expect(canvas).not.toBeNull();
   });
 
   it('renders within a semantic main element', () => {
-    render(<FlappyNatureGame />);
+    render(<FlappyGoudaGame />);
     expect(screen.getByRole('main')).toBeDefined();
   });
 
   it('renders without a footer', () => {
-    render(<FlappyNatureGame />);
+    render(<FlappyGoudaGame />);
     expect(screen.queryByText(/Made with/)).toBeNull();
   });
 
   it('shows best score when > 0', () => {
-    render(<FlappyNatureGame />);
+    render(<FlappyGoudaGame />);
     expect(screen.getByText('Best: 10')).toBeDefined();
   });
 
   it('opens difficulty picker when badge is clicked', () => {
-    render(<FlappyNatureGame />);
+    render(<FlappyGoudaGame />);
     fireEvent.click(screen.getByRole('button', { name: /Difficulty/ }));
     expect(mockPause).toHaveBeenCalledOnce();
     expect(screen.getByLabelText('Select difficulty')).toBeDefined();
   });
 
   it('closes picker and resumes when badge clicked again', () => {
-    render(<FlappyNatureGame />);
+    render(<FlappyGoudaGame />);
     // Open picker
     fireEvent.click(screen.getByRole('button', { name: /Difficulty/ }));
     // Click badge again to close
@@ -85,7 +79,7 @@ describe('FlappyNatureGame', () => {
   });
 
   it('selects difficulty and closes picker', () => {
-    render(<FlappyNatureGame />);
+    render(<FlappyGoudaGame />);
     // Open picker
     fireEvent.click(screen.getByRole('button', { name: /Difficulty/ }));
     // Select "Easy"
@@ -94,7 +88,7 @@ describe('FlappyNatureGame', () => {
   });
 
   it('closes picker on backdrop click and resumes', () => {
-    render(<FlappyNatureGame />);
+    render(<FlappyGoudaGame />);
     // Open picker
     fireEvent.click(screen.getByRole('button', { name: /Difficulty/ }));
     // Click backdrop
@@ -104,19 +98,19 @@ describe('FlappyNatureGame', () => {
 
   it('calls onStateChange with current state', () => {
     const onStateChange = vi.fn();
-    render(<FlappyNatureGame onStateChange={onStateChange} />);
+    render(<FlappyGoudaGame onStateChange={onStateChange} />);
     expect(onStateChange).toHaveBeenCalledWith('play');
   });
 
   it('calls onScoreChange with current score', () => {
     const onScoreChange = vi.fn();
-    render(<FlappyNatureGame onScoreChange={onScoreChange} />);
+    render(<FlappyGoudaGame onScoreChange={onScoreChange} />);
     expect(onScoreChange).toHaveBeenCalledWith(5);
   });
 
   it('calls onBestScoreChange with current bestScores', () => {
     const onBestScoreChange = vi.fn();
-    render(<FlappyNatureGame onBestScoreChange={onBestScoreChange} />);
+    render(<FlappyGoudaGame onBestScoreChange={onBestScoreChange} />);
     expect(onBestScoreChange).toHaveBeenCalledWith({ easy: 3, normal: 10, hard: 0 });
   });
 });

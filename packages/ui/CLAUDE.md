@@ -6,7 +6,7 @@ This package contains all React presentational components. Every component here 
 
 - Components MUST be stateless. No `useState`, `useEffect`, `useRef`, `useMemo`, `useCallback`, `useContext`, or any React hook.
 - The only allowed `@repo/*` dependency is `@repo/types`.
-- MUST NOT import from `@repo/hooks`, `@repo/engine`, or `@repo/flappy-nature-game`.
+- MUST NOT import from `@repo/hooks`, `@repo/engine`, or `@repo/flappy-gouda-game`.
 - Every component MUST work in Storybook with just props -- no providers, no context, no side effects.
 - Files MUST NOT exceed 200 lines.
 

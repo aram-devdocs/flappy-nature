@@ -9,7 +9,7 @@ import {
   Z_INDEX,
   cssVar,
 } from '@repo/types';
-import { HeartIcon } from '../atoms/HeartIcon';
+import { CheeseIcon } from '../atoms/CheeseIcon';
 
 /** Props for {@link TitleScreen}. */
 interface TitleScreenProps {
@@ -57,7 +57,7 @@ export function TitleScreen({ visible, bestScore, onPlay }: TitleScreenProps) {
         }}
       >
         <div style={{ fontSize: FONT_SIZE['6xl'], marginBottom: SPACING[3] }}>
-          <HeartIcon />
+          <CheeseIcon />
         </div>
         <p
           style={{

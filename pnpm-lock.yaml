@@ -32,9 +32,9 @@ importers:
 
   apps/web:
     dependencies:
-      '@repo/flappy-nature-game':
+      '@repo/flappy-gouda-game':
         specifier: workspace:*
-        version: link:../../packages/flappy-nature-game
+        version: link:../../packages/flappy-gouda-game
       '@supabase/supabase-js':
         specifier: ^2.97.0
         version: 2.97.0
@@ -91,7 +91,7 @@ importers:
         specifier: ^3.0.0
         version: 3.2.4(@types/node@25.3.0)(jsdom@26.1.0)(tsx@4.21.0)(yaml@2.8.2)
 
-  packages/flappy-nature-game:
+  packages/flappy-gouda-game:
     dependencies:
       '@repo/engine':
         specifier: workspace:*

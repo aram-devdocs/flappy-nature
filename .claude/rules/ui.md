@@ -9,12 +9,12 @@ Violations to check:
 - Any React hook call (`use*`) inside a component in `packages/ui/src/`.
 - `import ... from '@repo/hooks'` in any file under `packages/ui/`.
 - `import ... from '@repo/engine'` in any file under `packages/ui/`.
-- `import ... from '@repo/flappy-nature-game'` in any file under `packages/ui/`.
+- `import ... from '@repo/flappy-gouda-game'` in any file under `packages/ui/`.
 - Side effects in the component body (subscriptions, timers, direct DOM manipulation).
 
 The only allowed `@repo/*` import is `@repo/types` (for shared type definitions).
 
 When you encounter a situation where a UI component seems to need state or engine access, the correct solution is:
 1. The state SHOULD live in a hook in `@repo/hooks`.
-2. The wiring SHOULD happen in `@repo/flappy-nature-game`.
+2. The wiring SHOULD happen in `@repo/flappy-gouda-game`.
 3. The UI component receives the already-computed value as a prop.

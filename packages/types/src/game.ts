@@ -89,8 +89,6 @@ export interface BackgroundConfig {
   midSpeed: number;
   /** Scroll speed multiplier for the near/tree layer. */
   nearSpeed: number;
-  /** Scroll speed multiplier for banner planes. */
-  planeSpeed: number;
   /** Width of a single skyline segment in pixels. */
   skylineSegW: number;
   /** Minimum building width in pixels. */
@@ -107,10 +105,6 @@ export interface BackgroundConfig {
   buildingAlpha: number;
   /** Draw opacity for near-ground trees. */
   treeAlpha: number;
-  /** Draw opacity for the plane body. */
-  planeAlpha: number;
-  /** Draw opacity for the plane banner text. */
-  bannerAlpha: number;
   /** Draw opacity for far-layer clouds. */
   cloudFarAlpha: number;
   /** Draw opacity for mid-layer clouds. */

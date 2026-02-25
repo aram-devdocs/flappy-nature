@@ -1,5 +1,5 @@
 {
-  "name": "flappy-nature",
+  "name": "flappy-gouda",
   "private": true,
   "scripts": {
     "dev": "bash scripts/supabase-dev.sh; turbo dev",

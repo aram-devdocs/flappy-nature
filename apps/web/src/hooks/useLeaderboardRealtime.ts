@@ -1,4 +1,4 @@
-import type { DifficultyKey, LeaderboardConnectionStatus } from '@repo/flappy-nature-game';
+import type { DifficultyKey, LeaderboardConnectionStatus } from '@repo/flappy-gouda-game';
 import { useQueryClient } from '@tanstack/react-query';
 import { useEffect, useState } from 'react';
 import { useLeaderboardService } from '../components/LeaderboardProvider';

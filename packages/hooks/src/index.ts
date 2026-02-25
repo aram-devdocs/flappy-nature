@@ -2,8 +2,6 @@ export { useGameEngine } from './useGameEngine';
 export type { UseGameEngineReturn } from './useGameEngine';
 export { useGameInput } from './useGameInput';
 export { useLocalStorage } from './useLocalStorage';
-export { useScoreMigration } from './useScoreMigration';
-export type { UseScoreMigrationReturn } from './useScoreMigration';
 export { useNickname } from './useNickname';
 export type { UseNicknameReturn } from './useNickname';
 export { useDebugMetrics } from './useDebugMetrics';

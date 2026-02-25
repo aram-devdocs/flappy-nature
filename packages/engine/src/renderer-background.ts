@@ -1,7 +1,5 @@
-import type { Building, Cloud, GameColors, Plane, SkylineSegment, Tree } from '@repo/types';
-import type { CachedFonts } from './cache';
-import { BG } from './config';
-import { TAU, roundRectPath } from './math';
+import type { Building, Cloud, GameColors, SkylineSegment, Tree } from '@repo/types';
+import { TAU } from './math';
 
 /** Draw all clouds from their pre-rendered offscreen canvases. */
 export function drawCloudsPrerendered(ctx: CanvasRenderingContext2D, cloudArr: Cloud[]): void {
@@ -41,80 +39,6 @@ export function drawSkylineSegment(ctx: CanvasRenderingContext2D, seg: SkylineSe
       ctx.fillRect(cacX + 4, cacY - 11, 3, -5);
     }
   }
-}
-
-/** Draw a small plane with trailing banner text, applying a vertical wobble animation. */
-export function drawPlane(
-  ctx: CanvasRenderingContext2D,
-  p: Plane,
-  globalTime: number,
-  colors: GameColors,
-  fonts: CachedFonts,
-): void {
-  const wobbleY = Math.sin(globalTime * 0.0015 + p.wobble) * 3;
-  const py = p.y + wobbleY;
-  const dir = p.dir;
-  const px = p.x;
-
-  const tailX = px - 12 * dir;
-  const ropeLen = 18;
-  const bannerX = tailX - ropeLen * dir;
-  const bw = p.bannerW;
-  const bh = 16;
-  const bLeft = dir > 0 ? bannerX - bw : bannerX;
-  const bTop = py - bh / 2;
-
-  ctx.strokeStyle = colors.navy;
-  ctx.lineWidth = 0.8;
-  ctx.globalAlpha = BG.bannerAlpha * 0.6;
-  ctx.beginPath();
-  ctx.moveTo(tailX, py);
-  ctx.lineTo(dir > 0 ? bLeft + bw : bLeft, py);
-  ctx.stroke();
-
-  ctx.globalAlpha = BG.bannerAlpha;
-  ctx.fillStyle = colors.magenta;
-  roundRectPath(ctx, bLeft, bTop, bw, bh, 3);
-  ctx.fill();
-
-  ctx.globalAlpha = BG.bannerAlpha + 0.15;
-  ctx.fillStyle = colors.white;
-  ctx.font = fonts.banner;
-  ctx.textAlign = 'center';
-  ctx.textBaseline = 'middle';
-  ctx.fillText(p.bannerText, bLeft + bw / 2, bTop + bh / 2 + 0.5);
-
-  ctx.globalAlpha = BG.planeAlpha;
-  ctx.fillStyle = colors.navy;
-
-  ctx.beginPath();
-  ctx.ellipse(px, py, 12, 4, 0, 0, TAU);
-  ctx.fill();
-
-  ctx.beginPath();
-  ctx.moveTo(px + 12 * dir, py);
-  ctx.lineTo(px + 17 * dir, py - 1.5);
-  ctx.lineTo(px + 17 * dir, py + 1.5);
-  ctx.closePath();
-  ctx.fill();
-
-  ctx.beginPath();
-  ctx.moveTo(px + 3 * dir, py);
-  ctx.lineTo(px - 4 * dir, py - 9);
-  ctx.lineTo(px - 8 * dir, py - 8);
-  ctx.lineTo(px - 2 * dir, py);
-  ctx.closePath();
-  ctx.fill();
-
-  ctx.beginPath();
-  ctx.moveTo(px - 10 * dir, py - 1);
-  ctx.lineTo(px - 14 * dir, py - 7);
-  ctx.lineTo(px - 12 * dir, py);
-  ctx.closePath();
-  ctx.fill();
-
-  ctx.globalAlpha = 1;
-  ctx.textBaseline = 'alphabetic';
 }
 
 /** Draw a foreground building (house, apartment, or office) at its position. */

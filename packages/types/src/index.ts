@@ -14,7 +14,6 @@ export { DIFF_KEYS, DIFF_LABELS } from './game';
 export type {
   Bird,
   Pipe,
-  Plane,
   Cloud,
   SkylineCity,
   SkylineBuilding,
@@ -29,7 +28,7 @@ export type {
 
 export type { EngineEvents, EngineEventName, EngineConfig } from './engine';
 
-export type { FlappyNatureGameProps } from './props';
+export type { FlappyGoudaGameProps } from './props';
 
 export type {
   DebugFrameSnapshot,
@@ -56,8 +55,6 @@ export type {
 } from './leaderboard';
 
 export { NICKNAME_LENGTH, NICKNAME_PATTERN } from './leaderboard';
-
-export type { ScoreComparison } from './migration';
 
 export {
   DESIGN_TOKENS,

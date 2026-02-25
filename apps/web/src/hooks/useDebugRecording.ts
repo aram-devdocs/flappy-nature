@@ -1,4 +1,4 @@
-import type { DebugControls, DebugRecording } from '@repo/flappy-nature-game';
+import type { DebugControls, DebugRecording } from '@repo/flappy-gouda-game';
 import { useCallback, useRef, useState } from 'react';
 
 /** Manages debug recording lifecycle (start / stop / export). */

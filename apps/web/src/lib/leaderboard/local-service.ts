@@ -1,11 +1,7 @@
-import type {
-  DifficultyKey,
-  LeaderboardEntry,
-  NicknameCheckResult,
-} from '@repo/flappy-nature-game';
+import type { DifficultyKey, LeaderboardEntry, NicknameCheckResult } from '@repo/flappy-gouda-game';
 import type { LeaderboardService } from './service';
 
-const STORAGE_KEY = 'sn-flappy-leaderboard';
+const STORAGE_KEY = 'fg-flappy-leaderboard';
 
 interface StoredScore {
   nickname: string;
@@ -53,7 +49,7 @@ export class LocalLeaderboardService implements LeaderboardService {
   }
 
   async submitScore(score: number, difficulty: DifficultyKey): Promise<LeaderboardEntry> {
-    const raw = localStorage.getItem('sn-flappy-nickname');
+    const raw = localStorage.getItem('fg-flappy-nickname');
     const nickname = raw ? (JSON.parse(raw) as string) : 'AAA';
 
     const scores = readScores();
@@ -98,7 +94,7 @@ export class LocalLeaderboardService implements LeaderboardService {
 
   async getNickname(): Promise<string | null> {
     try {
-      const raw = localStorage.getItem('sn-flappy-nickname');
+      const raw = localStorage.getItem('fg-flappy-nickname');
       return raw ? (JSON.parse(raw) as string) : null;
     } catch {
       return null;

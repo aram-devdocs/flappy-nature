@@ -6,7 +6,7 @@ on:
   workflow_dispatch:
     inputs:
       tag_name:
-        description: "Tag to publish (e.g., flappy-nature-game-v0.2.1)"
+        description: "Tag to publish (e.g., flappy-gouda-game-v0.2.1)"
         required: true
 
 permissions:
@@ -23,9 +23,9 @@ jobs:
     if: github.event_name == 'push'
     runs-on: ubuntu-latest
     outputs:
-      release_created: ${{ steps.release.outputs['flappy-nature-game--release_created'] || steps.check-release.outputs.release_created }}
-      tag_name: ${{ steps.release.outputs['flappy-nature-game--tag_name'] || steps.check-release.outputs.tag_name }}
-      version: ${{ steps.release.outputs['flappy-nature-game--version'] || steps.check-release.outputs.version }}
+      release_created: ${{ steps.release.outputs['flappy-gouda-game--release_created'] || steps.check-release.outputs.release_created }}
+      tag_name: ${{ steps.release.outputs['flappy-gouda-game--tag_name'] || steps.check-release.outputs.tag_name }}
+      version: ${{ steps.release.outputs['flappy-gouda-game--version'] || steps.check-release.outputs.version }}
       prs_created: ${{ steps.release.outputs.prs_created }}
     steps:
       - uses: googleapis/release-please-action@v4
@@ -36,7 +36,7 @@ jobs:
           token: ${{ secrets.RELEASE_PAT }}
       - name: Check if release was created
         id: check-release
-        if: steps.release.outputs['flappy-nature-game--release_created'] != 'true'
+        if: steps.release.outputs['flappy-gouda-game--release_created'] != 'true'
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
@@ -56,8 +56,8 @@ jobs:
             echo "No releases found"
             exit 0
           fi
-          # Extract version from tag (flappy-nature-game-v0.2.1 -> 0.2.1)
-          VERSION=$(echo "$LATEST_TAG" | sed 's/flappy-nature-game-v//')
+          # Extract version from tag (flappy-gouda-game-v0.2.1 -> 0.2.1)
+          VERSION=$(echo "$LATEST_TAG" | sed 's/flappy-gouda-game-v//')
           echo "Found release: $LATEST_TAG (v$VERSION)"
           echo "release_created=true" >> "$GITHUB_OUTPUT"
           echo "tag_name=$LATEST_TAG" >> "$GITHUB_OUTPUT"
@@ -72,7 +72,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          ref: release-please--branches--main--components--flappy-nature-game
+          ref: release-please--branches--main--components--flappy-gouda-game
       - uses: pnpm/action-setup@v4
         with:
           standalone: true
@@ -102,7 +102,7 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          PR_BRANCH="release-please--branches--main--components--flappy-nature-game"
+          PR_BRANCH="release-please--branches--main--components--flappy-gouda-game"
           PR_NUMBER=$(gh pr list --head "$PR_BRANCH" --json number --jq '.[0].number' --repo "${{ github.repository }}")
           if [ -n "$PR_NUMBER" ]; then
             gh pr merge "$PR_NUMBER" --auto --squash --repo "${{ github.repository }}"
@@ -130,7 +130,7 @@ jobs:
       - run: pnpm build
       - name: Verify bundle integrity
         run: |
-          for f in packages/flappy-nature-game/dist/index.js packages/flappy-nature-game/dist/index.cjs; do
+          for f in packages/flappy-gouda-game/dist/index.js packages/flappy-gouda-game/dist/index.cjs; do
             if grep -q '@repo/' "$f"; then
               echo "ERROR: Found @repo/ references in $f"
               grep '@repo/' "$f"
@@ -139,13 +139,13 @@ jobs:
           done
           echo "Bundle integrity check passed"
       - name: Prepare package for publishing
-        working-directory: packages/flappy-nature-game
+        working-directory: packages/flappy-gouda-game
         run: |
           cp ../../LICENSE ./LICENSE
 
           node -e "
             const pkg = require('./package.json');
-            pkg.name = 'flappy-nature-game';
+            pkg.name = 'flappy-gouda-game';
             delete pkg.devDependencies;
             if (pkg.dependencies) {
               for (const [k, v] of Object.entries(pkg.dependencies)) {
@@ -185,7 +185,7 @@ jobs:
           node-version-file: .nvmrc
           registry-url: https://registry.npmjs.org
       - name: Publish to npm
-        working-directory: packages/flappy-nature-game
+        working-directory: packages/flappy-gouda-game
         run: npm publish --provenance --access public
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}

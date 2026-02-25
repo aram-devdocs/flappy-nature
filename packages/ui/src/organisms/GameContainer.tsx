@@ -25,13 +25,13 @@ export function GameContainer({ colors, className, children }: GameContainerProp
         borderRadius: RADIUS.xl,
         overflow: 'hidden',
         // CSS custom properties for sub-components
-        ['--fn-navy' as string]: merged.navy,
-        ['--fn-violet' as string]: merged.violet,
-        ['--fn-cyan' as string]: merged.cyan,
-        ['--fn-magenta' as string]: merged.magenta,
-        ['--fn-light' as string]: merged.light,
-        ['--fn-white' as string]: merged.white,
-        ['--fn-midviolet' as string]: merged.midviolet,
+        ['--fg-navy' as string]: merged.navy,
+        ['--fg-violet' as string]: merged.violet,
+        ['--fg-cyan' as string]: merged.cyan,
+        ['--fg-magenta' as string]: merged.magenta,
+        ['--fg-light' as string]: merged.light,
+        ['--fg-white' as string]: merged.white,
+        ['--fg-midviolet' as string]: merged.midviolet,
       }}
     >
       {children}

@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState } from 'react';
 
-const NICKNAME_KEY = 'sn-flappy-nickname';
+const NICKNAME_KEY = 'fg-flappy-nickname';
 
 /** Return value of the useNickname hook. */
 export interface UseNicknameReturn {

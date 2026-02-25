@@ -12,8 +12,8 @@ const ALLOWED_DEPS: Record<string, string[]> = {
   '@repo/engine': ['@repo/types'],
   '@repo/ui': ['@repo/types'],
   '@repo/hooks': ['@repo/engine', '@repo/types'],
-  '@repo/flappy-nature-game': ['@repo/ui', '@repo/hooks', '@repo/engine', '@repo/types'],
-  '@repo/web': ['@repo/flappy-nature-game'],
+  '@repo/flappy-gouda-game': ['@repo/ui', '@repo/hooks', '@repo/engine', '@repo/types'],
+  '@repo/web': ['@repo/flappy-gouda-game'],
 };
 
 const NO_REACT_PACKAGES = ['@repo/types', '@repo/engine', '@repo/config'];

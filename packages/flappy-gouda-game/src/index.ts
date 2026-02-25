@@ -1,4 +1,4 @@
-export { FlappyNatureGame } from './FlappyNatureGame';
+export { FlappyGoudaGame } from './FlappyGoudaGame';
 export { CanvasStage } from './CanvasStage';
 
 // Re-export GamePage so apps/web can use it without violating dependency rules
@@ -39,7 +39,7 @@ export {
 
 // Re-export types for consumer convenience
 export type {
-  FlappyNatureGameProps,
+  FlappyGoudaGameProps,
   GameState,
   DifficultyKey,
   BestScores,

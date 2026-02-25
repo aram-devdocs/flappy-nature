@@ -51,7 +51,6 @@ function makeSnapshot(overrides: Partial<DebugMetricsSnapshot> = {}): DebugMetri
       buildings: 6,
       trees: 8,
       groundDeco: 10,
-      planes: 1,
     },
     systemInfo: {
       userAgent: 'test',

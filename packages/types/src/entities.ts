@@ -18,24 +18,6 @@ export interface Pipe {
   scored: boolean;
 }
 
-/** A banner plane that flies across the sky carrying text. */
-export interface Plane {
-  /** Horizontal position. */
-  x: number;
-  /** Vertical position (altitude). */
-  y: number;
-  /** Travel direction: 1 = right, -1 = left. */
-  dir: number;
-  /** Text displayed on the trailing banner. */
-  bannerText: string;
-  /** Computed pixel width of the banner. */
-  bannerW: number;
-  /** Phase offset for vertical wobble animation. */
-  wobble: number;
-  /** Horizontal speed multiplier. */
-  speed: number;
-}
-
 /** An ambient cloud with optional pre-rendered canvas cache. */
 export interface Cloud {
   /** Horizontal position. */

@@ -185,7 +185,7 @@ jobs:
             has_hooks_changes="true"
           fi
 
-          if echo "$CHANGED_FILES" | grep -q "packages/flappy-nature-game/"; then
+          if echo "$CHANGED_FILES" | grep -q "packages/flappy-gouda-game/"; then
             has_game_changes="true"
           fi
 
@@ -221,7 +221,7 @@ jobs:
           BASE_PROMPT="REPO: ${{ github.repository }}
           PR NUMBER: $PR_NUMBER
 
-          You are performing a structured code review for the Flappy Nature monorepo. Follow these 7 phases in order.
+          You are performing a structured code review for the Flappy Gouda monorepo. Follow these 7 phases in order.
 
           ## Phase 1: Context Gathering
 
@@ -239,15 +239,15 @@ jobs:
           - @repo/engine: imports @repo/types only. MUST NOT import react or react-dom.
           - @repo/ui: imports @repo/types only. MUST be stateless (no hooks).
           - @repo/hooks: imports @repo/engine and @repo/types only.
-          - @repo/flappy-nature-game: imports @repo/engine, @repo/hooks, @repo/ui, @repo/types.
-          - @repo/web: imports @repo/flappy-nature-game only.
+          - @repo/flappy-gouda-game: imports @repo/engine, @repo/hooks, @repo/ui, @repo/types.
+          - @repo/web: imports @repo/flappy-gouda-game only.
 
           Flag as BLOCKER:
           - Any import that violates the dependency DAG above
           - React or react-dom imports in @repo/engine or @repo/types
           - useState/useEffect/any hook call in @repo/ui components
           - Business logic (physics, scoring, collision) outside @repo/engine
-          - @repo/web importing anything other than @repo/flappy-nature-game
+          - @repo/web importing anything other than @repo/flappy-gouda-game
 
           ## Phase 3: Anti-Pattern Scan
 
@@ -382,7 +382,7 @@ jobs:
 
           HOOKS CHANGE CONTEXT:
           - Read .claude/rules/hooks.md for hook constraints
-          - Verify NO imports from @repo/ui or @repo/flappy-nature-game
+          - Verify NO imports from @repo/ui or @repo/flappy-gouda-game
           - Verify all useEffect subscriptions have cleanup functions
           - Verify NO business logic (physics, scoring, collision)"
           fi

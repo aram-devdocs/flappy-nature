@@ -1,4 +1,4 @@
-`@repo/flappy-nature-game` is the orchestration layer. It composes engine + hooks + ui into the public `<FlappyNatureGame />` component.
+`@repo/flappy-gouda-game` is the orchestration layer. It composes engine + hooks + ui into the public `<FlappyGoudaGame />` component.
 
 This package MUST NOT contain business logic (scoring, physics, collision detection). That belongs in `@repo/engine`.
 

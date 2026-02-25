@@ -17,7 +17,7 @@
 - [ ] `@repo/engine`
 - [ ] `@repo/ui`
 - [ ] `@repo/hooks`
-- [ ] `@repo/flappy-nature-game`
+- [ ] `@repo/flappy-gouda-game`
 - [ ] `@repo/web`
 - [ ] `supabase/` (migrations, functions)
 - [ ] Leaderboard service layer
@@ -43,7 +43,7 @@
 - [ ] All source files under 200 lines
 - [ ] No Supabase imports in packages/ (only in apps/web)
 - [ ] Leaderboard types are backend-agnostic
-- [ ] FlappyNatureGame works without leaderboard props
+- [ ] FlappyGoudaGame works without leaderboard props
 
 ## Breaking Changes
 <!-- If "Breaking change" checked above, describe migration steps. Otherwise write "None." -->

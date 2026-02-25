@@ -1,12 +1,10 @@
 import type { Cloud, GameColors, Pipe } from '@repo/types';
-import { atIndex } from './assert';
 import type { BackgroundSystem } from './background';
 import type { CachedFonts } from './cache';
 import { BG } from './config';
 import {
   drawBuilding,
   drawCloudsPrerendered,
-  drawPlane,
   drawSkylineSegment,
   drawTree,
 } from './renderer-background';
@@ -39,7 +37,7 @@ export class Renderer {
   private dpr: number;
   private grads: GradientCache = { skyGrad: null, accentGrad: null, pipeGrad: null };
   private pipeLip: PipeLipCache = { canvas: null, logW: 0, logH: 0 };
-  heartImg: HTMLImageElement | null = null;
+  spriteImg: HTMLImageElement | null = null;
 
   constructor(
     ctx: CanvasRenderingContext2D,
@@ -59,7 +57,7 @@ export class Renderer {
   dispose(): void {
     this.grads = { skyGrad: null, accentGrad: null, pipeGrad: null };
     this.pipeLip = { canvas: null, logW: 0, logH: 0 };
-    this.heartImg = null;
+    this.spriteImg = null;
   }
 
   /** Create and cache all canvas gradients and the pipe lip sprite. */
@@ -88,8 +86,8 @@ export class Renderer {
     drawSky(this.ctx, this.deps.width, this.deps.height, this.grads.skyGrad);
   }
 
-  /** Draw all parallax background layers (clouds, skyline, buildings, trees, planes). */
-  drawBackground(bg: BackgroundSystem, globalTime: number): void {
+  /** Draw all parallax background layers (clouds, skyline, buildings, trees). */
+  drawBackground(bg: BackgroundSystem, _globalTime: number): void {
     if (!bg.layers) return;
     const ctx = this.ctx;
 
@@ -105,10 +103,6 @@ export class Renderer {
 
     ctx.globalAlpha = BG.cloudMidAlpha;
     drawCloudsPrerendered(ctx, bg.layers.midClouds);
-
-    for (let i = 0; i < bg.planeActiveCount; i++) {
-      drawPlane(ctx, atIndex(bg.planePool, i), globalTime, this.colors, this.fonts);
-    }
 
     ctx.globalAlpha = BG.buildingAlpha;
     const groundY = this.deps.height - this.deps.groundH;
@@ -159,7 +153,7 @@ export class Renderer {
   }
 
   drawBird(y: number, rot: number): void {
-    drawBird(this.ctx, y, rot, this.deps.birdX, this.deps.birdSize, this.heartImg, this.colors);
+    drawBird(this.ctx, y, rot, this.deps.birdX, this.deps.birdSize, this.spriteImg, this.colors);
   }
 
   drawScore(score: number): void {

@@ -54,7 +54,7 @@ if (violations.length > 0) {
     console.error(`  - ${v.file}:${v.line} -- hook call found: ${v.hook}`);
   }
   console.error(
-    '\nUI components must be stateless. Move state into @repo/hooks and wire via @repo/flappy-nature-game.',
+    '\nUI components must be stateless. Move state into @repo/hooks and wire via @repo/flappy-gouda-game.',
   );
   process.exit(2);
 } else {

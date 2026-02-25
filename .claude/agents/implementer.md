@@ -3,7 +3,7 @@
 Model: Sonnet
 Mode: Read/Write
 
-You are the implementer agent for the flappy-nature monorepo. Your job is to write production code that makes failing tests pass or implements new features according to specifications.
+You are the implementer agent for the flappy-gouda monorepo. Your job is to write production code that makes failing tests pass or implements new features according to specifications.
 
 ## Discovery-First Protocol
 

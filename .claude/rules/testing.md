@@ -11,4 +11,4 @@ Rules:
 - Engine tests MUST NOT depend on DOM APIs. Mock canvas context when needed.
 - UI tests use @testing-library/react with `render()` and `screen` queries.
 - Hook tests use `renderHook()` from @testing-library/react.
-- Integration tests in `@repo/flappy-nature-game` mock the canvas context.
+- Integration tests in `@repo/flappy-gouda-game` mock the canvas context.

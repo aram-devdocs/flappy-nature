@@ -133,7 +133,6 @@ export function DebugBottomSheet({ visible, metrics, isRecording }: DebugBottomS
           <Stat label="skyline" value={ec.skylineSegments} />
           <Stat label="bldg" value={ec.buildings} />
           <Stat label="trees" value={ec.trees} />
-          <Stat label="planes" value={ec.planes} />
         </div>
       </div>
     </div>

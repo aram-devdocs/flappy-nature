@@ -62,7 +62,6 @@ export const BG: BackgroundConfig = {
   farSpeed: 0.08,
   midSpeed: 0.18,
   nearSpeed: 0.35,
-  planeSpeed: 0.6,
   skylineSegW: 120,
   buildingMinW: 25,
   buildingMaxW: 50,
@@ -71,8 +70,6 @@ export const BG: BackgroundConfig = {
   skylineAlpha: 0.06,
   buildingAlpha: 0.07,
   treeAlpha: 0.06,
-  planeAlpha: 0.18,
-  bannerAlpha: 0.3,
   cloudFarAlpha: 0.06,
   cloudMidAlpha: 0.1,
 };
@@ -99,15 +96,6 @@ export const PIPE_LIP = {
   extraW: 8,
   height: 20,
   radius: 8,
-} as const;
-
-/** Plane spawn altitude and timing parameters. */
-export const PLANE_PARAMS = {
-  altMin: 12,
-  altMax: 160,
-  altSep: 45,
-  spawnDelayMin: 8000,
-  spawnDelayRange: 15000,
 } as const;
 
 /** Maximum number of pipe pairs in the object pool. */

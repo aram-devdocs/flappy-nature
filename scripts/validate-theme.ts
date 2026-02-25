@@ -37,7 +37,7 @@ function checkFile(filePath: string, rel: string): void {
   const lines = content.split('\n');
   for (let i = 0; i < lines.length; i++) {
     const line = lines[i] ?? '';
-    // Skip lines that are CSS var fallbacks -- var(--fn-*, #xxx)
+    // Skip lines that are CSS var fallbacks -- var(--fg-*, #xxx)
     const withoutFallbacks = line.replace(CSS_VAR_FALLBACK, '');
     // Skip comment lines
     if (

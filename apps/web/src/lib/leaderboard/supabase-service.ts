@@ -1,8 +1,4 @@
-import type {
-  DifficultyKey,
-  LeaderboardEntry,
-  NicknameCheckResult,
-} from '@repo/flappy-nature-game';
+import type { DifficultyKey, LeaderboardEntry, NicknameCheckResult } from '@repo/flappy-gouda-game';
 import type { RealtimeChannel } from '@supabase/supabase-js';
 import { supabase } from '../supabase/client';
 import { isProfane } from './profanity';
@@ -95,7 +91,7 @@ export class SupabaseLeaderboardService implements LeaderboardService {
       .maybeSingle();
 
     if (!profile) {
-      const raw = localStorage.getItem('sn-flappy-nickname');
+      const raw = localStorage.getItem('fg-flappy-nickname');
       const nickname = raw ? (JSON.parse(raw) as string) : null;
       if (!nickname) throw new Error('No nickname set');
       await supabase.from('profiles').upsert({ id: userId, nickname }, { onConflict: 'id' });

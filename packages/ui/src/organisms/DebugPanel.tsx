@@ -133,7 +133,6 @@ export function DebugPanel({
           <Stat label="bldg" value={ec.buildings} />
           <Stat label="trees" value={ec.trees} />
           <Stat label="deco" value={ec.groundDeco} />
-          <Stat label="planes" value={ec.planes} />
         </div>
       </div>
 

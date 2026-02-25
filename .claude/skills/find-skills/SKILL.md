@@ -45,7 +45,7 @@ CLAUDE.md                           Root monorepo guide
 packages/engine/CLAUDE.md           Engine package constraints
 packages/ui/CLAUDE.md               UI package constraints
 packages/hooks/CLAUDE.md            Hooks package constraints
-packages/flappy-nature-game/CLAUDE.md  Game orchestration guide
+packages/flappy-gouda-game/CLAUDE.md  Game orchestration guide
 ```
 
 If the user provides a filter keyword (e.g., `/find-skills tdd`), only show items whose name or description matches the keyword.

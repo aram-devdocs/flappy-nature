@@ -30,7 +30,6 @@ function makeMetrics(overrides: Partial<DebugMetricsSnapshot> = {}): DebugMetric
       buildings: 6,
       trees: 8,
       groundDeco: 10,
-      planes: 1,
     },
     systemInfo: {
       userAgent: 'test',

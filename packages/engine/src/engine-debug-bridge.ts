@@ -31,7 +31,6 @@ export function recordDebugFrame(
     buildings: layers?.buildings.length ?? 0,
     trees: layers?.trees.length ?? 0,
     groundDeco: layers?.groundDeco.length ?? 0,
-    planes: bg.planeActiveCount,
   });
 }
 
