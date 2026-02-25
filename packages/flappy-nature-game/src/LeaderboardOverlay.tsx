@@ -1,31 +1,20 @@
-import type { DifficultyKey, LeaderboardData } from '@repo/types';
-import { LeaderboardPanel, LeaderboardTab } from '@repo/ui';
-import type { LeaderboardState } from './useLeaderboardState.js';
+import type { GameState, LeaderboardData } from '@repo/types';
+import { LeaderboardMiniOverlay } from '@repo/ui';
 
 interface LeaderboardOverlayProps {
   leaderboard: LeaderboardData;
-  lb: LeaderboardState;
-  difficulty: DifficultyKey;
+  gameState: GameState;
 }
 
-/** Renders the leaderboard tab and panel overlay. */
-export function LeaderboardOverlay({ leaderboard, lb, difficulty }: LeaderboardOverlayProps) {
+/** Renders the compact top-3 mini overlay during active gameplay. */
+export function LeaderboardOverlay({ leaderboard, gameState }: LeaderboardOverlayProps) {
+  const top3 = leaderboard.entries.slice(0, 3);
+
   return (
-    <>
-      <LeaderboardTab
-        visible
-        expanded={lb.leaderboardOpen}
-        onClick={lb.toggleLeaderboard}
-        connectionStatus={leaderboard.connectionStatus}
-      />
-      <LeaderboardPanel
-        visible={lb.leaderboardOpen}
-        entries={leaderboard.entries}
-        playerEntry={leaderboard.playerEntry}
-        isLoading={leaderboard.isLoading}
-        onClose={lb.closeLeaderboard}
-        difficulty={difficulty}
-      />
-    </>
+    <LeaderboardMiniOverlay
+      entries={top3}
+      visible={gameState === 'play'}
+      playerEntryId={leaderboard.playerEntry?.id ?? null}
+    />
   );
 }

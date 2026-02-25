@@ -5,8 +5,8 @@ export { CanvasStage } from './CanvasStage.js';
 export { GamePage } from '@repo/ui';
 
 // Re-export leaderboard UI components for external rendering
-export { LeaderboardSidebar } from '@repo/ui';
-export type { LeaderboardSidebarProps } from '@repo/ui';
+export { LeaderboardBottomSheet } from '@repo/ui';
+export type { LeaderboardBottomSheetProps } from '@repo/ui';
 export { LeaderboardTab } from '@repo/ui';
 export type { LeaderboardTabProps } from '@repo/ui';
 

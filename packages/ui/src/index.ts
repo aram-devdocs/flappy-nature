@@ -9,6 +9,8 @@ export { HeartIcon } from './atoms/HeartIcon.js';
 export type { HeartIconProps } from './atoms/HeartIcon.js';
 export { LeaderboardTab } from './atoms/LeaderboardTab.js';
 export type { LeaderboardTabProps } from './atoms/LeaderboardTab.js';
+export { LeaderboardMiniOverlay } from './atoms/LeaderboardMiniOverlay.js';
+export type { LeaderboardMiniOverlayProps } from './atoms/LeaderboardMiniOverlay.js';
 export { NicknameCharCell } from './atoms/NicknameCharCell.js';
 export type { NicknameCharCellProps } from './atoms/NicknameCharCell.js';
 
@@ -29,6 +31,8 @@ export { LeaderboardPanel } from './organisms/LeaderboardPanel.js';
 export type { LeaderboardPanelProps } from './organisms/LeaderboardPanel.js';
 export { LeaderboardSidebar } from './organisms/LeaderboardSidebar.js';
 export type { LeaderboardSidebarProps } from './organisms/LeaderboardSidebar.js';
+export { LeaderboardBottomSheet } from './organisms/LeaderboardBottomSheet.js';
+export type { LeaderboardBottomSheetProps } from './organisms/LeaderboardBottomSheet.js';
 export { NicknameModal } from './organisms/NicknameModal.js';
 export type { NicknameModalProps } from './organisms/NicknameModal.js';
 export { GameContainer } from './organisms/GameContainer.js';

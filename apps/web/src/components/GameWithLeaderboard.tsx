@@ -1,11 +1,11 @@
 import {
   type DifficultyKey,
   FlappyNatureGame,
+  LeaderboardBottomSheet,
   type LeaderboardCallbacks,
-  LeaderboardSidebar,
+  type LeaderboardData,
   LeaderboardTab,
-  RADIUS,
-  Z_INDEX,
+  SPACING,
   useNickname,
 } from '@repo/flappy-nature-game';
 import { useQueryClient } from '@tanstack/react-query';
@@ -19,7 +19,7 @@ export function GameWithLeaderboard() {
   const queryClient = useQueryClient();
   const { nickname, setNickname } = useNickname();
   const [difficulty, setDifficulty] = useState<DifficultyKey>('normal');
-  const [leaderboardOpen, setLeaderboardOpen] = useState(false);
+  const [sheetOpen, setSheetOpen] = useState(false);
 
   const { data: entries, isLoading } = useLeaderboard(difficulty);
   const { status: connectionStatus } = useLeaderboardRealtime(difficulty);
@@ -29,8 +29,22 @@ export function GameWithLeaderboard() {
     return entries.find((e) => e.nickname === nickname) ?? null;
   }, [entries, nickname]);
 
-  const toggleLeaderboard = useCallback(() => {
-    setLeaderboardOpen((prev) => !prev);
+  const leaderboardData: LeaderboardData = useMemo(
+    () => ({
+      entries: entries ?? [],
+      playerEntry,
+      isLoading,
+      connectionStatus,
+    }),
+    [entries, playerEntry, isLoading, connectionStatus],
+  );
+
+  const toggleSheet = useCallback(() => {
+    setSheetOpen((prev) => !prev);
+  }, []);
+
+  const closeSheet = useCallback(() => {
+    setSheetOpen(false);
   }, []);
 
   const callbacks: LeaderboardCallbacks = useMemo(
@@ -60,45 +74,33 @@ export function GameWithLeaderboard() {
 
   return (
     <div style={{ position: 'relative', display: 'inline-block' }}>
-      <div style={{ position: 'relative', zIndex: Z_INDEX.base, display: 'inline-block' }}>
-        <FlappyNatureGame
-          showFps
-          leaderboardCallbacks={callbacks}
-          nickname={nickname}
-          onDifficultyChange={setDifficulty}
-        />
-      </div>
+      <FlappyNatureGame
+        showFps
+        leaderboard={leaderboardData}
+        leaderboardCallbacks={callbacks}
+        nickname={nickname}
+        onDifficultyChange={setDifficulty}
+      />
       <LeaderboardTab
         visible
-        expanded={leaderboardOpen}
-        onClick={toggleLeaderboard}
+        expanded={sheetOpen}
+        onClick={toggleSheet}
         connectionStatus={connectionStatus}
         style={{
-          right: 'auto',
-          left: '100%',
-          borderRadius: `0 ${RADIUS.lg} ${RADIUS.lg} 0`,
+          top: 'auto',
+          bottom: SPACING[2],
+          transform: 'none',
         }}
       />
-      <div
-        style={{
-          position: 'absolute',
-          left: '100%',
-          top: 0,
-          bottom: 0,
-          width: '220px',
-          overflow: 'hidden',
-          pointerEvents: leaderboardOpen ? 'auto' : 'none',
-        }}
-      >
-        <LeaderboardSidebar
-          visible={leaderboardOpen}
-          entries={entries ?? []}
-          playerEntry={playerEntry}
-          isLoading={isLoading}
-          difficulty={difficulty}
-          connectionStatus={connectionStatus}
-        />
-      </div>
+      <LeaderboardBottomSheet
+        visible={sheetOpen}
+        entries={entries ?? []}
+        playerEntry={playerEntry}
+        isLoading={isLoading}
+        onClose={closeSheet}
+        difficulty={difficulty}
+        connectionStatus={connectionStatus}
+      />
     </div>
   );
 }

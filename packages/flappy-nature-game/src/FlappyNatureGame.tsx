@@ -70,20 +70,15 @@ export function FlappyNatureGame({
 
   const handleFlap = useCallback(() => {
     if (pickerOpen) return;
-    if (lb.leaderboardOpen) lb.closeLeaderboard();
     flap();
-  }, [flap, pickerOpen, lb]);
+  }, [flap, pickerOpen]);
 
   const handleEscape = useCallback(() => {
-    if (lb.leaderboardOpen) {
-      lb.closeLeaderboard();
-      return;
-    }
     if (pickerOpen) {
       setPickerOpen(false);
       resume();
     }
-  }, [pickerOpen, resume, lb]);
+  }, [pickerOpen, resume]);
 
   const togglePicker = useCallback(() => {
     if (pickerOpen) {
@@ -142,8 +137,7 @@ export function FlappyNatureGame({
   }, [flap]);
 
   const currentBest = bestScores[difficulty] ?? 0;
-  const isOverlayVisible =
-    state !== 'play' || pickerOpen || migration.showModal || lb.leaderboardOpen;
+  const isOverlayVisible = state !== 'play' || pickerOpen || migration.showModal;
   const hasLeaderboard = !!leaderboard;
   const hasCallbacks = !!leaderboardCallbacks;
 
@@ -179,9 +173,7 @@ export function FlappyNatureGame({
           onSelect={handleDifficultySelect}
           onClose={handlePickerClose}
         />
-        {hasLeaderboard && (
-          <LeaderboardOverlay leaderboard={leaderboard} lb={lb} difficulty={difficulty} />
-        )}
+        {hasLeaderboard && <LeaderboardOverlay leaderboard={leaderboard} gameState={state} />}
         {hasCallbacks && (
           <NicknameModal
             visible={lb.showNicknameModal}
