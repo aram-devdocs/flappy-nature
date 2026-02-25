@@ -1,14 +1,12 @@
 name: Release & Publish
 
 on:
-  workflow_run:
-    workflows: [CI]
-    types: [completed]
+  push:
     branches: [main]
   workflow_dispatch:
     inputs:
       tag_name:
-        description: "Tag to publish (e.g., flappy-nature-game-v0.2.0)"
+        description: "Tag to publish (e.g., flappy-nature-game-v0.2.1)"
         required: true
 
 permissions:
@@ -16,11 +14,13 @@ permissions:
   pull-requests: write
   id-token: write
 
+concurrency:
+  group: release-${{ github.ref }}
+  cancel-in-progress: false
+
 jobs:
   release-please:
-    if: >-
-      github.event_name == 'workflow_dispatch' ||
-      github.event.workflow_run.conclusion == 'success'
+    if: github.event_name == 'push'
     runs-on: ubuntu-latest
     outputs:
       release_created: ${{ steps.release.outputs['flappy-nature-game--release_created'] }}
@@ -36,7 +36,7 @@ jobs:
 
   format-release-pr:
     needs: release-please
-    if: ${{ needs.release-please.outputs.prs_created == 'true' }}
+    if: needs.release-please.outputs.prs_created == 'true'
     runs-on: ubuntu-latest
     env:
       HUSKY: "0"
@@ -44,19 +44,14 @@ jobs:
       - uses: actions/checkout@v4
         with:
           ref: release-please--branches--main--components--flappy-nature-game
-
       - uses: pnpm/action-setup@v4
         with:
           standalone: true
-
       - uses: actions/setup-node@v4
         with:
           node-version-file: .nvmrc
-
       - run: pnpm install --frozen-lockfile
-
       - run: pnpm format
-
       - name: Push formatting fixes
         run: |
           git config user.name "github-actions[bot]"
@@ -69,58 +64,61 @@ jobs:
             echo "No formatting changes needed"
           fi
 
+  auto-merge-release-pr:
+    needs: [release-please, format-release-pr]
+    if: needs.release-please.outputs.prs_created == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Enable auto-merge
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          PR_BRANCH="release-please--branches--main--components--flappy-nature-game"
+          PR_NUMBER=$(gh pr list --head "$PR_BRANCH" --json number --jq '.[0].number' --repo "${{ github.repository }}")
+          if [ -n "$PR_NUMBER" ]; then
+            gh pr merge "$PR_NUMBER" --auto --squash --repo "${{ github.repository }}"
+          fi
+
   publish:
     needs: release-please
     if: >-
-      needs.release-please.outputs.release_created == 'true' ||
-      github.event_name == 'workflow_dispatch'
+      !cancelled() &&
+      (needs.release-please.outputs.release_created == 'true' ||
+       github.event_name == 'workflow_dispatch')
     runs-on: ubuntu-latest
     environment: npm
     steps:
       - uses: actions/checkout@v4
         with:
           ref: ${{ needs.release-please.outputs.tag_name || github.event.inputs.tag_name }}
-
       - uses: pnpm/action-setup@v4
         with:
           standalone: true
-
       - uses: actions/setup-node@v4
         with:
           node-version-file: .nvmrc
           registry-url: https://registry.npmjs.org
-
       - run: pnpm install --frozen-lockfile
-
       - run: pnpm build
-
       - name: Verify bundle integrity
         run: |
-          echo "Checking dist/index.js for @repo/ references..."
-          if grep -q '@repo/' packages/flappy-nature-game/dist/index.js; then
-            echo "ERROR: Found @repo/ references in index.js"
-            grep '@repo/' packages/flappy-nature-game/dist/index.js
-            exit 1
-          fi
-          if grep -q '@repo/' packages/flappy-nature-game/dist/index.cjs; then
-            echo "ERROR: Found @repo/ references in index.cjs"
-            grep '@repo/' packages/flappy-nature-game/dist/index.cjs
-            exit 1
-          fi
+          for f in packages/flappy-nature-game/dist/index.js packages/flappy-nature-game/dist/index.cjs; do
+            if grep -q '@repo/' "$f"; then
+              echo "ERROR: Found @repo/ references in $f"
+              grep '@repo/' "$f"
+              exit 1
+            fi
+          done
           echo "Bundle integrity check passed"
-
       - name: Prepare package for publishing
         working-directory: packages/flappy-nature-game
         run: |
-          # Copy LICENSE from repo root
           cp ../../LICENSE ./LICENSE
 
-          # Rewrite package name for npm
           node -e "
             const pkg = require('./package.json');
             pkg.name = 'flappy-nature-game';
             delete pkg.devDependencies;
-            // Remove workspace:* dependencies (they're bundled by tsup)
             if (pkg.dependencies) {
               for (const [k, v] of Object.entries(pkg.dependencies)) {
                 if (String(v).includes('workspace:')) delete pkg.dependencies[k];
@@ -130,56 +128,30 @@ jobs:
             require('fs').writeFileSync('package.json', JSON.stringify(pkg, null, 2) + '\n');
           "
 
-          # Bundle type declarations to remove @repo/ references
           node -e "
             const fs = require('fs');
             const path = require('path');
-
-            // Read all workspace package d.ts files
             const typesDir = path.resolve('../../packages/types/dist');
             const uiDir = path.resolve('../../packages/ui/dist');
             const hooksDir = path.resolve('../../packages/hooks/dist');
-
             const typesDts = fs.readFileSync(path.join(typesDir, 'index.d.ts'), 'utf8');
             const uiDts = fs.readFileSync(path.join(uiDir, 'index.d.ts'), 'utf8');
             const hooksDts = fs.readFileSync(path.join(hooksDir, 'index.d.ts'), 'utf8');
-
-            // Read our d.ts
             for (const ext of ['d.ts', 'd.cts']) {
               const dtsPath = path.join('dist', 'index.' + ext);
               let dts = fs.readFileSync(dtsPath, 'utf8');
-
-              // Replace @repo/* barrel re-exports with inlined declarations
-              // Remove import lines referencing @repo/*
               dts = dts.replace(/^import .* from '@repo\/.*';?\n?/gm, '');
-              // Remove export lines referencing @repo/*
               dts = dts.replace(/^export \{[^}]*\} from '@repo\/.*';?\n?/gm, '');
-
-              // Prepend the needed type declarations
               const header = [
-                '// Inlined from @repo/types',
-                typesDts.replace(/^export /gm, 'export '),
-                '',
-                '// Inlined from @repo/ui',
-                uiDts,
-                '',
-                '// Inlined from @repo/hooks',
-                hooksDts,
-                '',
+                '// Inlined from @repo/types', typesDts.replace(/^export /gm, 'export '), '',
+                '// Inlined from @repo/ui', uiDts, '',
+                '// Inlined from @repo/hooks', hooksDts, '',
               ].join('\n');
-
               dts = header + '\n' + dts;
               fs.writeFileSync(dtsPath, dts);
             }
             console.log('Type declarations bundled successfully');
           "
-
-          echo "Package prepared for publishing:"
-          cat package.json
-          echo ""
-          echo "Files to publish:"
-          ls -la dist/
-
       - name: Publish to npm
         working-directory: packages/flappy-nature-game
         run: npm publish --provenance --access public
