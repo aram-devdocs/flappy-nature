@@ -32,11 +32,11 @@ export function DemoFooter() {
         }}
       >
         <img
-          src="/assets/logos/vegan-gouda-leaf.png"
+          src="/favicon.svg"
           alt="Vegan Gouda Development"
-          width={28}
-          height={28}
-          style={{ filter: 'brightness(0) invert(1)', opacity: OPACITY.strong }}
+          width={20}
+          height={20}
+          style={{ opacity: OPACITY.strong }}
         />
         <span
           style={{

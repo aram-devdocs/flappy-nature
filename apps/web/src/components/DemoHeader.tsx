@@ -22,12 +22,7 @@ export function DemoHeader() {
         boxShadow: SHADOW.dropdown,
       }}
     >
-      <img
-        src="/assets/logos/vegan-gouda-games.png"
-        alt="Vegan Gouda Games"
-        height={48}
-        style={{ filter: 'brightness(0) invert(1)', objectFit: 'contain' }}
-      />
+      <img src="/assets/logos/vegan-gouda-white.svg" alt="Vegan Gouda" height={32} />
       <div
         style={{
           height: '1px',
