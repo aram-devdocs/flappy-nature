@@ -7,6 +7,8 @@ export { GamePage } from '@repo/ui';
 // Re-export leaderboard UI components for external rendering
 export { LeaderboardBottomSheet } from '@repo/ui';
 export type { LeaderboardBottomSheetProps } from '@repo/ui';
+export { LeaderboardPanel } from '@repo/ui';
+export type { LeaderboardPanelProps } from '@repo/ui';
 export { LeaderboardTab } from '@repo/ui';
 export type { LeaderboardTabProps } from '@repo/ui';
 

@@ -63,4 +63,6 @@ export interface LeaderboardProps {
   leaderboardCallbacks?: LeaderboardCallbacks;
   /** Player's current nickname. Null triggers the nickname modal. */
   nickname?: string | null;
+  /** Whether the external leaderboard sheet/panel is expanded. Hides the in-game mini overlay. */
+  leaderboardExpanded?: boolean;
 }

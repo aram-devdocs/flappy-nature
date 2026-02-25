@@ -29,6 +29,7 @@ export function FlappyNatureGame({
   showFps = false,
   leaderboard,
   leaderboardCallbacks,
+  leaderboardExpanded = false,
   nickname,
 }: FlappyNatureGameProps) {
   const {
@@ -173,7 +174,9 @@ export function FlappyNatureGame({
           onSelect={handleDifficultySelect}
           onClose={handlePickerClose}
         />
-        {hasLeaderboard && <LeaderboardOverlay leaderboard={leaderboard} gameState={state} />}
+        {hasLeaderboard && !leaderboardExpanded && (
+          <LeaderboardOverlay leaderboard={leaderboard} gameState={state} />
+        )}
         {hasCallbacks && (
           <NicknameModal
             visible={lb.showNicknameModal}

@@ -65,14 +65,23 @@ export function LeaderboardBottomSheet({
         borderRadius: `${RADIUS.xl} ${RADIUS.xl} 0 0`,
         zIndex: Z_INDEX.overlay,
         transform: visible ? 'translateY(0)' : 'translateY(100%)',
-        transition: 'transform 0.25s cubic-bezier(0.4, 0, 0.2, 1)',
+        visibility: visible ? 'visible' : 'hidden',
+        transition: 'transform 0.25s cubic-bezier(0.4, 0, 0.2, 1), visibility 0.25s',
         display: 'flex',
         flexDirection: 'column',
         overflow: 'hidden',
+        pointerEvents: 'none',
       }}
     >
       {/* Drag handle */}
-      <div style={{ display: 'flex', justifyContent: 'center', padding: `${SPACING[1.5]} 0 0` }}>
+      <div
+        style={{
+          display: 'flex',
+          justifyContent: 'center',
+          padding: `${SPACING[1.5]} 0 0`,
+          pointerEvents: 'auto',
+        }}
+      >
         <div
           style={{
             width: '36px',
@@ -91,6 +100,7 @@ export function LeaderboardBottomSheet({
           justifyContent: 'space-between',
           padding: `${SPACING[1.5]} ${SPACING[3]}`,
           flexShrink: 0,
+          pointerEvents: 'auto',
         }}
       >
         <div style={{ display: 'flex', alignItems: 'center', gap: SPACING[2] }}>
@@ -134,7 +144,9 @@ export function LeaderboardBottomSheet({
       </div>
 
       {/* Body */}
-      <div style={{ flex: 1, overflowY: 'auto', padding: `0 ${SPACING[1]}` }}>
+      <div
+        style={{ flex: 1, overflowY: 'auto', padding: `0 ${SPACING[1]}`, pointerEvents: 'auto' }}
+      >
         {isLoading && <p style={emptyStyle}>Loading...</p>}
         {!isLoading && entries.length === 0 && <p style={emptyStyle}>No scores yet</p>}
         {!isLoading &&
@@ -154,6 +166,7 @@ export function LeaderboardBottomSheet({
             borderTop: `1px solid ${RGBA_TOKENS.shadowSm}`,
             padding: SPACING[1],
             flexShrink: 0,
+            pointerEvents: 'auto',
           }}
         >
           <LeaderboardEntryRow entry={playerEntry} isPlayer isNew={false} />
