@@ -14,7 +14,8 @@ export function DemoPage({ children }: DemoPageProps) {
       style={{
         display: 'flex',
         flexDirection: 'column',
-        minHeight: '100vh',
+        height: '100%',
+        overflow: 'hidden',
         background: `linear-gradient(to bottom, ${COLOR_TOKENS.lavender}, ${COLOR_TOKENS.lavender} 40%, ${COLOR_TOKENS.light})`,
         fontFamily: FONT_FAMILY.body,
       }}
