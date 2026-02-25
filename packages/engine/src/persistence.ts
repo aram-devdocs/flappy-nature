@@ -5,8 +5,8 @@ import { createLogger } from './logger';
 const log = createLogger('persistence');
 
 const MAX_SCORE = 9999;
-const BEST_STORAGE_KEY = 'sn-flappy-best-v2';
-const DIFF_STORAGE_KEY = 'sn-flappy-diff';
+const BEST_STORAGE_KEY = 'fg-flappy-best-v2';
+const DIFF_STORAGE_KEY = 'fg-flappy-diff';
 
 /** Load per-difficulty best scores from localStorage, migrating the legacy single-score key if needed. */
 export function loadBestScores(): BestScores {
@@ -27,11 +27,11 @@ export function loadBestScores(): BestScores {
     }
     // Migrate old single-score key if v2 doesn't exist yet
     if (!raw) {
-      const old = Number.parseInt(localStorage.getItem('sn-flappy-best') ?? '0', 10);
+      const old = Number.parseInt(localStorage.getItem('fg-flappy-best') ?? '0', 10);
       if (old > 0) {
         scores.normal = old;
         saveBestScores(scores);
-        localStorage.removeItem('sn-flappy-best');
+        localStorage.removeItem('fg-flappy-best');
       }
     }
   } catch (e) {

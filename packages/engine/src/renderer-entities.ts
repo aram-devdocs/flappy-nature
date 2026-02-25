@@ -17,14 +17,14 @@ export interface IconBounds {
   h: number;
 }
 
-/** Draw the bird sprite (heart image or fallback circle) at the given position with rotation. */
+/** Draw the bird sprite (cheese image or fallback circle) at the given position with rotation. */
 export function drawBird(
   ctx: CanvasRenderingContext2D,
   y: number,
   rot: number,
   birdX: number,
   birdSize: number,
-  heartImg: HTMLImageElement | null,
+  spriteImg: HTMLImageElement | null,
   colors: GameColors,
 ): void {
   const cx = birdX + birdSize / 2;
@@ -34,8 +34,8 @@ export function drawBird(
   ctx.translate(cx, cy);
   ctx.rotate(rad);
 
-  if (heartImg) {
-    ctx.drawImage(heartImg, -birdSize / 2, -birdSize / 2, birdSize, birdSize);
+  if (spriteImg) {
+    ctx.drawImage(spriteImg, -birdSize / 2, -birdSize / 2, birdSize, birdSize);
   } else {
     ctx.fillStyle = colors.violet;
     ctx.beginPath();

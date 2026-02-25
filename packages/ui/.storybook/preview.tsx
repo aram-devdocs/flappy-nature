@@ -7,13 +7,13 @@ const preview: Preview = {
       <div
         style={
           {
-            '--fn-navy': COLOR_TOKENS.navy,
-            '--fn-violet': COLOR_TOKENS.violet,
-            '--fn-cyan': COLOR_TOKENS.cyan,
-            '--fn-magenta': COLOR_TOKENS.magenta,
-            '--fn-light': COLOR_TOKENS.light,
-            '--fn-white': COLOR_TOKENS.white,
-            '--fn-midviolet': COLOR_TOKENS.midviolet,
+            '--fg-navy': COLOR_TOKENS.navy,
+            '--fg-violet': COLOR_TOKENS.violet,
+            '--fg-cyan': COLOR_TOKENS.cyan,
+            '--fg-magenta': COLOR_TOKENS.magenta,
+            '--fg-light': COLOR_TOKENS.light,
+            '--fg-white': COLOR_TOKENS.white,
+            '--fg-midviolet': COLOR_TOKENS.midviolet,
           } as React.CSSProperties
         }
       >

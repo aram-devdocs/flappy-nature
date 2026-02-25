@@ -6,7 +6,7 @@ This package contains React hooks that bridge the pure TypeScript engine (`@repo
 
 - MUST NOT contain business logic. No physics, no collision math, no scoring rules. That belongs in `@repo/engine`.
 - MUST NOT render anything. No JSX, no components. That belongs in `@repo/ui`.
-- MUST NOT import from `@repo/ui` or `@repo/flappy-nature-game`.
+- MUST NOT import from `@repo/ui` or `@repo/flappy-gouda-game`.
 - Allowed `@repo/*` dependencies: `@repo/engine` and `@repo/types` only.
 - React is a peer dependency. Hooks MUST work with React 18 and React 19.
 - Files MUST NOT exceed 200 lines.

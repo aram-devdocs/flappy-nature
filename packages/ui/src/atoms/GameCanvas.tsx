@@ -16,7 +16,7 @@ export const GameCanvas = forwardRef<HTMLCanvasElement, GameCanvasProps>(
       <canvas
         ref={ref}
         className={className}
-        aria-label="Flappy Nature game"
+        aria-label="Flappy Gouda game"
         role="img"
         tabIndex={0}
         style={{

@@ -1,6 +1,6 @@
-# @repo/flappy-nature-game -- Package Guide
+# @repo/flappy-gouda-game -- Package Guide
 
-This is the orchestration layer. It composes `@repo/engine`, `@repo/hooks`, and `@repo/ui` into the public-facing `<FlappyNatureGame />` component that consumers (like `@repo/web`) import.
+This is the orchestration layer. It composes `@repo/engine`, `@repo/hooks`, and `@repo/ui` into the public-facing `<FlappyGoudaGame />` component that consumers (like `@repo/web`) import.
 
 ## Hard Constraints
 
@@ -16,7 +16,7 @@ This is the orchestration layer. It composes `@repo/engine`, `@repo/hooks`, and 
 2. **Hook wiring.** Use hooks from `@repo/hooks` to subscribe to engine state.
 3. **Component composition.** Pass hook-derived state into UI components from `@repo/ui` as props.
 4. **Lifecycle management.** Start/stop the engine when the component mounts/unmounts.
-5. **Public API surface.** The `FlappyNatureGameProps` interface (from `@repo/types`) defines what consumers can configure.
+5. **Public API surface.** The `FlappyGoudaGameProps` interface (from `@repo/types`) defines what consumers can configure.
 
 ## Pattern
 
@@ -24,9 +24,9 @@ This is the orchestration layer. It composes `@repo/engine`, `@repo/hooks`, and 
 import { GameEngine } from '@repo/engine';
 import { useGameState, useScore } from '@repo/hooks';
 import { GameCanvas, ScoreDisplay } from '@repo/ui';
-import type { FlappyNatureGameProps } from '@repo/types';
+import type { FlappyGoudaGameProps } from '@repo/types';
 
-export function FlappyNatureGame(props: FlappyNatureGameProps) {
+export function FlappyGoudaGame(props: FlappyGoudaGameProps) {
   // 1. Instantiate engine
   const engine = useEngine(props);
 
@@ -55,11 +55,11 @@ export function FlappyNatureGame(props: FlappyNatureGameProps) {
 Integration tests verify that the full composition works: engine produces state, hooks relay it, UI renders correctly.
 
 ```bash
-pnpm test --filter=@repo/flappy-nature-game
+pnpm test --filter=@repo/flappy-gouda-game
 ```
 
 Test strategy:
-- Mount `<FlappyNatureGame />` with test props.
+- Mount `<FlappyGoudaGame />` with test props.
 - Simulate user interactions (click/tap to flap).
 - Assert that score updates, state transitions, and visual output match expectations.
 - Mock the canvas context for rendering assertions.
@@ -68,7 +68,7 @@ Test strategy:
 
 ```
 src/
-  FlappyNatureGame.tsx     Main composed component
+  FlappyGoudaGame.tsx     Main composed component
   useEngine.ts             Engine instantiation and lifecycle hook (local to this package)
   index.ts                 Barrel export
 ```

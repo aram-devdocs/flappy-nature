@@ -1,8 +1,4 @@
-import type {
-  DifficultyKey,
-  LeaderboardEntry,
-  NicknameCheckResult,
-} from '@repo/flappy-nature-game';
+import type { DifficultyKey, LeaderboardEntry, NicknameCheckResult } from '@repo/flappy-gouda-game';
 
 export interface LiveScoreBroadcast {
   sessionId: string;

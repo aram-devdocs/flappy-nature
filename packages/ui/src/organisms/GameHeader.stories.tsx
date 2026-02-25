@@ -10,7 +10,7 @@ type Story = StoryObj<typeof GameHeader>;
 
 export const Default: Story = {
   args: {
-    brandName: 'Flappy Nature',
+    brandName: 'Flappy Gouda',
     difficulty: 'normal',
     bestScore: 10,
     difficultyVisible: true,
@@ -20,7 +20,7 @@ export const Default: Story = {
 
 export const NoBestScore: Story = {
   args: {
-    brandName: 'Flappy Nature',
+    brandName: 'Flappy Gouda',
     difficulty: 'easy',
     bestScore: 0,
     difficultyVisible: true,
@@ -30,7 +30,7 @@ export const NoBestScore: Story = {
 
 export const DifficultyHidden: Story = {
   args: {
-    brandName: 'Flappy Nature',
+    brandName: 'Flappy Gouda',
     difficulty: 'normal',
     bestScore: 42,
     difficultyVisible: false,
@@ -40,7 +40,7 @@ export const DifficultyHidden: Story = {
 
 export const HardDifficulty: Story = {
   args: {
-    brandName: 'Flappy Nature',
+    brandName: 'Flappy Gouda',
     difficulty: 'hard',
     bestScore: 99,
     difficultyVisible: true,

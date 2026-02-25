@@ -91,7 +91,7 @@ for (const [level, comps] of byLevel) {
 }
 
 // Canvas asset story coverage
-const canvasStoriesDir = join(ROOT, 'packages', 'flappy-nature-game', 'src', 'stories', 'canvas');
+const canvasStoriesDir = join(ROOT, 'packages', 'flappy-gouda-game', 'src', 'stories', 'canvas');
 const expectedCanvasStories = [
   'Bird',
   'Pipes',
@@ -99,7 +99,6 @@ const expectedCanvasStories = [
   'Skyline',
   'Buildings',
   'Trees',
-  'Plane',
   'Ground',
   'ScoreAndUI',
   'FullScene',

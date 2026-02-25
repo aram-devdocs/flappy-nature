@@ -5,7 +5,7 @@ import {
   DebugPanel,
   DebugTab,
   type DifficultyKey,
-  FlappyNatureGame,
+  FlappyGoudaGame,
   type GameState,
   LeaderboardBottomSheet,
   type LeaderboardCallbacks,
@@ -14,7 +14,7 @@ import {
   LeaderboardTab,
   RADIUS,
   useNickname,
-} from '@repo/flappy-nature-game';
+} from '@repo/flappy-gouda-game';
 import { useQueryClient } from '@tanstack/react-query';
 import { useCallback, useMemo, useRef, useState } from 'react';
 import { useBreakpoint } from '../hooks/useBreakpoint';
@@ -191,7 +191,7 @@ export function GameWithLeaderboard() {
         </div>
       )}
 
-      <FlappyNatureGame
+      <FlappyGoudaGame
         showFps
         showDebug
         onDebugMetrics={setDebugMetrics}

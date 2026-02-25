@@ -1,5 +1,5 @@
 {
-  "name": "@repo/flappy-nature-game",
+  "name": "@repo/flappy-gouda-game",
   "version": "0.2.1",
   "description": "A drop-in canvas-based Flappy Bird game component for React 18+",
   "keywords": ["flappy-bird", "game", "canvas", "react", "react-component", "typescript"],
@@ -7,12 +7,12 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/aram-devdocs/flappy-nature.git",
-    "directory": "packages/flappy-nature-game"
+    "url": "https://github.com/aram-devdocs/flappy-gouda.git",
+    "directory": "packages/flappy-gouda-game"
   },
-  "homepage": "https://flappy-nature.aramhammoudeh.com",
+  "homepage": "https://flappy-gouda.aramhammoudeh.com",
   "bugs": {
-    "url": "https://github.com/aram-devdocs/flappy-nature/issues"
+    "url": "https://github.com/aram-devdocs/flappy-gouda/issues"
   },
   "sideEffects": false,
   "type": "module",

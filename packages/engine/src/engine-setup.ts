@@ -38,13 +38,12 @@ export function initClouds(config: GameConfig): Cloud[] {
 }
 
 /** Instantiate a BackgroundSystem with layout derived from the game config. */
-export function createBgSystem(config: GameConfig, bannerTexts: string[]): BackgroundSystem {
+export function createBgSystem(config: GameConfig): BackgroundSystem {
   return new BackgroundSystem({
     width: config.width,
     height: config.height,
     groundH: config.groundH,
     pipeSpeed: config.pipeSpeed,
-    bannerTexts,
   });
 }
 

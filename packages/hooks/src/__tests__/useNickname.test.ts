@@ -2,7 +2,7 @@ import { act, renderHook } from '@testing-library/react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { useNickname } from '../useNickname';
 
-const NICKNAME_KEY = 'sn-flappy-nickname';
+const NICKNAME_KEY = 'fg-flappy-nickname';
 
 describe('useNickname', () => {
   beforeEach(() => {

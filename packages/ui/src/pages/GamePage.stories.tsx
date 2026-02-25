@@ -10,7 +10,7 @@ type Story = StoryObj<typeof GamePage>;
 
 export const Default: Story = {
   args: {
-    title: 'Flappy Nature',
+    title: 'Flappy Gouda',
     children: (
       <div
         style={{

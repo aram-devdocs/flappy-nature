@@ -8,13 +8,13 @@ const ROOT = resolve(__dirname, '..');
 
 const errors: string[] = [];
 
-const gameSrcDir = join(ROOT, 'packages', 'flappy-nature-game', 'src');
+const gameSrcDir = join(ROOT, 'packages', 'flappy-gouda-game', 'src');
 
 // Check for error boundary component
 const errorBoundaryFile = join(gameSrcDir, 'GameErrorBoundary.tsx');
 if (!existsSync(errorBoundaryFile)) {
   errors.push(
-    'Missing GameErrorBoundary.tsx in packages/flappy-nature-game/src/. Game component must be wrapped in an error boundary.',
+    'Missing GameErrorBoundary.tsx in packages/flappy-gouda-game/src/. Game component must be wrapped in an error boundary.',
   );
 } else {
   const content = readFileSync(errorBoundaryFile, 'utf-8');
@@ -26,12 +26,12 @@ if (!existsSync(errorBoundaryFile)) {
 }
 
 // Check that the main game component uses the error boundary
-const gameComponentFile = join(gameSrcDir, 'FlappyNatureGame.tsx');
+const gameComponentFile = join(gameSrcDir, 'FlappyGoudaGame.tsx');
 if (existsSync(gameComponentFile)) {
   const content = readFileSync(gameComponentFile, 'utf-8');
   if (!content.includes('GameErrorBoundary') && !content.includes('ErrorBoundary')) {
     errors.push(
-      'FlappyNatureGame.tsx does not reference GameErrorBoundary. The game component must be wrapped.',
+      'FlappyGoudaGame.tsx does not reference GameErrorBoundary. The game component must be wrapped.',
     );
   }
 }

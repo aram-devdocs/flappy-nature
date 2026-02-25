@@ -10,7 +10,6 @@ import {
   drawCloudsPrerendered,
   drawGround,
   drawPipes,
-  drawPlane,
   drawScore,
   drawSky,
   drawSkylineSegment,
@@ -18,7 +17,7 @@ import {
   generateSkylineSegment,
   prerenderCloud,
 } from '@repo/engine';
-import type { Building, Cloud, Pipe, Plane, Tree } from '@repo/types';
+import type { Building, Cloud, Pipe, Tree } from '@repo/types';
 import type { Meta, StoryObj } from '@storybook/react';
 import { useCallback, useMemo } from 'react';
 import { CanvasStage } from '../../CanvasStage';
@@ -64,18 +63,6 @@ function FullScenePreview({ score, birdY }: { score: number; birdY: number }) {
       drawSkylineSegment(ctx, seg);
       const seg2 = generateSkylineSegment('montreal', 180, GROUND_Y);
       drawSkylineSegment(ctx, seg2);
-
-      // Plane
-      const plane: Plane = {
-        x: 280,
-        y: 100,
-        dir: -1,
-        bannerText: 'FLAP!',
-        bannerW: 42,
-        wobble: 0,
-        speed: 0.6,
-      };
-      drawPlane(ctx, plane, 0, DEFAULT_COLORS, fonts);
 
       // Buildings
       ctx.globalAlpha = BG.buildingAlpha;

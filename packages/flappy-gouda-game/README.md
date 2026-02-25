@@ -1,24 +1,24 @@
-# flappy-nature-game
+# flappy-gouda-game
 
-[![npm](https://img.shields.io/npm/v/flappy-nature-game?style=flat-square&logo=npm)](https://www.npmjs.com/package/flappy-nature-game)
-[![GitHub](https://img.shields.io/badge/GitHub-flappy--nature-181717?logo=github&style=flat-square)](https://github.com/aram-devdocs/flappy-nature)
-[![Storybook](https://img.shields.io/badge/Storybook-live-FF4785?logo=storybook&style=flat-square)](https://flappy-nature.aramhammoudeh.com/storybook/)
-[![CI](https://img.shields.io/github/actions/workflow/status/aram-devdocs/flappy-nature/ci.yml?branch=main&style=flat-square&label=CI)](https://github.com/aram-devdocs/flappy-nature/actions/workflows/ci.yml)
-[![License: MIT](https://img.shields.io/badge/License-MIT-blue?style=flat-square)](https://github.com/aram-devdocs/flappy-nature/blob/main/LICENSE)
-[![Bundle Size](https://img.shields.io/bundlephobia/minzip/flappy-nature-game?style=flat-square)](https://bundlephobia.com/package/flappy-nature-game)
+[![npm](https://img.shields.io/npm/v/flappy-gouda-game?style=flat-square&logo=npm)](https://www.npmjs.com/package/flappy-gouda-game)
+[![GitHub](https://img.shields.io/badge/GitHub-flappy--nature-181717?logo=github&style=flat-square)](https://github.com/aram-devdocs/flappy-gouda)
+[![Storybook](https://img.shields.io/badge/Storybook-live-FF4785?logo=storybook&style=flat-square)](https://flappy-gouda.aramhammoudeh.com/storybook/)
+[![CI](https://img.shields.io/github/actions/workflow/status/aram-devdocs/flappy-gouda/ci.yml?branch=main&style=flat-square&label=CI)](https://github.com/aram-devdocs/flappy-gouda/actions/workflows/ci.yml)
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue?style=flat-square)](https://github.com/aram-devdocs/flappy-gouda/blob/main/LICENSE)
+[![Bundle Size](https://img.shields.io/bundlephobia/minzip/flappy-gouda-game?style=flat-square)](https://bundlephobia.com/package/flappy-gouda-game)
 
 A drop-in canvas-based Flappy Bird game component for React 18+. 60fps rendering, 3 difficulty levels, customizable theme, optional leaderboard, and full TypeScript support.
 
-**[Live Demo](https://flappy-nature.aramhammoudeh.com)** · **[Storybook](https://flappy-nature.aramhammoudeh.com/storybook/)**
+**[Live Demo](https://flappy-gouda.aramhammoudeh.com)** · **[Storybook](https://flappy-gouda.aramhammoudeh.com/storybook/)**
 
 ## Installation
 
 ```bash
-npm install flappy-nature-game
+npm install flappy-gouda-game
 # or
-pnpm add flappy-nature-game
+pnpm add flappy-gouda-game
 # or
-yarn add flappy-nature-game
+yarn add flappy-gouda-game
 ```
 
 **Peer dependencies:** `react >= 18` and `react-dom >= 18`.
@@ -26,10 +26,10 @@ yarn add flappy-nature-game
 ## Basic Usage
 
 ```tsx
-import { FlappyNatureGame } from 'flappy-nature-game';
+import { FlappyGoudaGame } from 'flappy-gouda-game';
 
 function App() {
-  return <FlappyNatureGame />;
+  return <FlappyGoudaGame />;
 }
 ```
 
@@ -62,7 +62,7 @@ That's it. The component renders a self-contained canvas game with title screen,
 Pass a partial `GameColors` object to override the default palette:
 
 ```tsx
-<FlappyNatureGame
+<FlappyGoudaGame
   colors={{
     navy: '#1a1a2e',
     violet: '#e94560',
@@ -81,13 +81,13 @@ Pass a partial `GameColors` object to override the default palette:
 The game supports optional leaderboard integration. You provide the data and callbacks; the game handles the UI.
 
 ```tsx
-import { FlappyNatureGame, useNickname } from 'flappy-nature-game';
+import { FlappyGoudaGame, useNickname } from 'flappy-gouda-game';
 
 function App() {
   const { nickname, setNickname } = useNickname();
 
   return (
-    <FlappyNatureGame
+    <FlappyGoudaGame
       nickname={nickname}
       leaderboard={{
         entries: [...],
@@ -120,7 +120,7 @@ import {
   SHADOW,
   Z_INDEX,
   cssVar,
-} from 'flappy-nature-game';
+} from 'flappy-gouda-game';
 
 // Use tokens in your own components
 const style = { fontFamily: FONT_FAMILY.heading, padding: SPACING.md };
@@ -133,7 +133,7 @@ const varName = cssVar('color-navy'); // '--sn-color-navy'
 
 ```tsx
 import type {
-  FlappyNatureGameProps,
+  FlappyGoudaGameProps,
   GameState,            // 'idle' | 'play' | 'dead' | 'paused'
   DifficultyKey,        // 'easy' | 'normal' | 'hard'
   BestScores,           // Record<DifficultyKey, number>
@@ -144,7 +144,7 @@ import type {
   DebugMetricsSnapshot, // Debug panel metrics
   DebugControls,        // Recording control interface
   DebugRecording,       // Recorded frame data
-} from 'flappy-nature-game';
+} from 'flappy-gouda-game';
 ```
 
 ## Browser Support
@@ -153,4 +153,4 @@ Requires a browser with Canvas 2D support (all modern browsers). Works with Reac
 
 ## License
 
-[MIT](https://github.com/aram-devdocs/flappy-nature/blob/main/LICENSE)
+[MIT](https://github.com/aram-devdocs/flappy-gouda/blob/main/LICENSE)

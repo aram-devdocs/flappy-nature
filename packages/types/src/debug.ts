@@ -34,7 +34,6 @@ export interface DebugEntityCounts {
   buildings: number;
   trees: number;
   groundDeco: number;
-  planes: number;
 }
 
 /** Static system info captured once at init. */

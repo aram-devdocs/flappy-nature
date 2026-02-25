@@ -2,12 +2,10 @@ import type { DebugControls, DebugMetricsSnapshot } from './debug';
 import type { BestScores, DifficultyKey, GameColors, GameState } from './game';
 import type { LeaderboardProps } from './leaderboard';
 
-/** Props for the top-level FlappyNatureGame React component. */
-export interface FlappyNatureGameProps extends LeaderboardProps {
+/** Props for the top-level FlappyGoudaGame React component. */
+export interface FlappyGoudaGameProps extends LeaderboardProps {
   /** Custom color theme overrides. */
   colors?: Partial<GameColors>;
-  /** Custom banner texts displayed on flying planes. */
-  bannerTexts?: string[];
   /** Custom heading font family for canvas-rendered text. */
   fontFamily?: string;
   /** Initial difficulty level (defaults to persisted or 'normal'). */

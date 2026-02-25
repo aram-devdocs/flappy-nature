@@ -1,4 +1,4 @@
-import type { LeaderboardEntry, LeaderboardWindowItem } from '@repo/flappy-nature-game';
+import type { LeaderboardEntry, LeaderboardWindowItem } from '@repo/flappy-gouda-game';
 
 interface WindowConfig {
   topCount: number;

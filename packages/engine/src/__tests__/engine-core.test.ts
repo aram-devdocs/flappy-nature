@@ -1,14 +1,13 @@
 import type { Bird, GameColors, GameConfig } from '@repo/types';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import { DEFAULT_BANNERS } from '../banners';
 import { DEFAULT_COLORS, buildFontCache } from '../cache';
+import { loadCheeseImage } from '../cheese';
 import { BASE_H, BASE_W, DEFAULT_CONFIG } from '../config';
 import { EngineEventEmitter } from '../engine-events';
 import { syncPrevBird } from '../engine-lifecycle';
 import { EngineLoop } from '../engine-loop';
 import { createBgSystem, createRenderer, initClouds, setupCanvas } from '../engine-setup';
 import { EngineState } from '../engine-state';
-import { loadHeartImage } from '../heart';
 import { roundRectPath } from '../math';
 
 // Module-level mocks -- vi.mock is hoisted by vitest
@@ -677,38 +676,10 @@ describe('EngineLoop', () => {
 });
 
 // ---------------------------------------------------------------------------
-// banners.ts
+// cheese.ts
 // ---------------------------------------------------------------------------
 
-describe('DEFAULT_BANNERS', () => {
-  it('is a non-empty array of strings', () => {
-    expect(Array.isArray(DEFAULT_BANNERS)).toBe(true);
-    expect(DEFAULT_BANNERS.length).toBeGreaterThan(0);
-  });
-
-  it('contains expected entries', () => {
-    expect(DEFAULT_BANNERS).toContain('Triple Win!');
-    expect(DEFAULT_BANNERS).toContain('Second Nature');
-    expect(DEFAULT_BANNERS).toContain('Nashville');
-  });
-
-  it('contains exactly 26 entries', () => {
-    expect(DEFAULT_BANNERS).toHaveLength(26);
-  });
-
-  it('has only string entries with non-zero length', () => {
-    for (const banner of DEFAULT_BANNERS) {
-      expect(typeof banner).toBe('string');
-      expect(banner.length).toBeGreaterThan(0);
-    }
-  });
-});
-
-// ---------------------------------------------------------------------------
-// heart.ts
-// ---------------------------------------------------------------------------
-
-describe('loadHeartImage', () => {
+describe('loadCheeseImage', () => {
   let mockCreateObjectURL: ReturnType<typeof vi.fn>;
   let mockRevokeObjectURL: ReturnType<typeof vi.fn>;
 
@@ -748,7 +719,7 @@ describe('loadHeartImage', () => {
       vi.fn(() => mockImg),
     );
 
-    const result = await loadHeartImage('#ff0000');
+    const result = await loadCheeseImage('#ff0000');
 
     expect(mockCreateObjectURL).toHaveBeenCalledTimes(1);
     expect(mockRevokeObjectURL).toHaveBeenCalledWith('blob:mock-url');
@@ -778,7 +749,7 @@ describe('loadHeartImage', () => {
       vi.fn(() => mockImg),
     );
 
-    const result = await loadHeartImage('#00ff00');
+    const result = await loadCheeseImage('#00ff00');
 
     expect(mockCreateObjectURL).toHaveBeenCalledTimes(1);
     expect(mockRevokeObjectURL).toHaveBeenCalledWith('blob:mock-url');
@@ -813,7 +784,7 @@ describe('loadHeartImage', () => {
       vi.fn(() => mockImg),
     );
 
-    await loadHeartImage('#abcdef');
+    await loadCheeseImage('#abcdef');
 
     expect(mockCreateObjectURL).toHaveBeenCalledTimes(1);
     const svgContent = capturedBlobContent.join('');
@@ -995,11 +966,9 @@ describe('initClouds', () => {
 describe('createBgSystem', () => {
   it('returns a BackgroundSystem with null layers', () => {
     const cfg = makeConfig();
-    const bg = createBgSystem(cfg, ['Banner 1', 'Banner 2']);
+    const bg = createBgSystem(cfg);
     expect(bg).toBeDefined();
     expect(bg.layers).toBeNull();
-    expect(bg.planePool).toEqual([]);
-    expect(bg.planeActiveCount).toBe(0);
   });
 });
 

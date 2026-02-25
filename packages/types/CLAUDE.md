@@ -16,7 +16,7 @@ Pure TypeScript types, interfaces, constants, and design tokens. Zero runtime de
 | `game.ts` | Core game types: `GameState`, `DifficultyKey`, `GameConfig`, `GameColors` |
 | `entities.ts` | Entity types: `Bird`, `Pipe`, `Cloud`, `Building`, `Tree`, etc. |
 | `engine.ts` | Engine types: `EngineEvents`, `EngineConfig`, `BestScores` |
-| `props.ts` | Public API types: `FlappyNatureGameProps`, `BannerTexts` |
+| `props.ts` | Public API types: `FlappyGoudaGameProps`, `BannerTexts` |
 | `tokens.ts` | Design tokens: `DESIGN_TOKENS` (centralized colors, CSS var prefix) |
 | `index.ts` | Barrel re-export |
 

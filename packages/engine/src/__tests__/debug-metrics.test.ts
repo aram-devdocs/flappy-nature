@@ -28,7 +28,6 @@ function makeEntityCounts(overrides: Partial<DebugEntityCounts> = {}): DebugEnti
     buildings: 6,
     trees: 8,
     groundDeco: 10,
-    planes: 1,
     ...overrides,
   };
 }
@@ -126,11 +125,10 @@ describe('DebugMetricsCollector', () => {
 
   describe('entity counts', () => {
     it('includes entity counts in snapshot', () => {
-      const counts = makeEntityCounts({ pipes: 3, planes: 2 });
+      const counts = makeEntityCounts({ pipes: 3 });
       collector.setEntityCounts(counts);
       const snap = collector.buildSnapshot();
       expect(snap.entityCounts.pipes).toBe(3);
-      expect(snap.entityCounts.planes).toBe(2);
     });
   });
 

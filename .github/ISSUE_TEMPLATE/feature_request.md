@@ -1,6 +1,6 @@
 ---
 name: Feature Request
-about: Suggest a new feature for Flappy Nature
+about: Suggest a new feature for Flappy Gouda
 labels: enhancement
 ---
 

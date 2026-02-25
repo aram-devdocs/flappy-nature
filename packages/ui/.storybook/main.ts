@@ -4,7 +4,7 @@ import type { StorybookConfig } from '@storybook/react-vite';
 const config: StorybookConfig = {
   stories: [
     '../src/**/*.stories.@(ts|tsx)',
-    '../../../packages/flappy-nature-game/src/**/*.stories.@(ts|tsx)',
+    '../../../packages/flappy-gouda-game/src/**/*.stories.@(ts|tsx)',
   ],
   addons: ['@storybook/addon-essentials', '@storybook/addon-a11y', '@storybook/addon-interactions'],
   framework: {
@@ -17,13 +17,13 @@ const config: StorybookConfig = {
     config.resolve.alias = {
       ...config.resolve.alias,
       '@repo/engine': resolve(__dirname, '../../../packages/engine/src'),
-      '@repo/flappy-nature-game': resolve(__dirname, '../../../packages/flappy-nature-game/src'),
+      '@repo/flappy-gouda-game': resolve(__dirname, '../../../packages/flappy-gouda-game/src'),
     };
     config.server = config.server || {};
     config.server.watch = config.server.watch || {};
     config.server.watch.ignored = [
       '!**/packages/engine/src/**',
-      '!**/packages/flappy-nature-game/src/**',
+      '!**/packages/flappy-gouda-game/src/**',
     ];
     return config;
   },

@@ -22,7 +22,6 @@ const MOCK_METRICS: DebugMetricsSnapshot = {
     buildings: 8,
     trees: 12,
     groundDeco: 4,
-    planes: 1,
   },
   systemInfo: {
     userAgent: 'Storybook',

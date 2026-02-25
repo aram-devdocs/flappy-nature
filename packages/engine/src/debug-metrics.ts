@@ -29,7 +29,6 @@ const EMPTY_COUNTS: DebugEntityCounts = {
   buildings: 0,
   trees: 0,
   groundDeco: 0,
-  planes: 0,
 };
 const EMPTY_SYS: DebugSystemInfo = {
   userAgent: '',

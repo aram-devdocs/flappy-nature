@@ -1,4 +1,4 @@
-import { COLOR_TOKENS, FONT_FAMILY, SPACING } from '@repo/flappy-nature-game';
+import { COLOR_TOKENS, FONT_FAMILY, SPACING } from '@repo/flappy-gouda-game';
 import type { ReactNode } from 'react';
 import { DemoBadges } from './DemoBadges';
 import { DemoFooter } from './DemoFooter';

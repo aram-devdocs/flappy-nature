@@ -1,4 +1,4 @@
-import { COLOR_TOKENS, FONT_SIZE, FONT_WEIGHT, OPACITY, SPACING } from '@repo/flappy-nature-game';
+import { COLOR_TOKENS, FONT_SIZE, FONT_WEIGHT, OPACITY, SPACING } from '@repo/flappy-gouda-game';
 
 export function DemoFooter() {
   return (
@@ -23,23 +23,19 @@ export function DemoFooter() {
           marginTop: SPACING[5],
         }}
       />
-      <a
-        href="https://www.secondnature.com/"
-        target="_blank"
-        rel="noopener noreferrer"
+      <div
         style={{
           display: 'flex',
           flexDirection: 'column',
           alignItems: 'center',
           gap: SPACING[1],
-          textDecoration: 'none',
         }}
       >
         <img
-          src="/favicon.svg"
-          alt="Second Nature"
-          width={20}
-          height={20}
+          src="/assets/logos/vegan-gouda-leaf.png"
+          alt="Vegan Gouda Development"
+          width={28}
+          height={28}
           style={{ opacity: OPACITY.strong }}
         />
         <span
@@ -51,9 +47,9 @@ export function DemoFooter() {
             letterSpacing: '0.025em',
           }}
         >
-          All logos, trademarks &amp; likeness &copy; Second Nature
+          &copy; Vegan Gouda Development
         </span>
-      </a>
+      </div>
       <span
         style={{
           fontSize: FONT_SIZE['2xs'],
@@ -63,7 +59,7 @@ export function DemoFooter() {
           letterSpacing: '0.025em',
         }}
       >
-        A tribute by{' '}
+        Built by{' '}
         <a
           href="https://github.com/aram-devdocs"
           target="_blank"

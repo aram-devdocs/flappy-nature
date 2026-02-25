@@ -149,14 +149,14 @@ describe('GameCanvas', () => {
     expect(canvas).not.toBeNull();
   });
 
-  it('has aria-label="Flappy Nature game"', () => {
+  it('has aria-label="Flappy Gouda game"', () => {
     render(<GameCanvas />);
-    expect(screen.getByLabelText('Flappy Nature game')).toBeDefined();
+    expect(screen.getByLabelText('Flappy Gouda game')).toBeDefined();
   });
 
   it('has role="img"', () => {
     render(<GameCanvas />);
-    expect(screen.getByRole('img', { name: 'Flappy Nature game' })).toBeDefined();
+    expect(screen.getByRole('img', { name: 'Flappy Gouda game' })).toBeDefined();
   });
 });
 
@@ -284,7 +284,7 @@ describe('GameFooter', () => {
 
 describe('GameHeader', () => {
   const defaultProps = {
-    brandName: 'Flappy Nature',
+    brandName: 'Flappy Gouda',
     difficulty: 'normal' as const,
     bestScore: 10,
     difficultyVisible: true,
@@ -293,17 +293,17 @@ describe('GameHeader', () => {
 
   it('renders brand name when provided', () => {
     render(<GameHeader {...defaultProps} />);
-    expect(screen.getByText('Flappy Nature')).toBeDefined();
+    expect(screen.getByText('Flappy Gouda')).toBeDefined();
   });
 
   it('hides brand name when omitted', () => {
     render(<GameHeader {...defaultProps} brandName={undefined} />);
-    expect(screen.queryByText('Flappy Nature')).toBeNull();
+    expect(screen.queryByText('Flappy Gouda')).toBeNull();
   });
 
-  it('renders heart icon', () => {
+  it('renders cheese icon', () => {
     render(<GameHeader {...defaultProps} />);
-    expect(screen.getByRole('img', { name: 'Heart icon' })).toBeDefined();
+    expect(screen.getByRole('img', { name: 'Cheese icon' })).toBeDefined();
   });
 
   it('renders difficulty badge when visible', () => {

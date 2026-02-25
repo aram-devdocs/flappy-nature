@@ -1,4 +1,4 @@
-import { DEFAULT_COLORS, drawBird, loadHeartImage } from '@repo/engine';
+import { DEFAULT_COLORS, drawBird, loadCheeseImage } from '@repo/engine';
 import type { Meta, StoryObj } from '@storybook/react';
 import { useCallback, useEffect, useState } from 'react';
 import { CanvasStage } from '../../CanvasStage';
@@ -17,18 +17,18 @@ function CircleBirdPreview() {
   );
 }
 
-function HeartBirdPreview({ rotation }: { rotation: number }) {
-  const [heartImg, setHeartImg] = useState<HTMLImageElement | null>(null);
+function CheeseBirdPreview({ rotation }: { rotation: number }) {
+  const [spriteImg, setSpriteImg] = useState<HTMLImageElement | null>(null);
 
   useEffect(() => {
-    loadHeartImage(DEFAULT_COLORS.magenta).then(setHeartImg).catch(console.error);
+    loadCheeseImage(DEFAULT_COLORS.magenta).then(setSpriteImg).catch(console.error);
   }, []);
 
   const draw = useCallback(
     (ctx: CanvasRenderingContext2D) => {
-      drawBird(ctx, POS, rotation, POS, BIRD, heartImg, DEFAULT_COLORS);
+      drawBird(ctx, POS, rotation, POS, BIRD, spriteImg, DEFAULT_COLORS);
     },
-    [rotation, heartImg],
+    [rotation, spriteImg],
   );
 
   return (
@@ -36,9 +36,9 @@ function HeartBirdPreview({ rotation }: { rotation: number }) {
   );
 }
 
-const meta: Meta<typeof HeartBirdPreview> = {
+const meta: Meta<typeof CheeseBirdPreview> = {
   title: 'Canvas Assets/Bird',
-  component: HeartBirdPreview,
+  component: CheeseBirdPreview,
   argTypes: {
     rotation: { control: { type: 'range', min: -20, max: 55, step: 1 } },
   },
@@ -50,14 +50,14 @@ export const CircleBird: StoryObj<typeof CircleBirdPreview> = {
   render: () => <CircleBirdPreview />,
 };
 
-export const HeartBird: StoryObj<typeof HeartBirdPreview> = {
+export const CheeseBird: StoryObj<typeof CheeseBirdPreview> = {
   args: { rotation: 0 },
 };
 
-export const NoseUp: StoryObj<typeof HeartBirdPreview> = {
+export const NoseUp: StoryObj<typeof CheeseBirdPreview> = {
   args: { rotation: -20 },
 };
 
-export const NoseDown: StoryObj<typeof HeartBirdPreview> = {
+export const NoseDown: StoryObj<typeof CheeseBirdPreview> = {
   args: { rotation: 55 },
 };

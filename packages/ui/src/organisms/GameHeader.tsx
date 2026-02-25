@@ -1,6 +1,6 @@
 import type { DifficultyKey } from '@repo/types';
 import { FONT_SIZE, FONT_WEIGHT, OPACITY, RGBA_TOKENS, SPACING, cssVar } from '@repo/types';
-import { HeartIcon } from '../atoms/HeartIcon';
+import { CheeseIcon } from '../atoms/CheeseIcon';
 import { DifficultyBadge } from '../molecules/DifficultyBadge';
 
 /** Props for {@link GameHeader}. */
@@ -17,7 +17,7 @@ export interface GameHeaderProps {
   onDifficultyClick: () => void;
 }
 
-/** Header bar with heart icon, optional brand text, difficulty badge, and best score. */
+/** Header bar with cheese icon, optional brand text, difficulty badge, and best score. */
 export function GameHeader({
   brandName,
   difficulty,
@@ -35,7 +35,7 @@ export function GameHeader({
         background: RGBA_TOKENS.violetBorderSubtle,
       }}
     >
-      <HeartIcon size={18} color={cssVar('magenta')} />
+      <CheeseIcon size={18} color={cssVar('magenta')} />
       {brandName && (
         <span
           style={{

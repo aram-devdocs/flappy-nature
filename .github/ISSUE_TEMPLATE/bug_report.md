@@ -1,6 +1,6 @@
 ---
 name: Bug Report
-about: Report a bug in Flappy Nature
+about: Report a bug in Flappy Gouda
 labels: bug
 ---
 

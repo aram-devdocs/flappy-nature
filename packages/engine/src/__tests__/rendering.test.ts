@@ -5,7 +5,6 @@ import type {
   GameColors,
   GroundDeco,
   Pipe,
-  Plane,
   SkylineBuilding,
   SkylineSegment,
   Tree,
@@ -18,7 +17,6 @@ import { Renderer } from '../renderer';
 import {
   drawBuilding,
   drawCloudsPrerendered,
-  drawPlane,
   drawSkylineSegment,
   drawTree,
 } from '../renderer-background';
@@ -85,19 +83,6 @@ function makeCloud(overrides: Partial<Cloud> = {}): Cloud {
     _pad: 0,
     _logW: 0,
     _logH: 0,
-    ...overrides,
-  };
-}
-
-function makePlane(overrides: Partial<Plane> = {}): Plane {
-  return {
-    x: 100,
-    y: 60,
-    dir: 1,
-    bannerText: 'Hello',
-    bannerW: 60,
-    wobble: 0,
-    speed: 0.6,
     ...overrides,
   };
 }
@@ -178,8 +163,6 @@ function makeLayers(overrides: Partial<BgLayers> = {}): BgLayers {
 function makeBg(layers: BgLayers | null = makeLayers()): BackgroundSystem {
   return {
     layers,
-    planePool: [makePlane()],
-    planeActiveCount: 1,
   } as unknown as BackgroundSystem;
 }
 
@@ -353,13 +336,11 @@ describe('renderer-prerender', () => {
 describe('renderer-background', () => {
   let ctx: CanvasRenderingContext2D;
   let colors: GameColors;
-  let fonts: CachedFonts;
 
   beforeEach(() => {
     vi.restoreAllMocks();
     ctx = makeCtx();
     colors = makeColors();
-    fonts = makeFonts();
   });
 
   describe('drawCloudsPrerendered', () => {
@@ -460,34 +441,6 @@ describe('renderer-background', () => {
       expect(ctx.arc).toHaveBeenCalled();
       // 1 base + 5 cactus = 6
       expect(ctx.fillRect).toHaveBeenCalledTimes(6);
-    });
-  });
-
-  describe('drawPlane', () => {
-    it('draws the plane body, banner, and rope', () => {
-      const plane = makePlane();
-      drawPlane(ctx, plane, 1000, colors, fonts);
-
-      expect(ctx.stroke).toHaveBeenCalled(); // rope
-      expect(ctx.fill).toHaveBeenCalled(); // body + banner
-      expect(ctx.fillText).toHaveBeenCalled(); // banner text
-      expect(ctx.ellipse).toHaveBeenCalled(); // body ellipse
-    });
-
-    it('renders correctly with dir=-1', () => {
-      const plane = makePlane({ dir: -1, x: 300 });
-      drawPlane(ctx, plane, 500, colors, fonts);
-
-      expect(ctx.stroke).toHaveBeenCalled();
-      expect(ctx.ellipse).toHaveBeenCalled();
-      expect(ctx.fillText).toHaveBeenCalled();
-    });
-
-    it('resets globalAlpha and textBaseline at the end', () => {
-      drawPlane(ctx, makePlane(), 0, colors, fonts);
-
-      expect(ctx.globalAlpha).toBe(1);
-      expect(ctx.textBaseline).toBe('alphabetic');
     });
   });
 
@@ -601,7 +554,7 @@ describe('Renderer', () => {
   describe('constructor', () => {
     it('creates a renderer with default empty gradient and pipeLip caches', () => {
       expect(renderer).toBeDefined();
-      expect(renderer.heartImg).toBeNull();
+      expect(renderer.spriteImg).toBeNull();
     });
   });
 
@@ -756,27 +709,6 @@ describe('Renderer', () => {
       // tree.x > width, so culled
     });
 
-    it('draws planes based on planeActiveCount', () => {
-      const layers = makeLayers();
-      const bg = makeBg(layers);
-      bg.planeActiveCount = 1;
-      bg.planePool = [makePlane()];
-      renderer.drawBackground(bg, 500);
-
-      // Plane drawing triggers ellipse calls
-      expect(ctx.ellipse).toHaveBeenCalled();
-    });
-
-    it('does not draw planes when planeActiveCount is 0', () => {
-      const layers = makeLayers();
-      const bg = makeBg(layers);
-      bg.planeActiveCount = 0;
-      renderer.drawBackground(bg, 500);
-
-      // No ellipse for plane body
-      expect(ctx.ellipse).not.toHaveBeenCalled();
-    });
-
     it('resets globalAlpha to 1 at the end', () => {
       renderer.drawBackground(makeBg(), 0);
       expect(ctx.globalAlpha).toBe(1);
@@ -901,16 +833,16 @@ describe('Renderer', () => {
       expect(ctx.rotate).toHaveBeenCalled();
     });
 
-    it('draws a fallback circle when heartImg is null', () => {
+    it('draws a fallback circle when spriteImg is null', () => {
       renderer.drawBird(200, 0);
 
       expect(ctx.arc).toHaveBeenCalled();
       expect(ctx.fill).toHaveBeenCalled();
     });
 
-    it('draws the heart image when heartImg is set', () => {
+    it('draws the cheese image when spriteImg is set', () => {
       const fakeImg = {} as HTMLImageElement;
-      renderer.heartImg = fakeImg;
+      renderer.spriteImg = fakeImg;
       renderer.drawBird(200, 0);
 
       expect(ctx.drawImage).toHaveBeenCalled();

@@ -1,26 +1,26 @@
-# Flappy Nature
+# Flappy Gouda
 
-[![GitHub](https://img.shields.io/badge/GitHub-flappy--nature-181717?logo=github&style=flat-square)](https://github.com/aram-devdocs/flappy-nature)
-[![Storybook](https://img.shields.io/badge/Storybook-live-FF4785?logo=storybook&style=flat-square)](https://flappy-nature.aramhammoudeh.com/storybook/)
-[![npm](https://img.shields.io/npm/v/flappy-nature-game?style=flat-square&logo=npm)](https://www.npmjs.com/package/flappy-nature-game)
-[![CI](https://img.shields.io/github/actions/workflow/status/aram-devdocs/flappy-nature/ci.yml?branch=main&style=flat-square&label=CI)](https://github.com/aram-devdocs/flappy-nature/actions/workflows/ci.yml)
+[![GitHub](https://img.shields.io/badge/GitHub-flappy--nature-181717?logo=github&style=flat-square)](https://github.com/aram-devdocs/flappy-gouda)
+[![Storybook](https://img.shields.io/badge/Storybook-live-FF4785?logo=storybook&style=flat-square)](https://flappy-gouda.aramhammoudeh.com/storybook/)
+[![npm](https://img.shields.io/npm/v/flappy-gouda-game?style=flat-square&logo=npm)](https://www.npmjs.com/package/flappy-gouda-game)
+[![CI](https://img.shields.io/github/actions/workflow/status/aram-devdocs/flappy-gouda/ci.yml?branch=main&style=flat-square&label=CI)](https://github.com/aram-devdocs/flappy-gouda/actions/workflows/ci.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue?style=flat-square)](./LICENSE)
 
 A canvas-based Flappy Bird game with a nature/cityscape theme, built as a React component.
 
-**[Live Demo](https://flappy-nature.aramhammoudeh.com)** · **[Storybook](https://flappy-nature.aramhammoudeh.com/storybook/)** · **[npm](https://www.npmjs.com/package/flappy-nature-game)**
+**[Live Demo](https://flappy-gouda.aramhammoudeh.com)** · **[Storybook](https://flappy-gouda.aramhammoudeh.com/storybook/)** · **[npm](https://www.npmjs.com/package/flappy-gouda-game)**
 
 ## Quick Start
 
 ```bash
-npm install flappy-nature-game
+npm install flappy-gouda-game
 ```
 
 ```tsx
-import { FlappyNatureGame } from 'flappy-nature-game';
+import { FlappyGoudaGame } from 'flappy-gouda-game';
 
 function App() {
-  return <FlappyNatureGame />;
+  return <FlappyGoudaGame />;
 }
 ```
 
@@ -44,18 +44,18 @@ packages/
   engine/               Game loop, physics, collision (pure TS, no React)
   ui/                   Stateless React presentational components
   hooks/                React hooks bridging engine → React state
-  flappy-nature-game/   Orchestration layer (published to npm)
+  flappy-gouda-game/   Orchestration layer (published to npm)
 
 apps/
   web/                  Vite + React host app
 ```
 
-Dependency flow: `types → engine/ui → hooks → flappy-nature-game → web`
+Dependency flow: `types → engine/ui → hooks → flappy-gouda-game → web`
 
 - **engine** owns all game logic: physics, collision, scoring, entity lifecycle. Zero React dependencies.
 - **ui** contains stateless components. Props in, callbacks out. No hooks, no state.
 - **hooks** bridge engine events into React state via subscriptions.
-- **flappy-nature-game** wires everything together into `<FlappyNatureGame />`.
+- **flappy-gouda-game** wires everything together into `<FlappyGoudaGame />`.
 
 ## Development
 
@@ -103,4 +103,4 @@ The pre-push hook runs `typecheck + test + build + validate-architecture`. See [
 
 [MIT](./LICENSE) -- code is free to use, modify, and distribute.
 
-Second Nature brand assets (name, logo, visuals) are **not** covered by the MIT license. See [LICENSE](./LICENSE) for details.
+Vegan Gouda Development brand assets (name, logo, visuals) are **not** covered by the MIT license. See [LICENSE](./LICENSE) for details.

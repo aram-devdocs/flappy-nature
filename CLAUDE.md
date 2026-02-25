@@ -1,10 +1,10 @@
-# Flappy Nature -- Monorepo Guide
+# Flappy Gouda -- Monorepo Guide
 
 This document is the primary reference for any AI agent or human contributor working in this codebase. All statements using RFC 2119 keywords (MUST, MUST NOT, SHOULD, SHALL, etc.) are binding.
 
 ## Architecture
 
-Flappy Nature is a Turborepo monorepo that implements a canvas-based Flappy Bird game with a nature/cityscape theme. The codebase enforces strict separation between pure game logic, React bindings, and presentational components.
+Flappy Gouda is a Turborepo monorepo that implements a canvas-based Flappy Bird game with a nature/cityscape theme. The codebase enforces strict separation between pure game logic, React bindings, and presentational components.
 
 ### Package Map
 
@@ -15,10 +15,10 @@ packages/
   engine/              Game loop, physics, collision, entity management. Pure TS, no React.
   ui/                  Stateless React presentational components. Props in, callbacks out.
   hooks/               React hooks that bridge engine state into React. No rendering, no business logic.
-  flappy-nature-game/  Orchestration layer. Composes engine + hooks + ui into the public game component.
+  flappy-gouda-game/  Orchestration layer. Composes engine + hooks + ui into the public game component.
 
 apps/
-  web/                 Vite + React host app. Imports only @repo/flappy-nature-game.
+  web/                 Vite + React host app. Imports only @repo/flappy-gouda-game.
 ```
 
 ### Dependency Flow
@@ -31,16 +31,16 @@ config          --> (nothing)
 engine          --> types
 ui              --> types
 hooks           --> engine, types
-flappy-nature-game --> ui, hooks, engine, types
-web             --> flappy-nature-game
+flappy-gouda-game --> ui, hooks, engine, types
+web             --> flappy-gouda-game
 ```
 
 Rules:
 - `@repo/types` and `@repo/config` MUST NOT depend on any `@repo/*` package.
 - `@repo/engine` MUST NOT import from `react`, `react-dom`, or any `@repo/` package except `@repo/types`.
 - `@repo/ui` MUST NOT import from `@repo/hooks` or `@repo/engine`.
-- `@repo/hooks` MUST NOT import from `@repo/ui` or `@repo/flappy-nature-game`.
-- `@repo/web` MUST only depend on `@repo/flappy-nature-game`.
+- `@repo/hooks` MUST NOT import from `@repo/ui` or `@repo/flappy-gouda-game`.
+- `@repo/web` MUST only depend on `@repo/flappy-gouda-game`.
 - Circular dependencies MUST NOT exist. The architecture validator runs a DFS cycle check.
 
 ### Technology Stack
@@ -112,7 +112,7 @@ These patterns MUST NOT appear in the codebase:
 
 5. **`any` types.** Biome enforces `noExplicitAny: error`. Use `unknown` with type guards instead.
 
-6. **Direct cross-layer imports.** A UI component MUST NOT reach into `@repo/engine` directly. It goes through `@repo/hooks` via `@repo/flappy-nature-game`.
+6. **Direct cross-layer imports.** A UI component MUST NOT reach into `@repo/engine` directly. It goes through `@repo/hooks` via `@repo/flappy-gouda-game`.
 
 7. **Mutable default exports.** Prefer named exports. Default exports SHOULD be avoided except for React components that are the sole export of their file.
 

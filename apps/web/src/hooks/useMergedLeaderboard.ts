@@ -1,4 +1,4 @@
-import type { LeaderboardEntry, LeaderboardWindowItem } from '@repo/flappy-nature-game';
+import type { LeaderboardEntry, LeaderboardWindowItem } from '@repo/flappy-gouda-game';
 import { useMemo } from 'react';
 import { computeLeaderboardWindow } from '../lib/leaderboard/compute-window';
 import type { LiveScoreBroadcast } from '../lib/leaderboard/service';

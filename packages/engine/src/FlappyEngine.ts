@@ -2,6 +2,7 @@ import type { Bird, Cloud, DifficultyKey, EngineConfig, EngineEventName } from '
 import type { EngineEvents, GameColors, GameConfig, Pipe } from '@repo/types';
 import type { BackgroundSystem } from './background';
 import type { CachedFonts } from './cache';
+import { loadCheeseImage } from './cheese';
 import { DEFAULT_CONFIG, PIPE_POOL_SIZE, applyDifficulty, validateConfig } from './config';
 import { DebugMetricsCollector } from './debug-metrics';
 import { EngineEventEmitter } from './engine-events';
@@ -11,7 +12,6 @@ import { EngineLoop } from './engine-loop';
 import { createBgSystem, createRenderer, initClouds, setupCanvas } from './engine-setup';
 import { EngineState } from './engine-state';
 import { EngineError } from './errors';
-import { loadHeartImage } from './heart';
 import { loadBestScores, loadDifficulty } from './persistence';
 import type { Renderer } from './renderer';
 import { hitTestSettingsIcon } from './renderer-entities';
@@ -28,7 +28,6 @@ export class FlappyEngine {
   private config: GameConfig;
   private colors: GameColors;
   private fonts: CachedFonts;
-  private bannerTexts: string[];
   private canvas: HTMLCanvasElement;
   private ctx: CanvasRenderingContext2D;
   private dpr = 1;
@@ -53,13 +52,12 @@ export class FlappyEngine {
     const resolved = resolveEngineConfig(engineConfig);
     this.colors = resolved.colors;
     this.fonts = resolved.fonts;
-    this.bannerTexts = resolved.bannerTexts;
     this.config = { ...DEFAULT_CONFIG };
     this.state.bestScores = loadBestScores();
     this.state.difficulty = engineConfig?.difficulty ?? loadDifficulty();
     applyDifficulty(this.state.difficulty, this.config);
     validateConfig(this.config);
-    this.bg = createBgSystem(this.config, this.bannerTexts);
+    this.bg = createBgSystem(this.config);
     this.renderer = createRenderer(this.ctx, this.config, this.colors, this.fonts, this.dpr);
     if (engineConfig?.enableDebug) this.debugCollector = new DebugMetricsCollector(this.events);
   }
@@ -68,8 +66,8 @@ export class FlappyEngine {
     this.dpr = setupCanvas(this.canvas, this.ctx);
     this.renderer = createRenderer(this.ctx, this.config, this.colors, this.fonts, this.dpr);
     this.renderer.buildGradients();
-    this.renderer.heartImg = await Promise.race([
-      loadHeartImage(this.colors.violet),
+    this.renderer.spriteImg = await Promise.race([
+      loadCheeseImage(this.colors.violet),
       new Promise<null>((r) => setTimeout(() => r(null), 5000)),
     ]);
     this.pipePool = Array.from({ length: PIPE_POOL_SIZE }, () => ({
@@ -109,12 +107,12 @@ export class FlappyEngine {
   /** Change the difficulty preset, rebuild renderer/background, and reset the game. */
   setDifficulty(key: DifficultyKey): void {
     this.state.setDifficulty(key, this.config);
-    const prevHeartImg = this.renderer.heartImg;
+    const prevSpriteImg = this.renderer.spriteImg;
     this.renderer.dispose();
     this.renderer = createRenderer(this.ctx, this.config, this.colors, this.fonts, this.dpr);
     this.renderer.buildGradients();
-    this.renderer.heartImg = prevHeartImg;
-    this.bg = createBgSystem(this.config, this.bannerTexts);
+    this.renderer.spriteImg = prevSpriteImg;
+    this.bg = createBgSystem(this.config);
     this.bg.init();
     this.renderer.prerenderAllClouds(this.clouds, this.bg);
     this.doReset();

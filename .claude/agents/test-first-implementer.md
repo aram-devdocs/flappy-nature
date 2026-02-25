@@ -26,7 +26,7 @@ You are the RED phase agent in the TDD pipeline. Your sole job is to write faili
 - Engine tests: `packages/engine/src/__tests__/` or colocated as `*.test.ts`.
 - Hook tests: `packages/hooks/src/__tests__/` or colocated as `*.test.ts`.
 - UI tests: `packages/ui/src/__tests__/` or colocated as `*.test.tsx`.
-- Game tests: `packages/flappy-nature-game/src/__tests__/` or colocated as `*.test.tsx`.
+- Game tests: `packages/flappy-gouda-game/src/__tests__/` or colocated as `*.test.tsx`.
 
 ### Style
 - Use `describe` / `it` blocks with clear, behavior-focused descriptions.
