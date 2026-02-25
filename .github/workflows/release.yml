@@ -23,9 +23,9 @@ jobs:
     if: github.event_name == 'push'
     runs-on: ubuntu-latest
     outputs:
-      release_created: ${{ steps.release.outputs['flappy-nature-game--release_created'] }}
-      tag_name: ${{ steps.release.outputs['flappy-nature-game--tag_name'] }}
-      version: ${{ steps.release.outputs['flappy-nature-game--version'] }}
+      release_created: ${{ steps.release.outputs['flappy-nature-game--release_created'] || steps.check-release.outputs.release_created }}
+      tag_name: ${{ steps.release.outputs['flappy-nature-game--tag_name'] || steps.check-release.outputs.tag_name }}
+      version: ${{ steps.release.outputs['flappy-nature-game--version'] || steps.check-release.outputs.version }}
       prs_created: ${{ steps.release.outputs.prs_created }}
     steps:
       - uses: googleapis/release-please-action@v4
@@ -34,6 +34,34 @@ jobs:
           config-file: release-please-config.json
           manifest-file: .release-please-manifest.json
           token: ${{ secrets.RELEASE_PAT }}
+      - name: Check if release was created
+        id: check-release
+        if: steps.release.outputs['flappy-nature-game--release_created'] != 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          # release-please sometimes creates a release without setting outputs.
+          # Check the PR it just processed for the autorelease:tagged label.
+          PR_NUMBER=$(gh pr list --state merged --label "autorelease: tagged" \
+            --json number,mergedAt --jq 'sort_by(.mergedAt) | last | .number' \
+            --repo "${{ github.repository }}" 2>/dev/null || echo "")
+          if [ -z "$PR_NUMBER" ]; then
+            echo "No recently tagged release PR found"
+            exit 0
+          fi
+          # Find the release that was just created
+          LATEST_TAG=$(gh release list --limit 1 --json tagName --jq '.[0].tagName' \
+            --repo "${{ github.repository }}" 2>/dev/null || echo "")
+          if [ -z "$LATEST_TAG" ]; then
+            echo "No releases found"
+            exit 0
+          fi
+          # Extract version from tag (flappy-nature-game-v0.2.1 -> 0.2.1)
+          VERSION=$(echo "$LATEST_TAG" | sed 's/flappy-nature-game-v//')
+          echo "Found release: $LATEST_TAG (v$VERSION)"
+          echo "release_created=true" >> "$GITHUB_OUTPUT"
+          echo "tag_name=$LATEST_TAG" >> "$GITHUB_OUTPUT"
+          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
 
   format-release-pr:
     needs: release-please
@@ -98,7 +126,6 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version-file: .nvmrc
-          registry-url: https://registry.npmjs.org
       - run: pnpm install --frozen-lockfile
       - run: pnpm build
       - name: Verify bundle integrity
@@ -153,6 +180,10 @@ jobs:
             }
             console.log('Type declarations bundled successfully');
           "
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          registry-url: https://registry.npmjs.org
       - name: Publish to npm
         working-directory: packages/flappy-nature-game
         run: npm publish --provenance --access public
