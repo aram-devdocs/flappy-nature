@@ -6,6 +6,7 @@ import {
   RADIUS,
   RGBA_TOKENS,
   SPACING,
+  STATUS_COLORS,
   cssVar,
 } from '@repo/types';
 
@@ -97,7 +98,7 @@ export function LeaderboardEntryRow({
             width: '6px',
             height: '6px',
             borderRadius: '50%',
-            backgroundColor: '#4ade80',
+            backgroundColor: STATUS_COLORS.success,
             flexShrink: 0,
           }}
         />

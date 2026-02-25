@@ -6,6 +6,7 @@ import {
   RADIUS,
   RGBA_TOKENS,
   SPACING,
+  STATUS_COLORS,
   Z_INDEX,
   cssVar,
 } from '@repo/types';
@@ -87,7 +88,7 @@ export function LeaderboardMiniOverlay({
                   width: '6px',
                   height: '6px',
                   borderRadius: '50%',
-                  background: '#4ade80',
+                  background: STATUS_COLORS.success,
                   flexShrink: 0,
                 }}
               />
