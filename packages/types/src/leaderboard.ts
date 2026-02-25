@@ -55,6 +55,24 @@ export interface LeaderboardCallbacks {
   onNicknameCheck: (nickname: string) => Promise<NicknameCheckResult>;
 }
 
+/** Separator marker between non-contiguous leaderboard regions. */
+export interface LeaderboardSeparator {
+  type: 'separator';
+  rankAbove: number;
+  rankBelow: number;
+}
+
+/** An entry in the windowed leaderboard view. */
+export interface LeaderboardWindowEntry {
+  type: 'entry';
+  entry: LeaderboardEntry;
+  /** Whether this entry is a live (ephemeral, not yet persisted) score. */
+  isLive?: boolean;
+}
+
+/** A single renderable item in the windowed leaderboard list. */
+export type LeaderboardWindowItem = LeaderboardWindowEntry | LeaderboardSeparator;
+
 /** Optional leaderboard props passed to the game component. */
 export interface LeaderboardProps {
   /** Leaderboard data to display. When undefined, leaderboard UI is hidden. */

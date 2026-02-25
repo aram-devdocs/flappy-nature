@@ -15,8 +15,12 @@ export interface LeaderboardEntryRowProps {
   entry: LeaderboardEntry;
   /** Whether this entry belongs to the current player. */
   isPlayer: boolean;
-  /** Whether this is a newly submitted score. */
+  /** Whether this is a newly submitted score (fade-in effect). */
   isNew?: boolean;
+  /** Absolute Y offset in px. When set, the row is absolutely positioned. */
+  yOffset?: number;
+  /** Whether this is a live (in-game, not yet persisted) score. */
+  isLive?: boolean;
 }
 
 const RANK_MEDALS: Record<number, string> = {
@@ -26,12 +30,30 @@ const RANK_MEDALS: Record<number, string> = {
 };
 
 /** Single score row in the leaderboard list. */
-export function LeaderboardEntryRow({ entry, isPlayer, isNew }: LeaderboardEntryRowProps) {
+export function LeaderboardEntryRow({
+  entry,
+  isPlayer,
+  isNew,
+  yOffset,
+  isLive,
+}: LeaderboardEntryRowProps) {
   const highlight = isNew
     ? RGBA_TOKENS.violetBgSubtle.replace('0.08', '0.14')
     : isPlayer
       ? RGBA_TOKENS.violetBgSubtle
       : 'transparent';
+
+  const positionStyles: React.CSSProperties =
+    yOffset !== undefined
+      ? {
+          position: 'absolute',
+          top: 0,
+          left: 0,
+          right: 0,
+          transform: `translateY(${yOffset}px)`,
+          transition: 'transform 0.3s cubic-bezier(0.25, 0.1, 0.25, 1), background 0.3s ease',
+        }
+      : {};
 
   return (
     <div
@@ -42,6 +64,7 @@ export function LeaderboardEntryRow({ entry, isPlayer, isNew }: LeaderboardEntry
         borderRadius: RADIUS.sm,
         background: highlight,
         gap: SPACING[2],
+        ...positionStyles,
       }}
     >
       <span
@@ -68,6 +91,17 @@ export function LeaderboardEntryRow({ entry, isPlayer, isNew }: LeaderboardEntry
       >
         {entry.nickname}
       </span>
+      {isLive && (
+        <span
+          style={{
+            width: '6px',
+            height: '6px',
+            borderRadius: '50%',
+            backgroundColor: '#4ade80',
+            flexShrink: 0,
+          }}
+        />
+      )}
       <span
         style={{
           fontSize: FONT_SIZE.md,

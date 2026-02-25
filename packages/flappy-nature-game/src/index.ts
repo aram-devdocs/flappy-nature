@@ -42,6 +42,9 @@ export type {
   LeaderboardConnectionStatus,
   LeaderboardProps,
   NicknameCheckResult,
+  LeaderboardSeparator,
+  LeaderboardWindowEntry,
+  LeaderboardWindowItem,
 } from '@repo/types';
 
 export { NICKNAME_LENGTH, NICKNAME_PATTERN } from '@repo/types';

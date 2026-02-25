@@ -7,10 +7,14 @@ import type { RealtimeChannel } from '@supabase/supabase-js';
 import { supabase } from '../supabase/client.js';
 import { isProfane } from './profanity.js';
 import { NicknameSchema, ScoreSubmitSchema } from './schemas.js';
-import type { LeaderboardService } from './service.js';
+import type { LeaderboardService, LiveScoreBroadcast } from './service.js';
 
 export class SupabaseLeaderboardService implements LeaderboardService {
   private channels: RealtimeChannel[] = [];
+  private broadcastSessionId = crypto.randomUUID();
+  private liveChannel: RealtimeChannel | null = null;
+  private lastBroadcastTime = 0;
+  private readonly BROADCAST_THROTTLE_MS = 500;
 
   async initAuth(): Promise<void> {
     if (!supabase) return;
@@ -38,6 +42,38 @@ export class SupabaseLeaderboardService implements LeaderboardService {
       difficulty: row.difficulty as DifficultyKey,
       createdAt: row.created_at,
       rank: index + 1,
+    }));
+  }
+
+  async getLeaderboardWindowed(
+    difficulty: DifficultyKey,
+    topCount = 3,
+    surroundCount = 3,
+  ): Promise<LeaderboardEntry[]> {
+    if (!supabase) return [];
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+
+    const { data, error } = await supabase.rpc('get_leaderboard_window', {
+      p_difficulty: difficulty,
+      p_user_id: user?.id ?? null,
+      p_top_count: topCount,
+      p_surround_count: surroundCount,
+    });
+
+    if (error || !data) {
+      // Fall back to regular query if RPC unavailable
+      return this.getLeaderboard(difficulty, 50);
+    }
+
+    return (data as Array<Record<string, unknown>>).map((row) => ({
+      id: row.id as string,
+      nickname: row.nickname as string,
+      score: row.score as number,
+      difficulty: row.difficulty as DifficultyKey,
+      createdAt: row.created_at as string,
+      rank: Number(row.rank),
     }));
   }
 
@@ -216,6 +252,51 @@ export class SupabaseLeaderboardService implements LeaderboardService {
       .maybeSingle();
 
     return data?.nickname ?? null;
+  }
+
+  broadcastLiveScore(score: number, difficulty: DifficultyKey, nickname: string): void {
+    if (!supabase || !this.liveChannel) return;
+    const now = Date.now();
+    if (now - this.lastBroadcastTime < this.BROADCAST_THROTTLE_MS) return;
+    this.lastBroadcastTime = now;
+
+    const payload: LiveScoreBroadcast = {
+      sessionId: this.broadcastSessionId,
+      nickname,
+      score,
+      difficulty,
+      timestamp: now,
+    };
+    this.liveChannel.send({ type: 'broadcast', event: 'live-score', payload });
+  }
+
+  subscribeToBroadcasts(
+    difficulty: DifficultyKey,
+    onBroadcast: (broadcast: LiveScoreBroadcast) => void,
+  ): () => void {
+    if (!supabase) return () => {};
+
+    // Single shared channel for both sending and receiving live scores
+    const channelName = `live-${difficulty}`;
+    const channel = supabase
+      .channel(channelName)
+      .on('broadcast', { event: 'live-score' }, (msg) => {
+        onBroadcast(msg.payload as LiveScoreBroadcast);
+      })
+      .subscribe();
+
+    this.liveChannel = channel;
+    this.channels.push(channel);
+    return () => {
+      this.liveChannel = null;
+      supabase?.removeChannel(channel);
+      this.channels = this.channels.filter((c) => c !== channel);
+    };
+  }
+
+  resetBroadcastSession(): void {
+    this.broadcastSessionId = crypto.randomUUID();
+    this.lastBroadcastTime = 0;
   }
 
   dispose(): void {

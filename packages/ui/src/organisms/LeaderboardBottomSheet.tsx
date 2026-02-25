@@ -1,4 +1,8 @@
-import type { DifficultyKey, LeaderboardConnectionStatus, LeaderboardEntry } from '@repo/types';
+import type {
+  DifficultyKey,
+  LeaderboardConnectionStatus,
+  LeaderboardWindowItem,
+} from '@repo/types';
 import {
   DIFF_LABELS,
   FONT_SIZE,
@@ -11,22 +15,27 @@ import {
   Z_INDEX,
   cssVar,
 } from '@repo/types';
+import { LeaderboardSeparator } from '../atoms/LeaderboardSeparator.js';
 import { LeaderboardEntryRow } from '../molecules/LeaderboardEntryRow.js';
+
+const ROW_HEIGHT = 36;
 
 /** Props for {@link LeaderboardBottomSheet}. */
 export interface LeaderboardBottomSheetProps {
   /** Whether the sheet is visible. */
   visible: boolean;
-  /** Ordered list of leaderboard entries. */
-  entries: LeaderboardEntry[];
-  /** Current player's entry (pinned at bottom if not in list). */
-  playerEntry: LeaderboardEntry | null;
+  /** Windowed list of leaderboard items. */
+  items: LeaderboardWindowItem[];
+  /** Current player's entry ID, to highlight their row. */
+  playerEntryId: string | null;
   /** Whether leaderboard data is loading. */
   isLoading: boolean;
   /** Current difficulty filter. */
   difficulty: DifficultyKey;
   /** Real-time connection status. */
   connectionStatus: LeaderboardConnectionStatus;
+  /** Set of entry IDs that recently appeared (for fade-in). */
+  newEntryIds?: ReadonlySet<string>;
 }
 
 const DOT_COLORS: Record<LeaderboardConnectionStatus, string> = {
@@ -39,14 +48,13 @@ const DOT_COLORS: Record<LeaderboardConnectionStatus, string> = {
 /** Full leaderboard as a bottom sheet that slides up from the game's bottom edge. */
 export function LeaderboardBottomSheet({
   visible,
-  entries,
-  playerEntry,
+  items,
+  playerEntryId,
   isLoading,
   difficulty,
   connectionStatus,
+  newEntryIds,
 }: LeaderboardBottomSheetProps) {
-  const playerInList = playerEntry ? entries.some((e) => e.id === playerEntry.id) : true;
-
   return (
     <div
       aria-label="Leaderboard"
@@ -71,13 +79,7 @@ export function LeaderboardBottomSheet({
       }}
     >
       {/* Drag handle */}
-      <div
-        style={{
-          display: 'flex',
-          justifyContent: 'center',
-          padding: `${SPACING[1.5]} 0 0`,
-        }}
-      >
+      <div style={{ display: 'flex', justifyContent: 'center', padding: `${SPACING[1.5]} 0 0` }}>
         <div
           style={{
             width: '36px',
@@ -124,29 +126,35 @@ export function LeaderboardBottomSheet({
       {/* Body */}
       <div style={{ flex: 1, overflowY: 'auto', padding: `0 ${SPACING[1]}` }}>
         {isLoading && <p style={emptyStyle}>Loading...</p>}
-        {!isLoading && entries.length === 0 && <p style={emptyStyle}>No scores yet</p>}
-        {!isLoading &&
-          entries.map((entry) => (
-            <LeaderboardEntryRow
-              key={entry.id}
-              entry={entry}
-              isPlayer={playerEntry?.id === entry.id}
-            />
-          ))}
+        {!isLoading && items.length === 0 && <p style={emptyStyle}>No scores yet</p>}
+        {!isLoading && items.length > 0 && (
+          <div style={{ position: 'relative', height: items.length * ROW_HEIGHT }}>
+            {items.map((item, index) => {
+              if (item.type === 'separator') {
+                return (
+                  <LeaderboardSeparator
+                    key={`sep-${item.rankAbove}-${item.rankBelow}`}
+                    rankAbove={item.rankAbove}
+                    rankBelow={item.rankBelow}
+                    yOffset={index * ROW_HEIGHT}
+                  />
+                );
+              }
+              const { entry } = item;
+              return (
+                <LeaderboardEntryRow
+                  key={entry.id}
+                  entry={entry}
+                  isPlayer={entry.id === playerEntryId}
+                  isNew={newEntryIds?.has(entry.id)}
+                  isLive={item.isLive}
+                  yOffset={index * ROW_HEIGHT}
+                />
+              );
+            })}
+          </div>
+        )}
       </div>
-
-      {/* Player pinned at bottom */}
-      {!isLoading && playerEntry && !playerInList && (
-        <div
-          style={{
-            borderTop: `1px solid ${RGBA_TOKENS.shadowSm}`,
-            padding: SPACING[1],
-            flexShrink: 0,
-          }}
-        >
-          <LeaderboardEntryRow entry={playerEntry} isPlayer isNew={false} />
-        </div>
-      )}
     </div>
   );
 }

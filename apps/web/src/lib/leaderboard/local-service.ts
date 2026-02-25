@@ -36,6 +36,14 @@ export class LocalLeaderboardService implements LeaderboardService {
     /* no-op */
   }
 
+  async getLeaderboardWindowed(
+    difficulty: DifficultyKey,
+    _topCount?: number,
+    _surroundCount?: number,
+  ): Promise<LeaderboardEntry[]> {
+    return this.getLeaderboard(difficulty);
+  }
+
   async getLeaderboard(difficulty: DifficultyKey, limit = 25): Promise<LeaderboardEntry[]> {
     const scores = readScores()
       .filter((s) => s.difficulty === difficulty)

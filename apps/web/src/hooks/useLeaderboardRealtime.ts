@@ -1,8 +1,4 @@
-import type {
-  DifficultyKey,
-  LeaderboardConnectionStatus,
-  LeaderboardEntry,
-} from '@repo/flappy-nature-game';
+import type { DifficultyKey, LeaderboardConnectionStatus } from '@repo/flappy-nature-game';
 import { useQueryClient } from '@tanstack/react-query';
 import { useEffect, useState } from 'react';
 import { useLeaderboardService } from '../components/LeaderboardProvider.js';
@@ -18,8 +14,8 @@ export function useLeaderboardRealtime(difficulty: DifficultyKey) {
   useEffect(() => {
     setStatus(isSupabaseConfigured ? 'connecting' : 'disconnected');
 
-    const unsubscribe = service.subscribeToScores(difficulty, (entries: LeaderboardEntry[]) => {
-      queryClient.setQueryData(['leaderboard', difficulty], entries);
+    const unsubscribe = service.subscribeToScores(difficulty, () => {
+      queryClient.invalidateQueries({ queryKey: ['leaderboard', difficulty] });
     });
 
     // Mark connected after a short delay (Supabase channel subscription is async)

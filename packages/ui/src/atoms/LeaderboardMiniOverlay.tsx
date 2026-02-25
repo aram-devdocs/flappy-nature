@@ -18,6 +18,8 @@ export interface LeaderboardMiniOverlayProps {
   visible: boolean;
   /** Current player's entry ID, to highlight if they're in the list. */
   playerEntryId: string | null;
+  /** Set of entry IDs that have live (in-game) scores. */
+  liveEntryIds?: ReadonlySet<string>;
 }
 
 const RANK_MEDALS: Record<number, string> = {
@@ -31,6 +33,7 @@ export function LeaderboardMiniOverlay({
   entries,
   visible,
   playerEntryId,
+  liveEntryIds,
 }: LeaderboardMiniOverlayProps) {
   if (!visible || entries.length === 0) return null;
 
@@ -51,6 +54,7 @@ export function LeaderboardMiniOverlay({
     >
       {entries.map((entry) => {
         const isPlayer = entry.id === playerEntryId;
+        const isLive = liveEntryIds?.has(entry.id) ?? false;
         return (
           <div
             key={entry.id}
@@ -77,6 +81,17 @@ export function LeaderboardMiniOverlay({
             >
               {entry.nickname}
             </span>
+            {isLive && (
+              <span
+                style={{
+                  width: '6px',
+                  height: '6px',
+                  borderRadius: '50%',
+                  background: '#4ade80',
+                  flexShrink: 0,
+                }}
+              />
+            )}
             <span
               style={{
                 fontSize: FONT_SIZE.xs,

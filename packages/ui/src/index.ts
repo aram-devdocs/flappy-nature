@@ -11,6 +11,8 @@ export { LeaderboardTab } from './atoms/LeaderboardTab.js';
 export type { LeaderboardTabProps } from './atoms/LeaderboardTab.js';
 export { LeaderboardMiniOverlay } from './atoms/LeaderboardMiniOverlay.js';
 export type { LeaderboardMiniOverlayProps } from './atoms/LeaderboardMiniOverlay.js';
+export { LeaderboardSeparator } from './atoms/LeaderboardSeparator.js';
+export type { LeaderboardSeparatorProps } from './atoms/LeaderboardSeparator.js';
 export { NicknameCharCell } from './atoms/NicknameCharCell.js';
 export type { NicknameCharCellProps } from './atoms/NicknameCharCell.js';
 

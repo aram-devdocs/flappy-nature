@@ -38,6 +38,9 @@ export type {
   LeaderboardData,
   LeaderboardCallbacks,
   LeaderboardProps,
+  LeaderboardSeparator,
+  LeaderboardWindowEntry,
+  LeaderboardWindowItem,
 } from './leaderboard';
 
 export { NICKNAME_LENGTH, NICKNAME_PATTERN } from './leaderboard';

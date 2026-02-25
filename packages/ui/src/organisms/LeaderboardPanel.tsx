@@ -1,4 +1,4 @@
-import type { DifficultyKey, LeaderboardEntry } from '@repo/types';
+import type { DifficultyKey, LeaderboardWindowItem } from '@repo/types';
 import {
   DIFF_LABELS,
   FONT_SIZE,
@@ -10,35 +10,39 @@ import {
   Z_INDEX,
   cssVar,
 } from '@repo/types';
+import { LeaderboardSeparator } from '../atoms/LeaderboardSeparator.js';
 import { LeaderboardEntryRow } from '../molecules/LeaderboardEntryRow.js';
+
+const ROW_HEIGHT = 36;
 
 /** Props for {@link LeaderboardPanel}. */
 export interface LeaderboardPanelProps {
   /** Whether the panel is expanded. */
   visible: boolean;
-  /** Ordered list of leaderboard entries to display. */
-  entries: LeaderboardEntry[];
-  /** Current player's entry (shown at bottom if not in visible list). */
-  playerEntry: LeaderboardEntry | null;
+  /** Windowed list of leaderboard items to display. */
+  items: LeaderboardWindowItem[];
+  /** Current player's entry ID, to highlight their row. */
+  playerEntryId: string | null;
   /** Whether leaderboard data is currently loading. */
   isLoading: boolean;
   /** Called when the close button is clicked. */
   onClose: () => void;
   /** Current difficulty filter. */
   difficulty: DifficultyKey;
+  /** Set of entry IDs that recently appeared (for fade-in). */
+  newEntryIds?: ReadonlySet<string>;
 }
 
 /** Sliding leaderboard panel from the right edge of the game. */
 export function LeaderboardPanel({
   visible,
-  entries,
-  playerEntry,
+  items,
+  playerEntryId,
   isLoading,
   onClose,
   difficulty,
+  newEntryIds,
 }: LeaderboardPanelProps) {
-  const playerInList = playerEntry ? entries.some((e) => e.id === playerEntry.id) : true;
-
   return (
     <div
       aria-label="Leaderboard"
@@ -106,29 +110,35 @@ export function LeaderboardPanel({
         }}
       >
         {isLoading && <p style={emptyStyle}>Loading...</p>}
-        {!isLoading && entries.length === 0 && <p style={emptyStyle}>No scores yet</p>}
-        {!isLoading &&
-          entries.map((entry) => (
-            <LeaderboardEntryRow
-              key={entry.id}
-              entry={entry}
-              isPlayer={playerEntry?.id === entry.id}
-            />
-          ))}
+        {!isLoading && items.length === 0 && <p style={emptyStyle}>No scores yet</p>}
+        {!isLoading && items.length > 0 && (
+          <div style={{ position: 'relative', height: items.length * ROW_HEIGHT }}>
+            {items.map((item, index) => {
+              if (item.type === 'separator') {
+                return (
+                  <LeaderboardSeparator
+                    key={`sep-${item.rankAbove}-${item.rankBelow}`}
+                    rankAbove={item.rankAbove}
+                    rankBelow={item.rankBelow}
+                    yOffset={index * ROW_HEIGHT}
+                  />
+                );
+              }
+              const { entry } = item;
+              return (
+                <LeaderboardEntryRow
+                  key={entry.id}
+                  entry={entry}
+                  isPlayer={entry.id === playerEntryId}
+                  isNew={newEntryIds?.has(entry.id)}
+                  isLive={item.isLive}
+                  yOffset={index * ROW_HEIGHT}
+                />
+              );
+            })}
+          </div>
+        )}
       </div>
-
-      {/* Player entry pinned at bottom */}
-      {!isLoading && playerEntry && !playerInList && (
-        <div
-          style={{
-            borderTop: `1px solid ${RGBA_TOKENS.shadowSm}`,
-            padding: `${SPACING[1]} ${SPACING[1]}`,
-            flexShrink: 0,
-          }}
-        >
-          <LeaderboardEntryRow entry={playerEntry} isPlayer isNew={false} />
-        </div>
-      )}
     </div>
   );
 }
