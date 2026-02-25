@@ -57,6 +57,12 @@ export class SupabaseLeaderboardService implements LeaderboardService {
       if (!session) throw new Error('Not authenticated');
     }
 
+    // Refresh to ensure the access token is valid for the edge function gateway
+    const { data: refreshed } = await supabase.auth.refreshSession();
+    if (refreshed.session) {
+      session = refreshed.session;
+    }
+
     // Try edge function first (server-side validation)
     const { data, error } = await supabase.functions.invoke('validate-score', {
       body: parsed,
