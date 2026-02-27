@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.5.0](https://github.com/aram-devdocs/flappy-gouda/compare/flappy-gouda-game-v0.4.0...flappy-gouda-game-v0.5.0) (2026-02-27)
+
+
+### Features
+
+* **engine:** add souls mode difficulty with per-pipe gap variation ([#22](https://github.com/aram-devdocs/flappy-gouda/issues/22)) ([c3e2700](https://github.com/aram-devdocs/flappy-gouda/commit/c3e27004ad6e46fb387546f5de52268cc9036416))
+
 ## [0.4.0](https://github.com/aram-devdocs/flappy-gouda/compare/flappy-gouda-game-v0.3.1...flappy-gouda-game-v0.4.0) (2026-02-25)
 
 
