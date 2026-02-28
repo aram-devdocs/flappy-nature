@@ -7,52 +7,20 @@ import type {
 } from '@repo/types';
 import { MovementArc, PatternType as PT } from '@repo/types';
 import { PATTERN_GENERATORS, type PatternParams } from './patterns';
+import {
+  ARC_LENGTHS,
+  BUILD_PATTERNS,
+  CLIMAX_PATTERNS,
+  MAX_REROLLS,
+  MIN_TIMING_FLOOR_MS,
+  PHRASE_MAX,
+  PHRASE_MIN,
+  nextArcPhase,
+  pickRelease,
+  weightedPick,
+} from './pipe-director-utils';
 import type { ProgressionManager } from './progression';
 import { validateAndClamp } from './winnability';
-
-/** Phrase count range [min, max] for each arc phase, keyed by difficulty. */
-const ARC_LENGTHS: Record<string, Record<MovementArc, [number, number]>> = {
-  easy: {
-    [MovementArc.Build]: [4, 5],
-    [MovementArc.Climax]: [1, 1],
-    [MovementArc.Release]: [2, 3],
-  },
-  normal: {
-    [MovementArc.Build]: [3, 4],
-    [MovementArc.Climax]: [1, 2],
-    [MovementArc.Release]: [1, 2],
-  },
-  hard: {
-    [MovementArc.Build]: [2, 3],
-    [MovementArc.Climax]: [2, 3],
-    [MovementArc.Release]: [1, 1],
-  },
-  souls: {
-    [MovementArc.Build]: [1, 2],
-    [MovementArc.Climax]: [3, 4],
-    [MovementArc.Release]: [1, 1],
-  },
-};
-
-const BUILD_PATTERNS = new Set<PatternType>([
-  PT.Scatter,
-  PT.StairUp,
-  PT.StairDown,
-  PT.SineWave,
-  PT.Tunnel,
-]);
-const CLIMAX_PATTERNS = new Set<PatternType>([
-  PT.Zigzag,
-  PT.Squeeze,
-  PT.Rapids,
-  PT.Tunnel,
-  PT.StairUp,
-  PT.StairDown,
-]);
-const PHRASE_MIN = 3;
-const PHRASE_MAX = 8;
-const MAX_REROLLS = 3;
-const MIN_TIMING_FLOOR_MS = 200;
 
 /**
  * Orchestrates pipe placement using phrase-based patterns, movement arc cycling,
@@ -195,33 +163,4 @@ export class PipeDirector {
     const range = lengths?.[arc] ?? [3, 4];
     return range[0] + Math.floor(Math.random() * (range[1] - range[0] + 1));
   }
-}
-
-function pickRelease(): PatternType {
-  return Math.random() < 0.5 ? PT.Scatter : PT.Drift;
-}
-
-function nextArcPhase(arc: MovementArc): MovementArc {
-  if (arc === MovementArc.Build) return MovementArc.Climax;
-  if (arc === MovementArc.Climax) return MovementArc.Release;
-  return MovementArc.Build;
-}
-
-function weightedPick(
-  weights: Record<PatternType, number>,
-  allowed: Set<PatternType>,
-): PatternType {
-  let total = 0;
-  for (const [k, w] of Object.entries(weights)) {
-    if (allowed.has(k as PatternType) && w > 0) total += w;
-  }
-  if (total === 0) return PT.Scatter;
-
-  let r = Math.random() * total;
-  for (const [k, w] of Object.entries(weights)) {
-    if (!allowed.has(k as PatternType) || w <= 0) continue;
-    r -= w;
-    if (r <= 0) return k as PatternType;
-  }
-  return PT.Scatter;
 }

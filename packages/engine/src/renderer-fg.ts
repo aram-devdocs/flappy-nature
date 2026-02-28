@@ -24,12 +24,12 @@ import {
   drawBird,
   drawPipes,
   drawScore,
-  drawScoreWithEffects,
   drawSettingsIcon,
   drawSettingsIconCached,
 } from './renderer-entities';
 import { drawGround } from './renderer-ground';
 import type { GradientCache, PipeLipCache, SettingsIconCache } from './renderer-prerender';
+import { drawScoreWithEffects } from './renderer-score-fx';
 
 export function renderPipes(
   ctx: CanvasRenderingContext2D,

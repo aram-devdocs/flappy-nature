@@ -21,13 +21,13 @@ export {
   drawBird,
   drawPipes,
   drawScore,
-  drawScoreWithEffects,
   drawSettingsIcon,
   drawSettingsIconCached,
   ICON_SIZE,
   ICON_PAD,
   SCORE_Y,
 } from './renderer-entities';
+export { drawScoreWithEffects } from './renderer-score-fx';
 export {
   drawBuilding,
   drawTree,
@@ -52,7 +52,7 @@ export { buildFontCache } from './cache';
 export { Renderer } from './renderer';
 
 // Supporting types
-export type { CanvasContexts } from './renderer';
+export type { CanvasContexts, RendererDeps } from './renderer-fg';
 export type { IconBounds } from './renderer-entities';
 export type { PipeLipCache, SettingsIconCache, GradientCache } from './renderer-prerender';
 export type { CachedFonts } from './cache';

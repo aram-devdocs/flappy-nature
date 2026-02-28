@@ -7,22 +7,14 @@ import {
   renderBird,
   renderGround,
   renderPipes,
-  renderScore,
   renderScoreWithEffects,
   renderSettingsIcon,
 } from './renderer-fg';
 import type { CanvasContexts, RendererDeps } from './renderer-fg';
 import { drawSky } from './renderer-ground';
 import { drawFarLayer, drawMidLayer } from './renderer-layers';
-import {
-  buildPipeLipCache,
-  buildSettingsIconCache,
-  prerenderAllClouds,
-  prerenderCloud,
-} from './renderer-prerender';
+import { buildPipeLipCache, buildSettingsIconCache } from './renderer-prerender';
 import type { GradientCache, PipeLipCache, SettingsIconCache } from './renderer-prerender';
-
-export type { CanvasContexts, RendererDeps } from './renderer-fg';
 
 const BG_REDRAW_MS = 500;
 const MG_REDRAW_MS = 67;
@@ -52,15 +44,10 @@ export class Renderer {
     fonts: CachedFonts,
     dpr: number,
   ) {
-    if (typeof ctxOrContexts === 'object' && 'bg' in ctxOrContexts) {
-      this.bgCtx = ctxOrContexts.bg;
-      this.mgCtx = ctxOrContexts.mg;
-      this.fgCtx = ctxOrContexts.fg;
-    } else {
-      this.bgCtx = ctxOrContexts;
-      this.mgCtx = ctxOrContexts;
-      this.fgCtx = ctxOrContexts;
-    }
+    const layered = typeof ctxOrContexts === 'object' && 'bg' in ctxOrContexts;
+    this.bgCtx = layered ? ctxOrContexts.bg : ctxOrContexts;
+    this.mgCtx = layered ? ctxOrContexts.mg : ctxOrContexts;
+    this.fgCtx = layered ? ctxOrContexts.fg : ctxOrContexts;
     this.deps = deps;
     this.colors = colors;
     this.fonts = fonts;
@@ -70,7 +57,6 @@ export class Renderer {
   private get isLayered(): boolean {
     return this.bgCtx !== this.fgCtx;
   }
-
   dispose(): void {
     this.grads = { skyGrad: null, accentGrad: null, pipeGrad: null };
     this.pipeLip = { canvas: null, logW: 0, logH: 0 };
@@ -78,10 +64,8 @@ export class Renderer {
     this.cachedScoreStr = '0';
     this.cachedScoreNum = -1;
     this.spriteImg = null;
-    this.lastBgDraw = 0;
-    this.lastMgDraw = 0;
+    this.lastBgDraw = this.lastMgDraw = 0;
   }
-
   buildGradients(): void {
     const { width, height, groundH, pipeWidth } = this.deps;
     const c = this.colors;
@@ -99,74 +83,41 @@ export class Renderer {
     this.pipeLip = buildPipeLipCache(pipeWidth, this.dpr, c);
     this.iconCache = buildSettingsIconCache(ICON_SIZE, this.dpr, c);
   }
-
-  prerenderCloud(c: Cloud): void {
-    prerenderCloud(c, this.dpr, this.colors);
-  }
-
-  prerenderAllClouds(nearClouds: Cloud[], bg: BackgroundSystem): void {
-    prerenderAllClouds(nearClouds, bg, this.dpr, this.colors);
-  }
-
   markAllDirty(): void {
-    this.lastBgDraw = 0;
-    this.lastMgDraw = 0;
+    this.lastBgDraw = this.lastMgDraw = 0;
   }
-
-  private callFar(bg: BackgroundSystem): void {
-    if (!bg.layers) return;
-    drawFarLayer(
-      this.bgCtx,
-      bg.layers.farClouds,
-      bg.layers.skyline,
-      this.deps.width,
-      this.dpr,
-      this.colors,
-    );
-  }
-
-  private callMid(bg: BackgroundSystem): void {
-    if (!bg.layers) return;
-    const groundY = this.deps.height - this.deps.groundH;
-    drawMidLayer(
-      this.mgCtx,
-      bg.layers.midClouds,
-      bg.layers.buildings,
-      bg.layers.trees,
-      groundY,
-      this.deps.width,
-      this.dpr,
-      this.colors,
-    );
-  }
-
-  drawSky(): void {
-    drawSky(this.bgCtx, this.deps.width, this.deps.height, this.grads.skyGrad);
-  }
-
-  drawBackground(bg: BackgroundSystem, _globalTime: number): void {
-    this.callFar(bg);
-    this.callMid(bg);
-  }
-
-  drawNearClouds(clouds: Cloud[]): void {
-    this.mgCtx.globalAlpha = 0.12;
-    drawCloudsPrerendered(this.mgCtx, clouds);
-    this.mgCtx.globalAlpha = 1;
-  }
-
   drawBgLayer(bg: BackgroundSystem, now: number): void {
     if (this.isLayered && now - this.lastBgDraw < BG_REDRAW_MS) return;
     this.lastBgDraw = now;
     drawSky(this.bgCtx, this.deps.width, this.deps.height, this.grads.skyGrad);
-    this.callFar(bg);
+    if (bg.layers) {
+      drawFarLayer(
+        this.bgCtx,
+        bg.layers.farClouds,
+        bg.layers.skyline,
+        this.deps.width,
+        this.dpr,
+        this.colors,
+      );
+    }
   }
-
   drawMgLayer(bg: BackgroundSystem, nearClouds: Cloud[], now: number): void {
     if (this.isLayered && now - this.lastMgDraw < MG_REDRAW_MS) return;
     this.lastMgDraw = now;
     if (this.isLayered) this.mgCtx.clearRect(0, 0, this.deps.width, this.deps.height);
-    this.callMid(bg);
+    if (bg.layers) {
+      const groundY = this.deps.height - this.deps.groundH;
+      drawMidLayer(
+        this.mgCtx,
+        bg.layers.midClouds,
+        bg.layers.buildings,
+        bg.layers.trees,
+        groundY,
+        this.deps.width,
+        this.dpr,
+        this.colors,
+      );
+    }
     this.mgCtx.globalAlpha = 0.12;
     drawCloudsPrerendered(this.mgCtx, nearClouds);
     this.mgCtx.globalAlpha = 1;
@@ -189,7 +140,6 @@ export class Renderer {
       this.pipeLip,
     );
   }
-
   drawGround(bg: BackgroundSystem): void {
     renderGround(
       this.fgCtx,
@@ -201,7 +151,6 @@ export class Renderer {
       this.grads.accentGrad,
     );
   }
-
   drawBird(y: number, rot: number): void {
     renderBird(
       this.fgCtx,
@@ -219,27 +168,20 @@ export class Renderer {
       this.cachedScoreNum = score;
       this.cachedScoreStr = String(score);
     }
-    if (scale !== 1 || flashAlpha > 0) {
-      renderScoreWithEffects(
-        this.fgCtx,
-        this.cachedScoreStr,
-        this.deps.width,
-        this.fonts,
-        this.colors,
-        scale,
-        flashAlpha,
-      );
-    } else {
-      renderScore(this.fgCtx, this.cachedScoreStr, this.deps.width, this.fonts, this.colors);
-    }
+    renderScoreWithEffects(
+      this.fgCtx,
+      this.cachedScoreStr,
+      this.deps.width,
+      this.fonts,
+      this.colors,
+      scale,
+      flashAlpha,
+    );
   }
 
-  /** Apply a pixel offset to the foreground context (for screen shake). */
   translateFg(x: number, y: number): void {
     this.fgCtx.translate(x, y);
   }
-
-  /** Draw a white full-screen flash overlay at the given opacity. */
   drawScreenFlash(alpha: number): void {
     if (alpha <= 0) return;
     this.fgCtx.globalAlpha = alpha;
@@ -247,7 +189,6 @@ export class Renderer {
     this.fgCtx.fillRect(0, 0, this.deps.width, this.deps.height);
     this.fgCtx.globalAlpha = 1;
   }
-
   drawSettingsIcon(hovered: boolean): void {
     renderSettingsIcon(this.fgCtx, this.deps.width, this.colors, this.iconCache, hovered);
   }

@@ -1,6 +1,6 @@
 import { getDifficultyProfile } from '@repo/engine';
 import { useGameEngine, useGameInput } from '@repo/hooks';
-import type { DifficultyKey, FlappyGoudaGameProps, ProgressionState } from '@repo/types';
+import type { DifficultyKey, FlappyGoudaGameProps } from '@repo/types';
 import { DIFF_KEYS, Difficulty, GameState as GS } from '@repo/types';
 import {
   DifficultyPicker,
@@ -14,21 +14,15 @@ import {
   SettingsMenu,
   TitleScreen,
 } from '@repo/ui';
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { GameErrorBoundary } from './GameErrorBoundary';
 import { LeaderboardOverlay } from './LeaderboardOverlay';
+import { DEATH_FLAVOR, useDeathStats } from './useDeathStats';
 import { useDebugBridge } from './useDebugBridge';
 import type { SettingsView } from './useGameCallbacks';
 import { useGameCallbacks } from './useGameCallbacks';
 import { useLeaderboardState } from './useLeaderboardState';
 import { useLiveRank } from './useLiveRank';
-
-const DEATH_FLAVOR: Record<DifficultyKey, string> = {
-  [Difficulty.Easy]: 'The adventure continues next time.',
-  [Difficulty.Normal]: 'So close. One more try?',
-  [Difficulty.Hard]: 'The Gauntlet claims another.',
-  [Difficulty.Souls]: 'The Crucible spares no one.',
-};
 
 export function FlappyGoudaGame({
   colors,
@@ -76,11 +70,13 @@ export function FlappyGoudaGame({
   const [settingsView, setSettingsView] = useState<SettingsView>('closed');
   const lb = useLeaderboardState(state, score, difficulty, nickname, leaderboardCallbacks);
   const liveRank = useLiveRank(engineRef, engineReady, state, leaderboard);
-
-  const [deathStats, setDeathStats] = useState<ProgressionState | null>(null);
-  const [deathIsNewBest, setDeathIsNewBest] = useState(false);
-  const runStartBestRef = useRef(0);
-
+  const { deathStats, deathIsNewBest } = useDeathStats(
+    state,
+    engineRef,
+    score,
+    bestScores,
+    difficulty,
+  );
   useEffect(() => {
     onStateChange?.(state);
   }, [state, onStateChange]);
@@ -93,15 +89,6 @@ export function FlappyGoudaGame({
   useEffect(() => {
     onDifficultyChange?.(difficulty);
   }, [difficulty, onDifficultyChange]);
-
-  useEffect(() => {
-    if (state === GS.Play) runStartBestRef.current = bestScores[difficulty] ?? 0;
-    if (state === GS.Dead && engineRef.current) {
-      setDeathStats(engineRef.current.getProgressionState());
-      setDeathIsNewBest(score > 0 && score > runStartBestRef.current);
-    }
-  }, [state, engineRef, score, bestScores, difficulty]);
-
   const callbacks = useGameCallbacks({
     flap,
     pause,
@@ -123,16 +110,13 @@ export function FlappyGoudaGame({
     canvasRef,
     enabled: settingsView === 'closed',
   });
-
   const availableDifficulties = useMemo<DifficultyKey[]>(
     () => (soulsMode ? DIFF_KEYS : DIFF_KEYS.filter((k) => k !== Difficulty.Souls)),
     [soulsMode],
   );
-
   useEffect(() => {
     if (!soulsMode && difficulty === Difficulty.Souls) setDifficulty(Difficulty.Hard);
   }, [soulsMode, difficulty, setDifficulty]);
-
   const currentBest = bestScores[difficulty] ?? 0;
   const isOverlayVisible = state !== GS.Play || settingsView !== 'closed';
   const hasCallbacks = !!leaderboardCallbacks;

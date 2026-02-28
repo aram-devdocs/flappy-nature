@@ -1,9 +1,58 @@
-import type { CanvasStack, Cloud, GameColors, GameConfig } from '@repo/types';
+import type { CanvasStack, Cloud, GameColors, GameConfig, Pipe } from '@repo/types';
 import { BackgroundSystem } from './background';
 import type { CachedFonts } from './cache';
-import { BASE_H, BASE_W } from './config';
-import type { CanvasContexts } from './renderer';
+import { loadCheeseImage } from './cheese';
+import { BASE_H, BASE_W, PIPE_POOL_SIZE } from './config';
+import { EngineError } from './errors';
 import { Renderer } from './renderer';
+import type { CanvasContexts } from './renderer-fg';
+import { prerenderAllClouds } from './renderer-prerender';
+
+/** Extract and validate 2D contexts from the layered canvas stack. */
+export function getContextStack(stack: CanvasStack): CanvasContexts {
+  const bg = stack.bg.getContext('2d', { alpha: false });
+  const mg = stack.mg.getContext('2d');
+  const fg = stack.fg.getContext('2d');
+  if (!bg || !mg || !fg)
+    throw new EngineError('Canvas 2D context not available', 'CANVAS_CONTEXT_UNAVAILABLE');
+  return { bg, mg, fg };
+}
+
+export interface BootResult {
+  dpr: number;
+  renderer: Renderer;
+  pipePool: Pipe[];
+  clouds: Cloud[];
+}
+
+/** Set up DPR scaling, create renderer, load assets, and initialise clouds/background. */
+export async function bootEngine(
+  canvasStack: CanvasStack,
+  ctxStack: CanvasContexts,
+  config: GameConfig,
+  colors: GameColors,
+  fonts: CachedFonts,
+  bg: BackgroundSystem,
+): Promise<BootResult> {
+  const dpr = setupCanvasStack(canvasStack);
+  for (const ctx of Object.values(ctxStack)) ctx.scale(dpr, dpr);
+  const renderer = createRenderer(ctxStack, config, colors, fonts, dpr);
+  renderer.buildGradients();
+  renderer.spriteImg = await Promise.race([
+    loadCheeseImage(colors.violet),
+    new Promise<null>((r) => setTimeout(() => r(null), 5000)),
+  ]);
+  const pipePool: Pipe[] = Array.from({ length: PIPE_POOL_SIZE }, () => ({
+    x: 0,
+    topH: 0,
+    scored: false,
+    gap: 0,
+  }));
+  const clouds = initClouds(config);
+  bg.init();
+  prerenderAllClouds(clouds, bg, dpr, colors);
+  return { dpr, renderer, pipePool, clouds };
+}
 
 /** Configure all three layered canvases for DPR scaling, returning the device pixel ratio. */
 export function setupCanvasStack(stack: CanvasStack): number {

@@ -971,14 +971,13 @@ describe('createRenderer', () => {
     const renderer = createRenderer({ bg: ctx, mg: ctx, fg: ctx }, cfg, colors, fonts, 2);
 
     expect(renderer).toBeDefined();
-    expect(typeof renderer.drawSky).toBe('function');
     expect(typeof renderer.drawBird).toBe('function');
     expect(typeof renderer.drawScore).toBe('function');
     expect(typeof renderer.drawGround).toBe('function');
     expect(typeof renderer.buildGradients).toBe('function');
     expect(typeof renderer.drawPipes).toBe('function');
-    expect(typeof renderer.drawNearClouds).toBe('function');
-    expect(typeof renderer.drawBackground).toBe('function');
+    expect(typeof renderer.drawBgLayer).toBe('function');
+    expect(typeof renderer.drawMgLayer).toBe('function');
   });
 });
 

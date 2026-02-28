@@ -20,6 +20,8 @@ import {
   drawSkylineSegment,
   drawTree,
 } from '../renderer-background';
+import { drawSky } from '../renderer-ground';
+import { drawFarLayer, drawMidLayer } from '../renderer-layers';
 import {
   buildGradients,
   buildPipeLipCache,
@@ -545,6 +547,197 @@ describe('renderer-background', () => {
 });
 
 // ---------------------------------------------------------------------------
+// renderer-ground.ts -- drawSky
+// ---------------------------------------------------------------------------
+
+describe('drawSky', () => {
+  let ctx: CanvasRenderingContext2D;
+
+  beforeEach(() => {
+    vi.restoreAllMocks();
+    ctx = makeCtx();
+  });
+
+  it('fills the canvas when skyGrad exists', () => {
+    const skyGrad = ctx.createLinearGradient(0, 0, 0, HEIGHT);
+    drawSky(ctx, WIDTH, HEIGHT, skyGrad);
+    expect(ctx.fillRect).toHaveBeenCalledWith(0, 0, WIDTH, HEIGHT);
+  });
+
+  it('does nothing when skyGrad is null', () => {
+    drawSky(ctx, WIDTH, HEIGHT, null);
+    expect(ctx.fillRect).not.toHaveBeenCalled();
+  });
+});
+
+// ---------------------------------------------------------------------------
+// renderer-layers.ts -- drawFarLayer / drawMidLayer
+// ---------------------------------------------------------------------------
+
+describe('drawFarLayer', () => {
+  let ctx: CanvasRenderingContext2D;
+  let colors: GameColors;
+
+  beforeEach(() => {
+    vi.restoreAllMocks();
+    ctx = makeCtx();
+    colors = makeColors();
+  });
+
+  it('draws far clouds and skyline segments when layers exist', () => {
+    const layers = makeLayers();
+    drawFarLayer(ctx, layers.farClouds, layers.skyline, WIDTH, DPR, colors);
+    expect(ctx.fillRect).toHaveBeenCalled();
+  });
+
+  it('culls off-screen skyline segments (segment to the right)', () => {
+    const layers = makeLayers({
+      skyline: [makeSkylineSegment({ x: WIDTH + 10 })],
+    });
+    drawFarLayer(ctx, layers.farClouds, layers.skyline, WIDTH, DPR, colors);
+  });
+
+  it('culls off-screen skyline segments (segment to the left)', () => {
+    const layers = makeLayers({
+      skyline: [makeSkylineSegment({ x: -200, totalW: 100 })],
+    });
+    drawFarLayer(ctx, layers.farClouds, layers.skyline, WIDTH, DPR, colors);
+  });
+
+  it('draws visible skyline segments', () => {
+    const layers = makeLayers({
+      skyline: [makeSkylineSegment({ x: 50, totalW: 120 })],
+    });
+    drawFarLayer(ctx, layers.farClouds, layers.skyline, WIDTH, DPR, colors);
+    expect(ctx.fillRect).toHaveBeenCalled();
+  });
+
+  it('resets globalAlpha to 1 at the end', () => {
+    const layers = makeLayers();
+    drawFarLayer(ctx, layers.farClouds, layers.skyline, WIDTH, DPR, colors);
+    expect(ctx.globalAlpha).toBe(1);
+  });
+});
+
+describe('drawMidLayer', () => {
+  let ctx: CanvasRenderingContext2D;
+  let colors: GameColors;
+
+  beforeEach(() => {
+    vi.restoreAllMocks();
+    ctx = makeCtx();
+    colors = makeColors();
+  });
+
+  it('draws buildings and trees when layers exist', () => {
+    const layers = makeLayers();
+    const groundY = HEIGHT - GROUND_H;
+    drawMidLayer(
+      ctx,
+      layers.midClouds,
+      layers.buildings,
+      layers.trees,
+      groundY,
+      WIDTH,
+      DPR,
+      colors,
+    );
+    expect(ctx.fillRect).toHaveBeenCalled();
+  });
+
+  it('culls off-screen buildings', () => {
+    const layers = makeLayers({
+      buildings: [makeBuilding({ x: -100, w: 40 })],
+      skyline: [],
+    });
+    const groundY = HEIGHT - GROUND_H;
+    drawMidLayer(
+      ctx,
+      layers.midClouds,
+      layers.buildings,
+      layers.trees,
+      groundY,
+      WIDTH,
+      DPR,
+      colors,
+    );
+  });
+
+  it('culls off-screen trees', () => {
+    const layers = makeLayers({
+      trees: [makeTree({ x: -50, w: 14 })],
+      buildings: [],
+      skyline: [],
+    });
+    const groundY = HEIGHT - GROUND_H;
+    drawMidLayer(
+      ctx,
+      layers.midClouds,
+      layers.buildings,
+      layers.trees,
+      groundY,
+      WIDTH,
+      DPR,
+      colors,
+    );
+  });
+
+  it('culls buildings off-screen to the right', () => {
+    const layers = makeLayers({
+      buildings: [makeBuilding({ x: WIDTH + 10 })],
+      skyline: [],
+      trees: [],
+    });
+    const groundY = HEIGHT - GROUND_H;
+    drawMidLayer(
+      ctx,
+      layers.midClouds,
+      layers.buildings,
+      layers.trees,
+      groundY,
+      WIDTH,
+      DPR,
+      colors,
+    );
+  });
+
+  it('culls trees off-screen to the right', () => {
+    const layers = makeLayers({
+      trees: [makeTree({ x: WIDTH + 10 })],
+      buildings: [],
+      skyline: [],
+    });
+    const groundY = HEIGHT - GROUND_H;
+    drawMidLayer(
+      ctx,
+      layers.midClouds,
+      layers.buildings,
+      layers.trees,
+      groundY,
+      WIDTH,
+      DPR,
+      colors,
+    );
+  });
+
+  it('resets globalAlpha to 1 at the end', () => {
+    const layers = makeLayers();
+    const groundY = HEIGHT - GROUND_H;
+    drawMidLayer(
+      ctx,
+      layers.midClouds,
+      layers.buildings,
+      layers.trees,
+      groundY,
+      WIDTH,
+      DPR,
+      colors,
+    );
+    expect(ctx.globalAlpha).toBe(1);
+  });
+});
+
+// ---------------------------------------------------------------------------
 // Renderer class (renderer.ts)
 // ---------------------------------------------------------------------------
 
@@ -576,170 +769,6 @@ describe('Renderer', () => {
 
       expect(ctx.createLinearGradient).toHaveBeenCalledTimes(3);
       expect(document.createElement).toHaveBeenCalledWith('canvas');
-    });
-  });
-
-  describe('prerenderCloud', () => {
-    it('delegates to the standalone prerenderCloud function', () => {
-      mockOffscreenCanvas(makeCtx());
-      const cloud = makeCloud({ w: 50 });
-      renderer.prerenderCloud(cloud);
-
-      expect(cloud._canvas).not.toBeNull();
-      expect(cloud._pad).toBe(4);
-    });
-  });
-
-  describe('prerenderAllClouds', () => {
-    it('delegates to the standalone prerenderAllClouds function', () => {
-      mockOffscreenCanvas(makeCtx());
-      const nearClouds = [makeCloud()];
-      const bg = makeBg();
-      renderer.prerenderAllClouds(nearClouds, bg);
-
-      // 1 near + 1 far + 1 mid = 3
-      expect(document.createElement).toHaveBeenCalledTimes(3);
-    });
-  });
-
-  describe('drawSky', () => {
-    it('fills the canvas when skyGrad exists', () => {
-      mockOffscreenCanvas(makeCtx());
-      renderer.buildGradients();
-      renderer.drawSky();
-
-      expect(ctx.fillRect).toHaveBeenCalledWith(0, 0, WIDTH, HEIGHT);
-    });
-
-    it('does nothing when skyGrad is null (no buildGradients called)', () => {
-      renderer.drawSky();
-
-      expect(ctx.fillRect).not.toHaveBeenCalled();
-    });
-  });
-
-  describe('drawBackground', () => {
-    it('returns early when bg.layers is null', () => {
-      const bg = makeBg(null);
-      renderer.drawBackground(bg, 0);
-
-      expect(ctx.drawImage).not.toHaveBeenCalled();
-      expect(ctx.fillRect).not.toHaveBeenCalled();
-    });
-
-    it('draws all background layers when present', () => {
-      const bg = makeBg();
-      renderer.drawBackground(bg, 1000);
-
-      // skyline, buildings, trees all trigger fillRect
-      expect(ctx.fillRect).toHaveBeenCalled();
-    });
-
-    it('culls off-screen skyline segments (segment to the right)', () => {
-      const layers = makeLayers({
-        skyline: [makeSkylineSegment({ x: WIDTH + 10 })],
-      });
-      const bg = makeBg(layers);
-      renderer.drawBackground(bg, 0);
-
-      // skyline segment is off-screen right, so drawSkylineSegment is skipped
-      // but buildings and trees still draw
-      // The key thing is fillRect is only called for buildings/trees, not skyline
-      expect(ctx.fillRect).toHaveBeenCalled();
-    });
-
-    it('culls off-screen skyline segments (segment to the left)', () => {
-      const layers = makeLayers({
-        skyline: [makeSkylineSegment({ x: -200, totalW: 100 })],
-      });
-      const bg = makeBg(layers);
-      renderer.drawBackground(bg, 0);
-
-      // x + totalW = -200 + 100 = -100 < 0, so culled
-      expect(ctx.fillRect).toHaveBeenCalled();
-    });
-
-    it('draws visible skyline segments', () => {
-      const layers = makeLayers({
-        skyline: [makeSkylineSegment({ x: 50, totalW: 120 })],
-      });
-      const bg = makeBg(layers);
-      renderer.drawBackground(bg, 0);
-
-      expect(ctx.fillRect).toHaveBeenCalled();
-    });
-
-    it('culls off-screen buildings', () => {
-      const layers = makeLayers({
-        buildings: [makeBuilding({ x: -100, w: 40 })],
-        skyline: [],
-      });
-      const bg = makeBg(layers);
-      renderer.drawBackground(bg, 0);
-
-      // building x + w = -100 + 40 = -60 < 0, culled
-      // trees still visible
-      expect(ctx.fillRect).toHaveBeenCalled();
-    });
-
-    it('culls off-screen trees', () => {
-      const layers = makeLayers({
-        trees: [makeTree({ x: -50, w: 14 })],
-        buildings: [],
-        skyline: [],
-      });
-      const bg = makeBg(layers);
-      renderer.drawBackground(bg, 0);
-
-      // tree x + w = -50 + 14 = -36 < 0, culled
-      // No fillRect calls since skyline/buildings/trees all empty or culled
-      // and farClouds/midClouds have no _canvas
-    });
-
-    it('culls buildings off-screen to the right', () => {
-      const layers = makeLayers({
-        buildings: [makeBuilding({ x: WIDTH + 10 })],
-        skyline: [],
-        trees: [],
-      });
-      const bg = makeBg(layers);
-      renderer.drawBackground(bg, 0);
-
-      // building.x > width, so culled
-    });
-
-    it('culls trees off-screen to the right', () => {
-      const layers = makeLayers({
-        trees: [makeTree({ x: WIDTH + 10 })],
-        buildings: [],
-        skyline: [],
-      });
-      const bg = makeBg(layers);
-      renderer.drawBackground(bg, 0);
-
-      // tree.x > width, so culled
-    });
-
-    it('resets globalAlpha to 1 at the end', () => {
-      renderer.drawBackground(makeBg(), 0);
-      expect(ctx.globalAlpha).toBe(1);
-    });
-  });
-
-  describe('drawNearClouds', () => {
-    it('sets globalAlpha to 0.12, draws, then resets to 1', () => {
-      const fakeCanvas = {} as HTMLCanvasElement;
-      const clouds = [makeCloud({ _canvas: fakeCanvas, _pad: 4, _logW: 68, _logH: 35 })];
-      renderer.drawNearClouds(clouds);
-
-      expect(ctx.drawImage).toHaveBeenCalledTimes(1);
-      expect(ctx.globalAlpha).toBe(1);
-    });
-
-    it('handles empty cloud array', () => {
-      renderer.drawNearClouds([]);
-      expect(ctx.drawImage).not.toHaveBeenCalled();
-      expect(ctx.globalAlpha).toBe(1);
     });
   });
 
