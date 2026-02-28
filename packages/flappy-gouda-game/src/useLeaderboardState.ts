@@ -1,52 +1,42 @@
-import type { DifficultyKey, LeaderboardCallbacks } from '@repo/types';
+import type { DifficultyKey, GameState, LeaderboardCallbacks } from '@repo/types';
+import { GameState as GS } from '@repo/types';
 import { useCallback, useEffect, useRef, useState } from 'react';
 
 /** Internal state for leaderboard UI within the game component. */
 export interface LeaderboardState {
   leaderboardOpen: boolean;
-  showNicknameModal: boolean;
   nicknameValue: string;
   nicknameError: string | undefined;
   nicknameChecking: boolean;
   toggleLeaderboard: () => void;
   closeLeaderboard: () => void;
-  closeNicknameModal: () => void;
   handleNicknameChange: (value: string) => void;
   handleNicknameSubmit: () => void;
 }
 
-/** Manages leaderboard panel visibility, nickname modal, and auto-submit on death. */
+/** Manages leaderboard panel visibility, nickname input, and auto-submit on death. */
 export function useLeaderboardState(
-  state: string,
+  state: GameState,
   score: number,
   difficulty: DifficultyKey,
   nickname: string | null | undefined,
   callbacks: LeaderboardCallbacks | undefined,
 ): LeaderboardState {
   const [leaderboardOpen, setLeaderboardOpen] = useState(false);
-  const [showNicknameModal, setShowNicknameModal] = useState(false);
   const [nicknameValue, setNicknameValue] = useState('');
   const [nicknameError, setNicknameError] = useState<string | undefined>();
   const [nicknameChecking, setNicknameChecking] = useState(false);
   const submittedRef = useRef(false);
 
-  // Auto-submit score on death
   useEffect(() => {
-    if (state === 'dead' && callbacks && nickname && !submittedRef.current) {
+    if (state === GS.Dead && callbacks && nickname && !submittedRef.current) {
       submittedRef.current = true;
       callbacks.onScoreSubmit(score, difficulty);
     }
-    if (state === 'play') {
+    if (state === GS.Play) {
       submittedRef.current = false;
     }
   }, [state, score, difficulty, nickname, callbacks]);
-
-  // Show nickname modal on first death (defer so players can browse scores on idle)
-  useEffect(() => {
-    if (state === 'dead' && callbacks && nickname === null) {
-      setShowNicknameModal(true);
-    }
-  }, [state, callbacks, nickname]);
 
   const toggleLeaderboard = useCallback(() => {
     setLeaderboardOpen((prev) => !prev);
@@ -54,10 +44,6 @@ export function useLeaderboardState(
 
   const closeLeaderboard = useCallback(() => {
     setLeaderboardOpen(false);
-  }, []);
-
-  const closeNicknameModal = useCallback(() => {
-    setShowNicknameModal(false);
   }, []);
 
   const handleNicknameChange = useCallback((value: string) => {
@@ -75,7 +61,6 @@ export function useLeaderboardState(
       const result = await callbacks.onNicknameCheck(nicknameValue);
       if (result.available) {
         callbacks.onNicknameSet(nicknameValue);
-        setShowNicknameModal(false);
         setNicknameValue('');
       } else {
         setNicknameError(result.reason ?? 'Nickname unavailable');
@@ -90,13 +75,11 @@ export function useLeaderboardState(
 
   return {
     leaderboardOpen,
-    showNicknameModal,
     nicknameValue,
     nicknameError,
     nicknameChecking,
     toggleLeaderboard,
     closeLeaderboard,
-    closeNicknameModal,
     handleNicknameChange,
     handleNicknameSubmit,
   };

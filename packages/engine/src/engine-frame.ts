@@ -1,28 +1,95 @@
 import type { Bird, Cloud, GameConfig, Pipe } from '@repo/types';
+import { GameState as GS } from '@repo/types';
 import type { BackgroundSystem } from './background';
 import { syncPrevBird } from './engine-lifecycle';
 import type { EngineLoop } from './engine-loop';
 import type { EngineState } from './engine-state';
+import type { GameFeelState } from './game-feel';
+import {
+  checkMilestones,
+  detectNearMisses,
+  finalizeStreaks,
+  nearMissFlash,
+  scorePulseScale,
+  screenFlash,
+  updateShake,
+} from './game-feel';
 import { checkGroundCollision, spawnPipe, updateBird, updateClouds, updatePipes } from './physics';
+import type { PipeDirector } from './pipe-director';
 import type { Renderer } from './renderer';
 
-/** Try spawning a pipe if the spawn interval has elapsed, applying timing variation. */
+/** Try spawning a pipe if the spawn interval has elapsed. Uses director when available. */
 function trySpawnPipe(
   state: EngineState,
   config: GameConfig,
   pipePool: Pipe[],
   activeCount: number,
   now: number,
+  director: PipeDirector | null,
 ): number {
-  const spawnDelay = state.nextSpawnDelay > 0 ? state.nextSpawnDelay : config.pipeSpawn;
+  const baseDelay = director ? director.effectiveSpawnDelay : config.pipeSpawn;
+  const spawnDelay = state.nextSpawnDelay > 0 ? state.nextSpawnDelay : baseDelay;
   if (now - state.lastPipeTime <= spawnDelay) return activeCount;
-  const newCount = spawnPipe(pipePool, activeCount, config);
+
+  let newCount: number;
+  if (director) {
+    const intent = director.next();
+    newCount = spawnPipe(pipePool, activeCount, config, intent);
+    state.nextSpawnDelay = intent.delay > 0 ? intent.delay : director.effectiveSpawnDelay;
+  } else {
+    newCount = spawnPipe(pipePool, activeCount, config);
+    state.nextSpawnDelay =
+      config.pipeSpawnVariation > 0
+        ? config.pipeSpawn + (Math.random() * 2 - 1) * config.pipeSpawnVariation
+        : config.pipeSpawn;
+  }
+
   state.lastPipeTime = now;
-  state.nextSpawnDelay =
-    config.pipeSpawnVariation > 0
-      ? config.pipeSpawn + (Math.random() * 2 - 1) * config.pipeSpawnVariation
-      : config.pipeSpawn;
   return newCount;
+}
+
+/** Process score changes through the game-feel system (near-miss + milestones). */
+function processScoreFeel(
+  gf: GameFeelState,
+  state: EngineState,
+  config: GameConfig,
+  bird: Bird,
+  pipes: Pipe[],
+  activeCount: number,
+  scoreInc: number,
+  now: number,
+): void {
+  const events = state.getEmitter();
+  detectNearMisses(gf, bird, pipes, activeCount, config, state.difficulty, scoreInc, events, now);
+  state.setScore(state.score + scoreInc);
+  checkMilestones(gf, state.score, events, now);
+}
+
+/** Spawn, move, score, and collide pipes. Returns updated active count. */
+function tickPipes(
+  state: EngineState,
+  config: GameConfig,
+  bird: Bird,
+  pipePool: Pipe[],
+  initialCount: number,
+  dt: number,
+  now: number,
+  gf: GameFeelState | null,
+  director: PipeDirector | null,
+): number {
+  let count = trySpawnPipe(state, config, pipePool, initialCount, now, director);
+  const speed = director ? director.effectiveSpeed : undefined;
+  const r = updatePipes(pipePool, count, bird, config, dt, speed);
+  count = r.activeCount;
+  if (r.scoreInc > 0) {
+    if (gf) processScoreFeel(gf, state, config, bird, pipePool, count, r.scoreInc, now);
+    else state.setScore(state.score + r.scoreInc);
+  }
+  if (r.died) {
+    if (gf) finalizeStreaks(gf);
+    state.die();
+  }
+  return count;
 }
 
 /**
@@ -41,23 +108,23 @@ export function engineUpdate(
   pipeActiveCount: number,
   dt: number,
   now: number,
+  gf: GameFeelState | null,
+  director: PipeDirector | null = null,
 ): number {
   loop.globalTime = now;
   updateClouds(clouds, config, dt);
-  bg.update(dt, now, state.state === 'play', loop.reducedMotion);
+  bg.update(dt, now, state.state === GS.Play, loop.reducedMotion);
   syncPrevBird(prevBird, bird);
   let activeCount = pipeActiveCount;
-  if (state.state === 'play') {
+  if (state.state === GS.Play) {
     updateBird(bird, config, dt);
     if (checkGroundCollision(bird, config)) {
+      if (gf) finalizeStreaks(gf);
       state.die();
     } else {
-      activeCount = trySpawnPipe(state, config, pipePool, activeCount, now);
-      const r = updatePipes(pipePool, activeCount, bird, config, dt);
-      activeCount = r.activeCount;
-      if (r.scoreInc > 0) state.setScore(state.score + r.scoreInc);
-      if (r.died) state.die();
+      activeCount = tickPipes(state, config, bird, pipePool, activeCount, dt, now, gf, director);
     }
+    if (gf) updateShake(gf);
   }
   return activeCount;
 }
@@ -77,19 +144,36 @@ export function engineDraw(
   prevBird: Bird,
   settingsIconHovered: boolean,
   now: number,
+  gf: GameFeelState | null,
 ): void {
   renderer.drawBgLayer(bg, now);
   renderer.drawMgLayer(bg, clouds, now);
   renderer.clearFg();
+
+  const shakeX = gf ? gf.shakeX : 0;
+  const shakeY = gf ? gf.shakeY : 0;
+  const hasShake = shakeX !== 0 || shakeY !== 0;
+  if (hasShake) renderer.translateFg(shakeX, shakeY);
+
   renderer.drawPipes(pipePool, pipeActiveCount);
   renderer.drawGround(bg);
-  if (state.state !== 'idle') {
+  if (state.state !== GS.Idle) {
     const a = loop.alpha;
     const y = prevBird.y + (bird.y - prevBird.y) * a;
     const rot = prevBird.rot + (bird.rot - prevBird.rot) * a;
     renderer.drawBird(y, rot);
-    renderer.drawScore(state.score);
+    const scale = gf ? scorePulseScale(gf, now) : 1;
+    const flash = gf ? nearMissFlash(gf, now) : 0;
+    renderer.drawScore(state.score, scale, flash);
     renderer.drawSettingsIcon(settingsIconHovered);
   }
+
+  if (hasShake) renderer.translateFg(-shakeX, -shakeY);
+
+  if (gf) {
+    const flashA = screenFlash(gf, now);
+    if (flashA > 0) renderer.drawScreenFlash(flashA);
+  }
+
   loop.updateFps(now);
 }

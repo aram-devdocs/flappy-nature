@@ -15,6 +15,12 @@ export interface EngineEvents {
   difficultyChange: (key: DifficultyKey) => void;
   /** Fired ~8 times per second with aggregated debug metrics. */
   debugUpdate: (snapshot: DebugMetricsSnapshot) => void;
+  /** Fired when the score crosses a progression phase boundary. */
+  phaseChange: (phaseName: string) => void;
+  /** Fired when the score hits a milestone threshold. */
+  milestone: (score: number, label: string, celebration: 'minor' | 'major' | 'epic') => void;
+  /** Fired when the bird narrowly avoids a pipe edge. */
+  nearMiss: () => void;
 }
 
 /** Union of all engine event names. */

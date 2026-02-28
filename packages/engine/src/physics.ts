@@ -1,4 +1,4 @@
-import type { Bird, Cloud, GameConfig, Pipe } from '@repo/types';
+import type { Bird, Cloud, GameConfig, Pipe, PipeIntent } from '@repo/types';
 import { atIndex } from './assert';
 import { BIRD_ROTATION } from './config';
 import { poolRemove } from './pool';
@@ -66,22 +66,36 @@ export function updateClouds(clouds: Cloud[], config: GameConfig, dt: number): v
   }
 }
 
-/** Activate the next pipe in the pool with a random gap position. Returns the new active count. */
-export function spawnPipe(pipePool: Pipe[], activeCount: number, config: GameConfig): number {
+/**
+ * Activate the next pipe in the pool. When a PipeIntent is provided, uses its
+ * gap center/size. Otherwise falls back to random placement (legacy/test path).
+ */
+export function spawnPipe(
+  pipePool: Pipe[],
+  activeCount: number,
+  config: GameConfig,
+  intent?: PipeIntent,
+): number {
   if (activeCount >= pipePool.length) return activeCount;
-  const gap =
-    config.pipeGapVariation > 0
-      ? config.pipeGap + (Math.random() * 2 - 1) * config.pipeGapVariation
-      : config.pipeGap;
-  const margin = config.pipeSpawnMargin;
-  const minTop = margin;
-  const maxTop = config.height - config.groundH - gap - margin;
-  const topH = minTop + Math.random() * (maxTop - minTop);
   const p = atIndex(pipePool, activeCount);
   p.x = config.width;
-  p.topH = topH;
   p.scored = false;
-  p.gap = gap;
+
+  if (intent) {
+    p.topH = intent.gapCenter - intent.gapSize / 2;
+    p.gap = intent.gapSize;
+  } else {
+    const gap =
+      config.pipeGapVariation > 0
+        ? config.pipeGap + (Math.random() * 2 - 1) * config.pipeGapVariation
+        : config.pipeGap;
+    const margin = config.pipeSpawnMargin;
+    const minTop = margin;
+    const maxTop = config.height - config.groundH - gap - margin;
+    p.topH = minTop + Math.random() * (maxTop - minTop);
+    p.gap = gap;
+  }
+
   return activeCount + 1;
 }
 
@@ -92,14 +106,16 @@ export function updatePipes(
   bird: Bird,
   config: GameConfig,
   dt: number,
+  pipeSpeed?: number,
 ): { activeCount: number; scoreInc: number; died: boolean } {
+  const speed = pipeSpeed ?? config.pipeSpeed;
   let scoreInc = 0;
   let died = false;
   let count = initialActiveCount;
 
   for (let i = count - 1; i >= 0; i--) {
     const p = atIndex(pipePool, i);
-    p.x -= config.pipeSpeed * dt;
+    p.x -= speed * dt;
 
     // Remove off-screen
     if (p.x + config.pipeWidth < 0) {

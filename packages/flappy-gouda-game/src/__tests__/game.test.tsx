@@ -9,9 +9,34 @@ const mockPause = vi.fn();
 const mockResume = vi.fn();
 const mockReset = vi.fn();
 
+vi.mock('@repo/engine', async (importOriginal) => {
+  const actual = await importOriginal<Record<string, unknown>>();
+  return {
+    ...actual,
+    getDifficultyProfile: vi.fn(() => ({
+      key: 'normal',
+      name: 'The Challenge',
+      subtitle: 'The definitive Flappy Gouda experience',
+      phases: [{ name: 'Warmup', scoreThreshold: 0 }],
+      milestones: [],
+      graceFactor: 0.25,
+      gapFloor: 130,
+      speedCeiling: 3.5,
+      nearMissMargin: 10,
+      hasGapVariation: false,
+      gapVariationAmount: 0,
+      hasTimingVariation: false,
+      timingVariationAmount: 0,
+    })),
+  };
+});
+
 vi.mock('@repo/hooks', () => ({
   useGameEngine: vi.fn(() => ({
+    containerRef: { current: null },
     canvasRef: { current: null },
+    engineRef: { current: null },
+    engineReady: false,
     state: 'play',
     score: 5,
     bestScores: { easy: 3, normal: 10, hard: 0 },
@@ -22,6 +47,8 @@ vi.mock('@repo/hooks', () => ({
     reset: mockReset,
     pause: mockPause,
     resume: mockResume,
+    handleCanvasClick: vi.fn(() => false),
+    handleCanvasHover: vi.fn(() => false),
   })),
   useGameInput: vi.fn(),
 }));

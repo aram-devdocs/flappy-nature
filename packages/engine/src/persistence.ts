@@ -1,18 +1,23 @@
 import type { BestScores, DifficultyKey } from '@repo/types';
-import { DIFF_KEYS } from '@repo/types';
+import {
+  DIFF_KEYS,
+  Difficulty,
+  STORAGE_KEYS,
+  createEmptyBestScores,
+  isDifficultyKey,
+} from '@repo/types';
 import { createLogger } from './logger';
+import { safeGet, safeSet } from './safe-storage';
 
 const log = createLogger('persistence');
 
 const MAX_SCORE = 9999;
-const BEST_STORAGE_KEY = 'fg-flappy-best-v2';
-const DIFF_STORAGE_KEY = 'fg-flappy-diff';
 
 /** Load per-difficulty best scores from localStorage, migrating the legacy single-score key if needed. */
 export function loadBestScores(): BestScores {
-  const scores: BestScores = { easy: 0, normal: 0, hard: 0, souls: 0 };
+  const scores = createEmptyBestScores();
   try {
-    const raw = localStorage.getItem(BEST_STORAGE_KEY);
+    const raw = safeGet(STORAGE_KEYS.bestScores);
     if (raw) {
       const parsed = JSON.parse(raw) as Record<string, unknown>;
       for (const k of DIFF_KEYS) {
@@ -25,9 +30,8 @@ export function loadBestScores(): BestScores {
         }
       }
     }
-    // Migrate old single-score key if v2 doesn't exist yet
     if (!raw) {
-      const old = Number.parseInt(localStorage.getItem('fg-flappy-best') ?? '0', 10);
+      const old = Number.parseInt(safeGet('fg-flappy-best') ?? '0', 10);
       if (old > 0) {
         scores.normal = old;
         saveBestScores(scores);
@@ -42,19 +46,17 @@ export function loadBestScores(): BestScores {
 
 /** Persist best scores to localStorage. */
 export function saveBestScores(scores: BestScores): void {
-  localStorage.setItem(BEST_STORAGE_KEY, JSON.stringify(scores));
+  safeSet(STORAGE_KEYS.bestScores, JSON.stringify(scores));
 }
 
-/** Load the saved difficulty preference from localStorage, defaulting to 'normal'. */
+/** Load the saved difficulty preference from localStorage, defaulting to normal. */
 export function loadDifficulty(): DifficultyKey {
-  const stored = localStorage.getItem(DIFF_STORAGE_KEY);
-  if (stored === 'easy' || stored === 'normal' || stored === 'hard' || stored === 'souls') {
-    return stored;
-  }
-  return 'normal';
+  const stored = safeGet(STORAGE_KEYS.difficulty);
+  if (isDifficultyKey(stored)) return stored;
+  return Difficulty.Normal;
 }
 
 /** Persist the selected difficulty key to localStorage. */
 export function saveDifficulty(key: DifficultyKey): void {
-  localStorage.setItem(DIFF_STORAGE_KEY, key);
+  safeSet(STORAGE_KEYS.difficulty, key);
 }

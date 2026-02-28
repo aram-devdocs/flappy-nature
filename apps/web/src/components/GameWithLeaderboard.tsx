@@ -4,9 +4,10 @@ import {
   type DebugMetricsSnapshot,
   DebugPanel,
   DebugTab,
+  Difficulty,
   type DifficultyKey,
   FlappyGoudaGame,
-  type GameState,
+  GameState,
   LeaderboardBottomSheet,
   type LeaderboardCallbacks,
   type LeaderboardData,
@@ -33,11 +34,11 @@ export function GameWithLeaderboard() {
   const queryClient = useQueryClient();
   const { nickname, setNickname, clearNickname } = useNickname();
   const breakpoint = useBreakpoint();
-  const [difficulty, setDifficulty] = useState<DifficultyKey>('normal');
+  const [difficulty, setDifficulty] = useState<DifficultyKey>(Difficulty.Normal);
   const [sheetOpen, setSheetOpen] = useState(false);
   const [liveScore, setLiveScore] = useState<number | null>(null);
   const [bestScoreForDiff, setBestScoreForDiff] = useState(0);
-  const gameStateRef = useRef<GameState>('idle');
+  const gameStateRef = useRef<GameState>(GameState.Idle);
 
   // Debug state
   const [debugMetrics, setDebugMetrics] = useState<DebugMetricsSnapshot | null>(null);
@@ -93,7 +94,7 @@ export function GameWithLeaderboard() {
 
   const handleScoreChange = useCallback(
     (score: number) => {
-      if (gameStateRef.current !== 'play') return;
+      if (gameStateRef.current !== GameState.Play) return;
       if (score > bestScoreForDiff && nickname) {
         setLiveScore(score);
         service.broadcastLiveScore?.(score, difficulty, nickname);
@@ -105,7 +106,7 @@ export function GameWithLeaderboard() {
   const handleStateChange = useCallback(
     (state: GameState) => {
       gameStateRef.current = state;
-      if (state === 'play') {
+      if (state === GameState.Play) {
         setLiveScore(null);
         const svc = service as { resetBroadcastSession?: () => void };
         svc.resetBroadcastSession?.();

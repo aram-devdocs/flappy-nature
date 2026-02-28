@@ -24,7 +24,8 @@ export const ICON_PAD = 10;
 const SCORE_SHADOW_ALPHA = 0.12;
 const SCORE_SHADOW_OFFSET_X = 2;
 const SCORE_SHADOW_OFFSET_Y = 52;
-const SCORE_Y = 50;
+/** Y baseline for score text. Exported for effects that need the anchor point. */
+export const SCORE_Y = 50;
 const GEAR_INNER_RATIO = 0.62;
 const GEAR_HOLE_RATIO = 0.3;
 const GEAR_TEETH = 8;
@@ -174,4 +175,37 @@ export function drawSettingsIconCached(
 export function hitTestSettingsIcon(logicalX: number, logicalY: number, width: number): boolean {
   const b = getSettingsIconBounds(width);
   return logicalX >= b.x && logicalX <= b.x + b.w && logicalY >= b.y && logicalY <= b.y + b.h;
+}
+
+/**
+ * Draw the score with optional pulse-scale and near-miss white flash.
+ * Falls through to the standard drawScore when no effects are active.
+ */
+export function drawScoreWithEffects(
+  ctx: CanvasRenderingContext2D,
+  scoreStr: string,
+  width: number,
+  fonts: CachedFonts,
+  colors: GameColors,
+  scale: number,
+  flashAlpha: number,
+): void {
+  const cx = (width / 2) | 0;
+  const needsScale = scale !== 1;
+  if (needsScale) {
+    ctx.save();
+    ctx.translate(cx, SCORE_Y);
+    ctx.scale(scale, scale);
+    ctx.translate(-cx, -SCORE_Y);
+  }
+  drawScore(ctx, scoreStr, width, fonts, colors);
+  if (flashAlpha > 0) {
+    ctx.globalAlpha = flashAlpha;
+    ctx.fillStyle = '#ffffff';
+    ctx.font = fonts.score;
+    ctx.textAlign = 'center';
+    ctx.fillText(scoreStr, cx, SCORE_Y);
+    ctx.globalAlpha = 1;
+  }
+  if (needsScale) ctx.restore();
 }

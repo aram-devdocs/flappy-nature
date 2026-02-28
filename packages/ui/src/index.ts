@@ -15,6 +15,8 @@ export { DebugSparkline } from './atoms/DebugSparkline';
 export type { DebugSparklineProps } from './atoms/DebugSparkline';
 export { LeaderboardMiniOverlay } from './atoms/LeaderboardMiniOverlay';
 export type { LeaderboardMiniOverlayProps } from './atoms/LeaderboardMiniOverlay';
+export { LiveRankOverlay } from './atoms/LiveRankOverlay';
+export type { LiveRankOverlayProps } from './atoms/LiveRankOverlay';
 export { LeaderboardSeparator } from './atoms/LeaderboardSeparator';
 export type { LeaderboardSeparatorProps } from './atoms/LeaderboardSeparator';
 export { NicknameCharCell } from './atoms/NicknameCharCell';
@@ -34,7 +36,9 @@ export type { SettingsMenuProps } from './molecules/SettingsMenu';
 
 // Organisms
 export { TitleScreen } from './organisms/TitleScreen';
+export type { TitleScreenProps } from './organisms/TitleScreen';
 export { GameOverScreen } from './organisms/GameOverScreen';
+export type { GameOverScreenProps } from './organisms/GameOverScreen';
 export { LeaderboardPanel } from './organisms/LeaderboardPanel';
 export type { LeaderboardPanelProps } from './organisms/LeaderboardPanel';
 export { LeaderboardSidebar } from './organisms/LeaderboardSidebar';

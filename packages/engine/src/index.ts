@@ -7,16 +7,26 @@ export type { EngineErrorCode } from './errors';
 export { createLogger } from './logger';
 export type { LogLevel, LogEntry } from './logger';
 export { sanitizeFontFamily, sanitizeColors } from './sanitize';
+export { safeGet, safeSet, safeRemove } from './safe-storage';
+export { migrateToV3 } from './migration';
+export { createGameFeelState, resetGameFeel, finalizeStreaks } from './game-feel';
+export { scorePulseScale, nearMissFlash, screenFlash } from './game-feel';
+export type { GameFeelState } from './game-feel';
+export { DIFFICULTY_PROFILES, MILESTONES, getDifficultyProfile } from './difficulty-profiles';
+export { ProgressionManager } from './progression';
+export { PipeDirector } from './pipe-director';
 
 // Draw functions
 export {
   drawBird,
   drawPipes,
   drawScore,
+  drawScoreWithEffects,
   drawSettingsIcon,
   drawSettingsIconCached,
   ICON_SIZE,
   ICON_PAD,
+  SCORE_Y,
 } from './renderer-entities';
 export {
   drawBuilding,

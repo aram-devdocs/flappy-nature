@@ -1,4 +1,5 @@
 import type { GameState, LeaderboardData } from '@repo/types';
+import { GameState as GS } from '@repo/types';
 import { LeaderboardMiniOverlay } from '@repo/ui';
 
 interface LeaderboardOverlayProps {
@@ -13,7 +14,7 @@ export function LeaderboardOverlay({ leaderboard, gameState }: LeaderboardOverla
   return (
     <LeaderboardMiniOverlay
       entries={top3}
-      visible={gameState === 'play'}
+      visible={gameState === GS.Play}
       playerEntryId={leaderboard.playerEntry?.id ?? null}
     />
   );

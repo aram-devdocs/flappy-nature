@@ -7,3 +7,21 @@ export interface CanvasStack {
   /** Top layer for per-frame elements (pipes, bird, score, ground). */
   fg: HTMLCanvasElement;
 }
+
+/** Three rendering contexts for the layered canvas architecture. */
+export interface CanvasContexts {
+  bg: CanvasRenderingContext2D;
+  mg: CanvasRenderingContext2D;
+  fg: CanvasRenderingContext2D;
+}
+
+/** Layout dimensions the renderer needs from the game config. */
+export interface RendererDeps {
+  width: number;
+  height: number;
+  groundH: number;
+  pipeWidth: number;
+  pipeGap: number;
+  birdSize: number;
+  birdX: number;
+}

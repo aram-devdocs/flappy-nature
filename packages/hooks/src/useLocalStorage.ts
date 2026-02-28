@@ -1,3 +1,4 @@
+import { safeJsonParse } from '@repo/types';
 import { useCallback, useState } from 'react';
 
 /** Persist and hydrate a value in localStorage, returning a stateful getter and setter. */
@@ -5,7 +6,7 @@ export function useLocalStorage<T>(key: string, initialValue: T): [T, (value: T)
   const [storedValue, setStoredValue] = useState<T>(() => {
     try {
       const item = localStorage.getItem(key);
-      return item ? (JSON.parse(item) as T) : initialValue;
+      return item ? safeJsonParse<T>(item, initialValue) : initialValue;
     } catch {
       return initialValue;
     }

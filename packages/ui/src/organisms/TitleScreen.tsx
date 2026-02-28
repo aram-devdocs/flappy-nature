@@ -1,3 +1,4 @@
+import type { DifficultyKey } from '@repo/types';
 import {
   FONT_SIZE,
   FONT_WEIGHT,
@@ -10,20 +11,42 @@ import {
   cssVar,
 } from '@repo/types';
 import { CheeseIcon } from '../atoms/CheeseIcon';
+import { NicknameInput } from '../molecules/NicknameInput';
 
 /** Props for {@link TitleScreen}. */
-interface TitleScreenProps {
-  /** Whether the title overlay is shown. */
+export interface TitleScreenProps {
   visible: boolean;
-  /** Player's best score for the current difficulty (0 hides the label). */
   bestScore: number;
-  /** Called when the Play button is clicked. */
   onPlay: () => void;
+  nickname?: string | null;
+  nicknameValue?: string;
+  onNicknameChange?: (value: string) => void;
+  onNicknameSubmit?: () => void;
+  nicknameError?: string;
+  nicknameChecking?: boolean;
+  hasLeaderboard?: boolean;
+  difficultySubtitle?: string;
+  difficulty?: DifficultyKey;
 }
 
-/** Full-screen overlay shown in idle state with branding, controls hint, and Play button. */
-export function TitleScreen({ visible, bestScore, onPlay }: TitleScreenProps) {
+/** Full-screen overlay shown in idle state with branding, nickname onboarding, and Play button. */
+export function TitleScreen({
+  visible,
+  bestScore,
+  onPlay,
+  nickname,
+  nicknameValue = '',
+  onNicknameChange,
+  onNicknameSubmit,
+  nicknameError,
+  nicknameChecking,
+  hasLeaderboard,
+  difficultySubtitle,
+}: TitleScreenProps) {
   if (!visible) return null;
+
+  const needsNickname = hasLeaderboard && nickname === null;
+  const canSubmitNickname = nicknameValue.length === 3 && !nicknameChecking;
 
   return (
     <dialog
@@ -54,74 +77,116 @@ export function TitleScreen({ visible, bestScore, onPlay }: TitleScreenProps) {
           padding: `${SPACING[6]} ${SPACING[8]}`,
           textAlign: 'center',
           boxShadow: SHADOW.card,
+          maxWidth: '320px',
+          width: '100%',
         }}
       >
-        <div style={{ fontSize: FONT_SIZE['6xl'], marginBottom: SPACING[3] }}>
+        <div style={{ fontSize: FONT_SIZE['6xl'], marginBottom: SPACING[2] }}>
           <CheeseIcon />
         </div>
-        <p
-          style={{
-            fontSize: FONT_SIZE.sm,
-            color: cssVar('navy'),
-            opacity: OPACITY.medium,
-            margin: `0 0 ${SPACING[2]}`,
-          }}
-        >
-          <kbd
-            style={{
-              padding: `${SPACING[0.5]} ${SPACING[1.5]}`,
-              background: cssVar('light'),
-              borderRadius: RADIUS.sm,
-              fontSize: FONT_SIZE.xs,
-              fontWeight: FONT_WEIGHT.semibold,
-              border: `1px solid ${RGBA_TOKENS.shadowSm}`,
-            }}
-          >
-            Space
-          </kbd>{' '}
-          <kbd
-            style={{
-              padding: `${SPACING[0.5]} ${SPACING[1.5]}`,
-              background: cssVar('light'),
-              borderRadius: RADIUS.sm,
-              fontSize: FONT_SIZE.xs,
-              fontWeight: FONT_WEIGHT.semibold,
-              border: `1px solid ${RGBA_TOKENS.shadowSm}`,
-            }}
-          >
-            Click
-          </kbd>{' '}
-          <span>to flap</span>
+        {difficultySubtitle && <p style={subtitleStyle}>{difficultySubtitle}</p>}
+        <p style={{ ...hintStyle, margin: `0 0 ${SPACING[2]}` }}>
+          <Kbd>Space</Kbd> <Kbd>Click</Kbd> <span>to flap</span>
         </p>
-        {bestScore > 0 && (
-          <p
-            style={{
-              fontSize: FONT_SIZE.md,
-              fontWeight: FONT_WEIGHT.semibold,
-              color: cssVar('magenta'),
-              margin: `0 0 ${SPACING[3]}`,
-            }}
-          >
-            Best: {bestScore}
-          </p>
+        {bestScore > 0 && <p style={bestStyle}>Best: {bestScore}</p>}
+
+        {needsNickname && (
+          <div style={{ margin: `${SPACING[3]} 0` }}>
+            <p style={tagLabelStyle}>Choose Your Tag</p>
+            <div style={{ marginBottom: SPACING[2] }}>
+              <NicknameInput
+                value={nicknameValue}
+                onChange={onNicknameChange ?? noop}
+                error={nicknameError}
+                checking={nicknameChecking}
+              />
+            </div>
+            <button
+              type="button"
+              onClick={onNicknameSubmit}
+              disabled={!canSubmitNickname}
+              style={{
+                ...goBtnStyle,
+                opacity: canSubmitNickname ? 1 : OPACITY.soft,
+                cursor: canSubmitNickname ? 'pointer' : 'default',
+              }}
+            >
+              Set Tag
+            </button>
+          </div>
         )}
-        <button
-          type="button"
-          onClick={onPlay}
-          style={{
-            padding: `${SPACING[2]} ${SPACING[6]}`,
-            fontSize: FONT_SIZE.lg,
-            fontWeight: FONT_WEIGHT.bold,
-            color: cssVar('white'),
-            background: cssVar('violet'),
-            border: 'none',
-            borderRadius: RADIUS.lg,
-            cursor: 'pointer',
-          }}
-        >
-          Play
+
+        <button type="button" onClick={onPlay} style={playBtnStyle}>
+          {needsNickname ? 'Play Without Leaderboard' : 'Play'}
         </button>
       </div>
     </dialog>
   );
 }
+
+function Kbd({ children }: { children: string }) {
+  return <kbd style={kbdStyle}>{children}</kbd>;
+}
+
+function noop() {}
+
+const kbdStyle: React.CSSProperties = {
+  padding: `${SPACING[0.5]} ${SPACING[1.5]}`,
+  background: cssVar('light'),
+  borderRadius: RADIUS.sm,
+  fontSize: FONT_SIZE.xs,
+  fontWeight: FONT_WEIGHT.semibold,
+  border: `1px solid ${RGBA_TOKENS.shadowSm}`,
+};
+
+const hintStyle: React.CSSProperties = {
+  fontSize: FONT_SIZE.sm,
+  color: cssVar('navy'),
+  opacity: OPACITY.medium,
+};
+
+const bestStyle: React.CSSProperties = {
+  fontSize: FONT_SIZE.md,
+  fontWeight: FONT_WEIGHT.semibold,
+  color: cssVar('magenta'),
+  margin: `0 0 ${SPACING[2]}`,
+};
+
+const subtitleStyle: React.CSSProperties = {
+  fontSize: FONT_SIZE.sm,
+  fontWeight: FONT_WEIGHT.normal,
+  color: cssVar('violet'),
+  opacity: OPACITY.prominent,
+  margin: `0 0 ${SPACING[2]}`,
+  fontStyle: 'italic',
+};
+
+const tagLabelStyle: React.CSSProperties = {
+  fontSize: FONT_SIZE.sm,
+  fontWeight: FONT_WEIGHT.bold,
+  color: cssVar('navy'),
+  margin: `0 0 ${SPACING[2]}`,
+};
+
+const playBtnStyle: React.CSSProperties = {
+  padding: `${SPACING[2]} ${SPACING[6]}`,
+  fontSize: FONT_SIZE.lg,
+  fontWeight: FONT_WEIGHT.bold,
+  color: cssVar('white'),
+  background: cssVar('violet'),
+  border: 'none',
+  borderRadius: RADIUS.lg,
+  cursor: 'pointer',
+  width: '100%',
+};
+
+const goBtnStyle: React.CSSProperties = {
+  padding: `${SPACING[1.5]} ${SPACING[4]}`,
+  fontSize: FONT_SIZE.md,
+  fontWeight: FONT_WEIGHT.bold,
+  color: cssVar('white'),
+  background: cssVar('cyan'),
+  border: 'none',
+  borderRadius: RADIUS.lg,
+  cursor: 'pointer',
+};

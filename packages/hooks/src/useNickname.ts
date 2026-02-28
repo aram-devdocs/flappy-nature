@@ -1,6 +1,5 @@
+import { STORAGE_KEYS, safeJsonParse } from '@repo/types';
 import { useCallback, useEffect, useState } from 'react';
-
-const NICKNAME_KEY = 'fg-flappy-nickname';
 
 /** Return value of the useNickname hook. */
 export interface UseNicknameReturn {
@@ -14,25 +13,19 @@ export interface UseNicknameReturn {
 
 /** Manages a player nickname persisted in localStorage and synced across tabs. */
 export function useNickname(): UseNicknameReturn {
-  // Read from localStorage on init, return null if not set
   const [nickname, setNicknameState] = useState<string | null>(() => {
     try {
-      const item = localStorage.getItem(NICKNAME_KEY);
-      return item ? (JSON.parse(item) as string) : null;
+      const item = localStorage.getItem(STORAGE_KEYS.nickname);
+      return item ? safeJsonParse<string | null>(item, null) : null;
     } catch {
       return null;
     }
   });
 
-  // Sync nickname across tabs via storage event
   useEffect(() => {
     const handler = (e: StorageEvent) => {
-      if (e.key !== NICKNAME_KEY) return;
-      try {
-        setNicknameState(e.newValue ? (JSON.parse(e.newValue) as string) : null);
-      } catch {
-        setNicknameState(null);
-      }
+      if (e.key !== STORAGE_KEYS.nickname) return;
+      setNicknameState(e.newValue ? safeJsonParse<string | null>(e.newValue, null) : null);
     };
     window.addEventListener('storage', handler);
     return () => window.removeEventListener('storage', handler);
@@ -41,7 +34,7 @@ export function useNickname(): UseNicknameReturn {
   const setNickname = useCallback((value: string) => {
     setNicknameState(value);
     try {
-      localStorage.setItem(NICKNAME_KEY, JSON.stringify(value));
+      localStorage.setItem(STORAGE_KEYS.nickname, JSON.stringify(value));
     } catch {
       /* storage full or unavailable */
     }
@@ -50,7 +43,7 @@ export function useNickname(): UseNicknameReturn {
   const clearNickname = useCallback(() => {
     setNicknameState(null);
     try {
-      localStorage.removeItem(NICKNAME_KEY);
+      localStorage.removeItem(STORAGE_KEYS.nickname);
     } catch {
       /* storage unavailable */
     }

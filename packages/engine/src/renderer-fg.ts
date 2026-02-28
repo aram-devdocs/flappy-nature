@@ -24,6 +24,7 @@ import {
   drawBird,
   drawPipes,
   drawScore,
+  drawScoreWithEffects,
   drawSettingsIcon,
   drawSettingsIconCached,
 } from './renderer-entities';
@@ -75,6 +76,18 @@ export function renderScore(
   colors: GameColors,
 ): void {
   drawScore(ctx, scoreStr, width, fonts, colors);
+}
+
+export function renderScoreWithEffects(
+  ctx: CanvasRenderingContext2D,
+  scoreStr: string,
+  width: number,
+  fonts: CachedFonts,
+  colors: GameColors,
+  scale: number,
+  flashAlpha: number,
+): void {
+  drawScoreWithEffects(ctx, scoreStr, width, fonts, colors, scale, flashAlpha);
 }
 
 export function renderSettingsIcon(

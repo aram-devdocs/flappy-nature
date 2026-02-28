@@ -6,9 +6,8 @@ import {
   FONT_WEIGHT,
   LINE_HEIGHT,
   RADIUS,
-  RGBA_TOKENS,
   SPACING,
-  cssVar,
+  getDifficultyColors,
 } from '@repo/types';
 
 /** Props for {@link DifficultyBadge}. */
@@ -24,7 +23,7 @@ interface DifficultyBadgeProps {
 /** Small pill button showing the current difficulty level. */
 export function DifficultyBadge({ difficulty, visible, onClick }: DifficultyBadgeProps) {
   if (!visible) return null;
-  const isSouls = difficulty === 'souls';
+  const dc = getDifficultyColors(difficulty);
 
   return (
     <button
@@ -35,9 +34,9 @@ export function DifficultyBadge({ difficulty, visible, onClick }: DifficultyBadg
         padding: `${SPACING[0.5]} ${SPACING[2.5]}`,
         fontSize: FONT_SIZE.sm,
         fontWeight: FONT_WEIGHT.bold,
-        color: isSouls ? cssVar('souls') : cssVar('violet'),
-        background: isSouls ? RGBA_TOKENS.soulsBgSubtle : RGBA_TOKENS.violetBgSubtle,
-        border: `${BORDER_WIDTH.thin} solid ${isSouls ? RGBA_TOKENS.soulsBorderSubtle : RGBA_TOKENS.violetBorderSubtle}`,
+        color: dc.accent,
+        background: dc.bgSubtle,
+        border: `${BORDER_WIDTH.thin} solid ${dc.borderSubtle}`,
         borderRadius: RADIUS.xl,
         cursor: 'pointer',
         lineHeight: LINE_HEIGHT.tight,

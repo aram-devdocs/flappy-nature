@@ -11,6 +11,7 @@ import {
   SPACING,
   Z_INDEX,
   cssVar,
+  getDifficultyColors,
 } from '@repo/types';
 
 /** Props for {@link DifficultyPicker}. */
@@ -89,10 +90,8 @@ export function DifficultyPicker({
         </div>
         {availableDifficulties.map((key) => {
           const isActive = key === currentDifficulty;
-          const isSouls = key === 'souls';
+          const dc = getDifficultyColors(key);
           const best = bestScores[key];
-          const activeColor = isSouls ? cssVar('souls') : cssVar('violet');
-          const inactiveColor = isSouls ? RGBA_TOKENS.soulsBgSubtle : cssVar('light');
           return (
             <button
               key={key}
@@ -108,8 +107,8 @@ export function DifficultyPicker({
                 marginBottom: SPACING[1.5],
                 fontSize: FONT_SIZE.sm,
                 fontWeight: FONT_WEIGHT.bold,
-                color: isActive ? cssVar('white') : isSouls ? cssVar('souls') : cssVar('navy'),
-                background: isActive ? activeColor : inactiveColor,
+                color: isActive ? cssVar('white') : dc.accent,
+                background: isActive ? dc.accent : dc.bgSubtle,
                 border: 'none',
                 borderRadius: RADIUS.md,
                 cursor: 'pointer',

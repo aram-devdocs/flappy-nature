@@ -1,4 +1,5 @@
 import type { Bird, GameConfig } from '@repo/types';
+import { GameState as GS } from '@repo/types';
 import type { EngineLoop } from './engine-loop';
 import type { EngineState } from './engine-state';
 
@@ -24,17 +25,17 @@ export function handleFlap(
   config: GameConfig,
   doReset: () => void,
 ): void {
-  if (state.state === 'paused') return;
-  if (state.state === 'idle') {
-    state.setState('play');
+  if (state.state === GS.Paused) return;
+  if (state.state === GS.Idle) {
+    state.setState(GS.Play);
     bird.vy = config.flapForce;
     state.lastPipeTime = performance.now();
-  } else if (state.state === 'play') {
+  } else if (state.state === GS.Play) {
     bird.vy = config.flapForce;
-  } else if (state.state === 'dead') {
+  } else if (state.state === GS.Dead) {
     if (performance.now() - state.deadTime > config.resetDelay) {
       doReset();
-      state.setState('play');
+      state.setState(GS.Play);
       bird.vy = config.flapForce;
       state.lastPipeTime = performance.now();
     }

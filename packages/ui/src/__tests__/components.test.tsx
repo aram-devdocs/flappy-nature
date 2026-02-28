@@ -51,7 +51,7 @@ describe('GameOverScreen', () => {
   it('renders score and best score when visible', () => {
     render(<GameOverScreen visible score={7} bestScore={15} />);
     expect(screen.getByText('Game Over')).toBeDefined();
-    expect(screen.getByText('Score: 7')).toBeDefined();
+    expect(screen.getByText('7')).toBeDefined();
     expect(screen.getByText('Best: 15')).toBeDefined();
   });
 
@@ -62,8 +62,26 @@ describe('GameOverScreen', () => {
 
   it('renders a score of 0', () => {
     render(<GameOverScreen visible score={0} bestScore={0} />);
-    expect(screen.getByText('Score: 0')).toBeDefined();
+    expect(screen.getByText('0')).toBeDefined();
     expect(screen.getByText('Best: 0')).toBeDefined();
+  });
+
+  it('shows new best banner when isNewBest is true', () => {
+    render(<GameOverScreen visible score={50} bestScore={50} isNewBest />);
+    expect(screen.getByText('New Best!')).toBeDefined();
+    expect(screen.queryByText('Best: 50')).toBeNull();
+  });
+
+  it('shows phase reached when phaseName is provided', () => {
+    render(<GameOverScreen visible score={42} bestScore={100} phaseName="Intensification" />);
+    expect(screen.getByText('Reached: Intensification')).toBeDefined();
+  });
+
+  it('shows flavor text when provided', () => {
+    render(
+      <GameOverScreen visible score={5} bestScore={10} flavorText="So close. One more try?" />,
+    );
+    expect(screen.getByText('So close. One more try?')).toBeDefined();
   });
 });
 

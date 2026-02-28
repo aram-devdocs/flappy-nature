@@ -8,9 +8,10 @@ import {
   renderGround,
   renderPipes,
   renderScore,
+  renderScoreWithEffects,
   renderSettingsIcon,
 } from './renderer-fg';
-import type { RendererDeps } from './renderer-fg';
+import type { CanvasContexts, RendererDeps } from './renderer-fg';
 import { drawSky } from './renderer-ground';
 import { drawFarLayer, drawMidLayer } from './renderer-layers';
 import {
@@ -213,12 +214,38 @@ export class Renderer {
     );
   }
 
-  drawScore(score: number): void {
+  drawScore(score: number, scale = 1, flashAlpha = 0): void {
     if (score !== this.cachedScoreNum) {
       this.cachedScoreNum = score;
       this.cachedScoreStr = String(score);
     }
-    renderScore(this.fgCtx, this.cachedScoreStr, this.deps.width, this.fonts, this.colors);
+    if (scale !== 1 || flashAlpha > 0) {
+      renderScoreWithEffects(
+        this.fgCtx,
+        this.cachedScoreStr,
+        this.deps.width,
+        this.fonts,
+        this.colors,
+        scale,
+        flashAlpha,
+      );
+    } else {
+      renderScore(this.fgCtx, this.cachedScoreStr, this.deps.width, this.fonts, this.colors);
+    }
+  }
+
+  /** Apply a pixel offset to the foreground context (for screen shake). */
+  translateFg(x: number, y: number): void {
+    this.fgCtx.translate(x, y);
+  }
+
+  /** Draw a white full-screen flash overlay at the given opacity. */
+  drawScreenFlash(alpha: number): void {
+    if (alpha <= 0) return;
+    this.fgCtx.globalAlpha = alpha;
+    this.fgCtx.fillStyle = '#ffffff';
+    this.fgCtx.fillRect(0, 0, this.deps.width, this.deps.height);
+    this.fgCtx.globalAlpha = 1;
   }
 
   drawSettingsIcon(hovered: boolean): void {

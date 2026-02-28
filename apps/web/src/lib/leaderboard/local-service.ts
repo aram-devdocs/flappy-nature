@@ -1,7 +1,6 @@
 import type { DifficultyKey, LeaderboardEntry, NicknameCheckResult } from '@repo/flappy-gouda-game';
+import { STORAGE_KEYS, safeJsonParse } from '@repo/flappy-gouda-game';
 import type { LeaderboardService } from './service';
-
-const STORAGE_KEY = 'fg-flappy-leaderboard';
 
 interface StoredScore {
   nickname: string;
@@ -12,8 +11,8 @@ interface StoredScore {
 
 function readScores(): StoredScore[] {
   try {
-    const raw = localStorage.getItem(STORAGE_KEY);
-    return raw ? (JSON.parse(raw) as StoredScore[]) : [];
+    const raw = localStorage.getItem(STORAGE_KEYS.leaderboard);
+    return raw ? safeJsonParse<StoredScore[]>(raw, []) : [];
   } catch {
     return [];
   }
@@ -21,7 +20,7 @@ function readScores(): StoredScore[] {
 
 function writeScores(scores: StoredScore[]): void {
   try {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(scores));
+    localStorage.setItem(STORAGE_KEYS.leaderboard, JSON.stringify(scores));
   } catch {
     /* storage full */
   }
@@ -49,8 +48,8 @@ export class LocalLeaderboardService implements LeaderboardService {
   }
 
   async submitScore(score: number, difficulty: DifficultyKey): Promise<LeaderboardEntry> {
-    const raw = localStorage.getItem('fg-flappy-nickname');
-    const nickname = raw ? (JSON.parse(raw) as string) : 'AAA';
+    const raw = localStorage.getItem(STORAGE_KEYS.nickname);
+    const nickname = raw ? safeJsonParse<string>(raw, 'AAA') : 'AAA';
 
     const scores = readScores();
     const existing = scores.find((s) => s.nickname === nickname && s.difficulty === difficulty);
@@ -85,7 +84,7 @@ export class LocalLeaderboardService implements LeaderboardService {
 
   subscribeToScores(_difficulty: DifficultyKey, onUpdate: () => void): () => void {
     const handler = (e: StorageEvent) => {
-      if (e.key !== STORAGE_KEY) return;
+      if (e.key !== STORAGE_KEYS.leaderboard) return;
       onUpdate();
     };
     window.addEventListener('storage', handler);
@@ -94,8 +93,8 @@ export class LocalLeaderboardService implements LeaderboardService {
 
   async getNickname(): Promise<string | null> {
     try {
-      const raw = localStorage.getItem('fg-flappy-nickname');
-      return raw ? (JSON.parse(raw) as string) : null;
+      const raw = localStorage.getItem(STORAGE_KEYS.nickname);
+      return raw ? safeJsonParse<string | null>(raw, null) : null;
     } catch {
       return null;
     }

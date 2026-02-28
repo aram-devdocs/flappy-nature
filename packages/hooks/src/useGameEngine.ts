@@ -1,5 +1,6 @@
 import { FlappyEngine } from '@repo/engine';
 import type { BestScores, DifficultyKey, EngineConfig, GameState } from '@repo/types';
+import { Difficulty, GameState as GS, createEmptyBestScores } from '@repo/types';
 import { useCallback, useEffect, useRef, useState } from 'react';
 
 /** Minimum interval between fpsUpdate React state flushes (ms). */
@@ -51,15 +52,12 @@ export function useGameEngine(config?: EngineConfig): UseGameEngineReturn {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const engineRef = useRef<FlappyEngine | null>(null);
 
-  const [state, setState] = useState<GameState>('idle');
+  const [state, setState] = useState<GameState>(GS.Idle);
   const [score, setScore] = useState(0);
-  const [bestScores, setBestScores] = useState<BestScores>({
-    easy: 0,
-    normal: 0,
-    hard: 0,
-    souls: 0,
-  });
-  const [difficulty, setDifficultyState] = useState<DifficultyKey>(config?.difficulty ?? 'normal');
+  const [bestScores, setBestScores] = useState<BestScores>(createEmptyBestScores);
+  const [difficulty, setDifficultyState] = useState<DifficultyKey>(
+    config?.difficulty ?? Difficulty.Normal,
+  );
   const [fps, setFps] = useState(0);
   const [engineReady, setEngineReady] = useState(false);
 

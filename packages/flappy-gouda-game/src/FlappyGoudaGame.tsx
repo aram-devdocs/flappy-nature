@@ -1,6 +1,7 @@
+import { getDifficultyProfile } from '@repo/engine';
 import { useGameEngine, useGameInput } from '@repo/hooks';
-import type { DifficultyKey, FlappyGoudaGameProps } from '@repo/types';
-import { DIFF_KEYS } from '@repo/types';
+import type { DifficultyKey, FlappyGoudaGameProps, ProgressionState } from '@repo/types';
+import { DIFF_KEYS, Difficulty, GameState as GS } from '@repo/types';
 import {
   DifficultyPicker,
   FpsCounter,
@@ -8,18 +9,26 @@ import {
   GameHeader,
   GameLayout,
   GameOverScreen,
-  NicknameModal,
+  LiveRankOverlay,
   ResetConfirmModal,
   SettingsMenu,
   TitleScreen,
 } from '@repo/ui';
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { GameErrorBoundary } from './GameErrorBoundary';
 import { LeaderboardOverlay } from './LeaderboardOverlay';
 import { useDebugBridge } from './useDebugBridge';
 import type { SettingsView } from './useGameCallbacks';
 import { useGameCallbacks } from './useGameCallbacks';
 import { useLeaderboardState } from './useLeaderboardState';
+import { useLiveRank } from './useLiveRank';
+
+const DEATH_FLAVOR: Record<DifficultyKey, string> = {
+  [Difficulty.Easy]: 'The adventure continues next time.',
+  [Difficulty.Normal]: 'So close. One more try?',
+  [Difficulty.Hard]: 'The Gauntlet claims another.',
+  [Difficulty.Souls]: 'The Crucible spares no one.',
+};
 
 export function FlappyGoudaGame({
   colors,
@@ -66,6 +75,11 @@ export function FlappyGoudaGame({
   useDebugBridge(engineRef, engineReady, showDebug, onDebugMetrics, debugControlsRef);
   const [settingsView, setSettingsView] = useState<SettingsView>('closed');
   const lb = useLeaderboardState(state, score, difficulty, nickname, leaderboardCallbacks);
+  const liveRank = useLiveRank(engineRef, engineReady, state, leaderboard);
+
+  const [deathStats, setDeathStats] = useState<ProgressionState | null>(null);
+  const [deathIsNewBest, setDeathIsNewBest] = useState(false);
+  const runStartBestRef = useRef(0);
 
   useEffect(() => {
     onStateChange?.(state);
@@ -80,20 +94,15 @@ export function FlappyGoudaGame({
     onDifficultyChange?.(difficulty);
   }, [difficulty, onDifficultyChange]);
 
-  const {
-    handleFlap,
-    handleEscape,
-    toggleSettings,
-    onCanvasInteract,
-    onCanvasHover,
-    handleDifficultySelect,
-    handleSettingsClose,
-    openDifficultyFromMenu,
-    handleNicknameClear,
-    handleResetConfirm,
-    handleResetCancel,
-    handlePlay,
-  } = useGameCallbacks({
+  useEffect(() => {
+    if (state === GS.Play) runStartBestRef.current = bestScores[difficulty] ?? 0;
+    if (state === GS.Dead && engineRef.current) {
+      setDeathStats(engineRef.current.getProgressionState());
+      setDeathIsNewBest(score > 0 && score > runStartBestRef.current);
+    }
+  }, [state, engineRef, score, bestScores, difficulty]);
+
+  const callbacks = useGameCallbacks({
     flap,
     pause,
     resume,
@@ -107,30 +116,27 @@ export function FlappyGoudaGame({
   });
 
   useGameInput({
-    onFlap: handleFlap,
-    onEscape: handleEscape,
-    onCanvasInteract,
-    onCanvasHover,
+    onFlap: callbacks.handleFlap,
+    onEscape: callbacks.handleEscape,
+    onCanvasInteract: callbacks.onCanvasInteract,
+    onCanvasHover: callbacks.onCanvasHover,
     canvasRef,
     enabled: settingsView === 'closed',
   });
 
   const availableDifficulties = useMemo<DifficultyKey[]>(
-    () => (soulsMode ? DIFF_KEYS : DIFF_KEYS.filter((k) => k !== 'souls')),
+    () => (soulsMode ? DIFF_KEYS : DIFF_KEYS.filter((k) => k !== Difficulty.Souls)),
     [soulsMode],
   );
 
-  // Fall back from souls when soulsMode is disabled
   useEffect(() => {
-    if (!soulsMode && difficulty === 'souls') {
-      setDifficulty('hard');
-    }
+    if (!soulsMode && difficulty === Difficulty.Souls) setDifficulty(Difficulty.Hard);
   }, [soulsMode, difficulty, setDifficulty]);
 
   const currentBest = bestScores[difficulty] ?? 0;
-  const isOverlayVisible = state !== 'play' || settingsView !== 'closed';
-  const hasLeaderboard = !!leaderboard;
+  const isOverlayVisible = state !== GS.Play || settingsView !== 'closed';
   const hasCallbacks = !!leaderboardCallbacks;
+  const profile = getDifficultyProfile(difficulty);
 
   return (
     <GameErrorBoundary>
@@ -141,8 +147,8 @@ export function FlappyGoudaGame({
           <GameHeader
             difficulty={difficulty}
             bestScore={currentBest}
-            difficultyVisible={state !== 'idle'}
-            onDifficultyClick={toggleSettings}
+            difficultyVisible={state !== GS.Idle}
+            onDifficultyClick={callbacks.toggleSettings}
             nickname={nickname ?? null}
           />
         }
@@ -150,41 +156,58 @@ export function FlappyGoudaGame({
       >
         <GameCanvas ref={containerRef} blurred={isOverlayVisible} />
         <FpsCounter fps={fps} visible={showFps} />
-        <TitleScreen visible={state === 'idle'} bestScore={currentBest} onPlay={handlePlay} />
-        <GameOverScreen visible={state === 'dead'} score={score} bestScore={currentBest} />
+        <TitleScreen
+          visible={state === GS.Idle}
+          bestScore={currentBest}
+          onPlay={callbacks.handlePlay}
+          nickname={nickname ?? null}
+          nicknameValue={lb.nicknameValue}
+          onNicknameChange={lb.handleNicknameChange}
+          onNicknameSubmit={lb.handleNicknameSubmit}
+          nicknameError={lb.nicknameError}
+          nicknameChecking={lb.nicknameChecking}
+          hasLeaderboard={hasCallbacks}
+          difficultySubtitle={profile.subtitle}
+          difficulty={difficulty}
+        />
+        <GameOverScreen
+          visible={state === GS.Dead}
+          score={score}
+          bestScore={currentBest}
+          isNewBest={deathIsNewBest}
+          rank={liveRank.rank}
+          phaseName={deathStats?.phaseName ?? null}
+          clutchCount={deathStats?.clutchCount}
+          longestCleanStreak={deathStats?.longestCleanStreak}
+          flavorText={DEATH_FLAVOR[difficulty]}
+        />
+        <LiveRankOverlay
+          visible={state === GS.Play && !!leaderboard}
+          rank={liveRank.rank}
+          improving={liveRank.improving}
+        />
         <SettingsMenu
           visible={settingsView === 'menu'}
           nickname={nickname ?? null}
-          onDifficultyClick={openDifficultyFromMenu}
-          onNicknameClear={handleNicknameClear}
-          onClose={handleSettingsClose}
+          onDifficultyClick={callbacks.openDifficultyFromMenu}
+          onNicknameClear={callbacks.handleNicknameClear}
+          onClose={callbacks.handleSettingsClose}
         />
         <DifficultyPicker
           currentDifficulty={difficulty}
           bestScores={bestScores}
           visible={settingsView === 'difficulty'}
-          onSelect={handleDifficultySelect}
-          onClose={handleSettingsClose}
+          onSelect={callbacks.handleDifficultySelect}
+          onClose={callbacks.handleSettingsClose}
           availableDifficulties={availableDifficulties}
         />
         <ResetConfirmModal
           visible={settingsView === 'confirm-reset'}
-          onConfirm={handleResetConfirm}
-          onCancel={handleResetCancel}
+          onConfirm={callbacks.handleResetConfirm}
+          onCancel={callbacks.handleResetCancel}
         />
-        {hasLeaderboard && !leaderboardExpanded && (
+        {!!leaderboard && !leaderboardExpanded && (
           <LeaderboardOverlay leaderboard={leaderboard} gameState={state} />
-        )}
-        {hasCallbacks && (
-          <NicknameModal
-            visible={lb.showNicknameModal}
-            value={lb.nicknameValue}
-            onChange={lb.handleNicknameChange}
-            onSubmit={lb.handleNicknameSubmit}
-            onClose={lb.closeNicknameModal}
-            error={lb.nicknameError}
-            checking={lb.nicknameChecking}
-          />
         )}
       </GameLayout>
     </GameErrorBoundary>

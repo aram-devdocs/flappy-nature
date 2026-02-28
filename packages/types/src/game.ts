@@ -1,8 +1,15 @@
-/** Current state of the game lifecycle. */
-export type GameState = 'idle' | 'play' | 'dead' | 'paused';
+import type { DifficultyKey } from './constants';
 
-/** Identifier for a difficulty level. */
-export type DifficultyKey = 'easy' | 'normal' | 'hard' | 'souls';
+export {
+  GameState,
+  Difficulty,
+  DIFF_KEYS,
+  DIFF_LABELS,
+  STORAGE_KEYS,
+  createEmptyBestScores,
+  getDifficultyColors,
+} from './constants';
+export type { DifficultyKey, BestScores } from './constants';
 
 /** Configuration for a single difficulty level. */
 export interface DifficultyPreset {
@@ -30,17 +37,6 @@ export interface DifficultyPreset {
 
 /** Maps each difficulty key to its preset values. */
 export type DifficultyMap = Record<DifficultyKey, DifficultyPreset>;
-
-/** Ordered list of all difficulty keys. */
-export const DIFF_KEYS: DifficultyKey[] = ['easy', 'normal', 'hard', 'souls'];
-
-/** Human-readable labels for each difficulty level. */
-export const DIFF_LABELS: Record<DifficultyKey, string> = {
-  easy: 'Easy',
-  normal: 'Normal',
-  hard: 'Hard',
-  souls: 'Souls',
-};
 
 /** Full runtime game configuration including physics and layout values. */
 export interface GameConfig {
@@ -123,6 +119,3 @@ export interface BackgroundConfig {
   /** Draw opacity for mid-layer clouds. */
   cloudMidAlpha: number;
 }
-
-/** Per-difficulty best scores persisted across sessions. */
-export type BestScores = Record<DifficultyKey, number>;

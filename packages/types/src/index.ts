@@ -1,15 +1,23 @@
-export type {
+export {
   GameState,
-  DifficultyKey,
+  Difficulty,
+  DIFF_KEYS,
+  DIFF_LABELS,
+  STORAGE_KEYS,
+  createEmptyBestScores,
+  getDifficultyColors,
+} from './constants';
+export type { DifficultyKey, BestScores } from './constants';
+
+export { isDifficultyKey, isGameState, safeJsonParse } from './guards';
+
+export type {
   DifficultyPreset,
   DifficultyMap,
   GameConfig,
   GameColors,
   BackgroundConfig,
-  BestScores,
 } from './game';
-
-export { DIFF_KEYS, DIFF_LABELS } from './game';
 
 export type {
   Bird,
@@ -28,7 +36,16 @@ export type {
 
 export type { EngineEvents, EngineEventName, EngineConfig } from './engine';
 
-export type { CanvasStack } from './canvas';
+export { PatternType, MovementArc } from './director';
+export type {
+  PipeIntent,
+  PhaseConfig,
+  MilestoneThreshold,
+  DifficultyProfile,
+  ProgressionState,
+} from './director';
+
+export type { CanvasStack, CanvasContexts, RendererDeps } from './canvas';
 
 export type { FlappyGoudaGameProps } from './props';
 

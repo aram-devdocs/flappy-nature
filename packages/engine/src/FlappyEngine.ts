@@ -5,13 +5,16 @@ import type {
   DifficultyKey,
   EngineConfig,
   EngineEventName,
+  ProgressionState,
 } from '@repo/types';
 import type { EngineEvents, GameColors, GameConfig, Pipe } from '@repo/types';
+import { GameState as GS } from '@repo/types';
 import type { BackgroundSystem } from './background';
 import type { CachedFonts } from './cache';
 import { loadCheeseImage } from './cheese';
 import { DEFAULT_CONFIG, PIPE_POOL_SIZE, applyDifficulty, validateConfig } from './config';
 import { DebugMetricsCollector } from './debug-metrics';
+import { getDifficultyProfile } from './difficulty-profiles';
 import { recordDebugFrame } from './engine-debug-bridge';
 import { EngineEventEmitter } from './engine-events';
 import { engineDraw, engineUpdate } from './engine-frame';
@@ -20,7 +23,11 @@ import { EngineLoop } from './engine-loop';
 import { createBgSystem, createRenderer, initClouds, setupCanvasStack } from './engine-setup';
 import { EngineState } from './engine-state';
 import { EngineError } from './errors';
+import type { GameFeelState } from './game-feel';
+import { createGameFeelState, resetGameFeel } from './game-feel';
 import { loadBestScores, loadDifficulty } from './persistence';
+import { PipeDirector } from './pipe-director';
+import { ProgressionManager } from './progression';
 import type { CanvasContexts, Renderer } from './renderer';
 import { hitTestSettingsIcon } from './renderer-entities';
 import { resolveEngineConfig } from './sanitize';
@@ -51,6 +58,9 @@ export class FlappyEngine {
   private bg: BackgroundSystem;
   private renderer: Renderer;
   private debugCollector: DebugMetricsCollector | null = null;
+  private gameFeel: GameFeelState = createGameFeelState();
+  private progression: ProgressionManager;
+  private director: PipeDirector;
   constructor(canvasStack: CanvasStack, engineConfig?: EngineConfig) {
     this.canvasStack = canvasStack;
     const bg = canvasStack.bg.getContext('2d', { alpha: false });
@@ -70,6 +80,10 @@ export class FlappyEngine {
     this.bg = createBgSystem(this.config);
     this.renderer = createRenderer(this.ctxStack, this.config, this.colors, this.fonts, this.dpr);
     if (engineConfig?.enableDebug) this.debugCollector = new DebugMetricsCollector(this.events);
+    const profile = getDifficultyProfile(this.state.difficulty);
+    this.progression = new ProgressionManager(profile, this.config, this.events);
+    this.director = new PipeDirector(this.progression, profile, this.config);
+    this.events.on('scoreChange', (score: number) => this.progression.onScore(score));
   }
   /** Initialize the canvas stack, preload assets, and kick off the game loop. */
   async start(): Promise<void> {
@@ -127,6 +141,9 @@ export class FlappyEngine {
     this.bg = createBgSystem(this.config);
     this.bg.init();
     this.renderer.prerenderAllClouds(this.clouds, this.bg);
+    const profile = getDifficultyProfile(key);
+    this.progression = new ProgressionManager(profile, this.config, this.events);
+    this.director = new PipeDirector(this.progression, profile, this.config);
     this.doReset();
   }
   /** Reset the game to idle state without changing difficulty or configuration. */
@@ -140,7 +157,7 @@ export class FlappyEngine {
   /** Resume from a paused state and reset the loop's delta accumulator. */
   resume(): void {
     this.state.resume();
-    if (this.state.state === 'play') this.loop.resetAfterPause();
+    if (this.state.state === GS.Play) this.loop.resetAfterPause();
   }
   /** Return the current game state (`idle`, `play`, `dead`, or `paused`). */
   getState() {
@@ -174,6 +191,10 @@ export class FlappyEngine {
     this.settingsIconHovered = hitTestSettingsIcon(logicalX, logicalY, this.config.width);
     return this.settingsIconHovered;
   }
+  /** Return the game-feel state (streaks, near-miss count) for UI display. */
+  getGameFeelState(): Readonly<GameFeelState> {
+    return this.gameFeel;
+  }
   /** Return the debug metrics collector, or `null` if debug mode is disabled. */
   getDebugCollector(): DebugMetricsCollector | null {
     return this.debugCollector;
@@ -186,10 +207,17 @@ export class FlappyEngine {
   stopDebugRecording() {
     return this.debugCollector?.stopRecording() ?? null;
   }
+  /** Return a snapshot of the current progression state (phase, arc, streaks). */
+  getProgressionState(): ProgressionState {
+    return this.progression.snapshot(this.director.currentArc);
+  }
   private doReset(): void {
     resetEngine(this.state, this.loop, this.bird, this.prevBird, this.config, (n) => {
       this.pipeActiveCount = n;
     });
+    resetGameFeel(this.gameFeel);
+    this.progression.reset();
+    this.director.reset();
   }
   private updateMs = 0;
   private update(dt: number, now: number): void {
@@ -207,6 +235,8 @@ export class FlappyEngine {
       this.pipeActiveCount,
       dt,
       now,
+      this.gameFeel,
+      this.director,
     );
     this.updateMs = dc ? performance.now() - t0 : 0;
   }
@@ -225,6 +255,7 @@ export class FlappyEngine {
       this.prevBird,
       this.settingsIconHovered,
       now,
+      this.gameFeel,
     );
     if (dc) {
       recordDebugFrame(

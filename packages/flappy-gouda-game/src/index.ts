@@ -37,10 +37,21 @@ export {
   cssVar,
 } from '@repo/types';
 
+// Re-export value constants for consumer convenience
+export {
+  GameState,
+  Difficulty,
+  STORAGE_KEYS,
+  DIFF_KEYS,
+  NICKNAME_LENGTH,
+  NICKNAME_PATTERN,
+  isDifficultyKey,
+  safeJsonParse,
+} from '@repo/types';
+
 // Re-export types for consumer convenience
 export type {
   FlappyGoudaGameProps,
-  GameState,
   DifficultyKey,
   BestScores,
   GameColors,
@@ -57,8 +68,6 @@ export type {
   DebugControls,
   DebugRecording,
 } from '@repo/types';
-
-export { NICKNAME_LENGTH, NICKNAME_PATTERN } from '@repo/types';
 
 // Re-export hooks needed by web app to maintain architecture compliance
 export { useNickname } from '@repo/hooks';

@@ -6,8 +6,9 @@ import type {
   DebugRecording,
   DebugRecordingSession,
   DebugSystemInfo,
-  GameState,
 } from '@repo/types';
+import { GameState as GS } from '@repo/types';
+import type { GameState } from '@repo/types';
 import { buildDebugSnapshot } from './debug-snapshot';
 import type { EngineEventEmitter } from './engine-events';
 
@@ -171,7 +172,7 @@ export class DebugMetricsCollector {
   private subscribeEngineEvents(): void {
     const onState = (state: GameState) => {
       this.logEvent('state', `State changed to ${state}`);
-      if (this.recording && this.currentSession && state === 'play') {
+      if (this.recording && this.currentSession && state === GS.Play) {
         this.currentSession.endTime = performance.now();
         this.recordingSessions.push(this.currentSession);
         this.currentSession = { startTime: performance.now(), endTime: 0, frames: [], events: [] };
